@@ -1,10 +1,10 @@
 package websocket
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -13,31 +13,21 @@ import (
 
 type manager struct {
 	addr string
-	//Key is userID
-	clients map[string]*client
+
+	clients map[string]*conn
 
 	upgrader websocket.Upgrader
 
 	mu sync.RWMutex
 
 	logger *slog.Logger
-
-	/* broker Broker */
 }
 
 type ManagerOptions struct {
 	Addr string
 
 	Logger *slog.Logger
-
-	/* Broker Broker */
 }
-
-/* type Broker interface {
-	Subscribe(ctx context.Context) (*redis.PubSub, error)
-	Unsubscribe(ctx context.Context, pubsub *redis.PubSub) error
-	Publish(ctx context.Context, message []byte) error
-} */
 
 func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 
@@ -49,13 +39,11 @@ func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 	return &manager{
 		addr: o.Addr,
 
-		clients: make(map[string]*client),
+		clients: make(map[string]*conn),
 
 		mu: sync.RWMutex{},
 
 		logger: o.Logger,
-
-		/* broker: o.Broker, */
 
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
@@ -67,6 +55,20 @@ func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 	}, nil
 }
 
+func (m *manager) Broadcast(message []byte) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	for _, client := range m.clients {
+
+		select {
+		case client.sendChannel <- message:
+		default:
+			m.logger.Debug("Failed to send message to client", slog.String("clientID", client.id))
+		}
+	}
+}
+
 func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := m.upgrader.Upgrade(w, r, nil)
@@ -75,24 +77,23 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ws := newConnection(&connOptions{conn: conn, logger: m.logger})
-
-	client := newClient(&clientOptions{
-		conn:   ws,
+	ws := newConnection(&connOptions{conn: conn,
 		id:     uuid.Must(uuid.NewRandom()).String(),
 		logger: m.logger,
-		/* broker: m.broker, */
-	},
-	)
+	})
 
-	m.addClient(client)
-	defer m.removeClient(client)
+	m.addClient(ws)
+	defer m.removeClient(ws)
 
-	client.run()
+	ws.run()
+
+	//blocking statement until we are forced to cleanup
+	<-ws.shutdown
 
 }
 
-func (m *manager) addClient(c *client) {
+func (m *manager) addClient(c *conn) {
+	m.logger.Info("Adding client", slog.String("id", c.id))
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -100,7 +101,8 @@ func (m *manager) addClient(c *client) {
 
 }
 
-func (m *manager) removeClient(c *client) {
+func (m *manager) removeClient(c *conn) {
+	m.logger.Info("Removing client", slog.String("id", c.id))
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -110,14 +112,25 @@ func (m *manager) removeClient(c *client) {
 
 func (m *manager) ListenAndServe() error {
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	router := http.NewServeMux()
+
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		m.logger.Info("Websocket connection request received")
 		m.upgradeHandler(w, r)
 	})
 
+	srv := &http.Server{
+		Handler:           router,
+		Addr:              m.addr,
+		ReadTimeout:       5 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+
 	m.logger.Info("Starting websocket server on port: " + m.addr)
 	//TODO PASS IN OPTIONS
-	err := http.ListenAndServe(m.addr, nil)
+	err := srv.ListenAndServe()
 	if err != nil {
 		m.logger.Error("Failed to start websocket server", slog.String("error", err.Error()))
 		return err
@@ -127,18 +140,15 @@ func (m *manager) ListenAndServe() error {
 	return nil
 }
 
-// Method which closes all of the active websocket connections
-func (m *manager) Stop(ctx context.Context) {
+func (m *manager) Stop() {
 
 	wg := &sync.WaitGroup{}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for _, client := range m.clients {
 		wg.Add(1)
-		go client.conn.Close(wg)
+		go client.Close(wg)
 	}
 	wg.Wait()
-
 	m.logger.Info("Websocket server stopped")
-
 }

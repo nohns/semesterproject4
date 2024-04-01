@@ -25,6 +25,7 @@ const (
 
 type conn struct {
 	conn             *websocket.Conn
+	id               string
 	sendChannel      chan []byte
 	heartbeatChannel chan []byte
 	shutdown         chan any
@@ -37,12 +38,14 @@ type conn struct {
 
 type connOptions struct {
 	conn   *websocket.Conn
+	id     string
 	logger *slog.Logger
 }
 
 func newConnection(o *connOptions) *conn {
 	return &conn{
 		conn:             o.conn,
+		id:               o.id,
 		sendChannel:      make(chan []byte, sendBufferSize),
 		heartbeatChannel: make(chan []byte, recieveBufferSize),
 		shutdown:         make(chan interface{}),
@@ -161,7 +164,6 @@ func (c *conn) cleanup() {
 		c.logger.Info("Connection closed")
 
 	})
-
 }
 
 func (c *conn) run() {
