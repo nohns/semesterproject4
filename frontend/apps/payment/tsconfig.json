@@ -1,16 +1,3 @@
-/* {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "React Library",
-  "compilerOptions": {
-    "lib": ["ES2015", "DOM"],
-    "module": "ESNext",
-    "target": "ES6",
-    "jsx": "react-jsx",
-    "noEmit": true
-  }
-}
- */
-
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -39,5 +26,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
