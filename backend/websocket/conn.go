@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"go.uber.org/zap"
 )
 
 const (
@@ -38,7 +37,7 @@ type conn struct {
 
 type connOptions struct {
 	conn   *websocket.Conn
-	logger *zap.Logger
+	logger *slog.Logger
 }
 
 func newConnection(o *connOptions) *conn {
@@ -76,13 +75,13 @@ func (c *conn) writePump() {
 			}
 
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeTimeout)); err != nil {
-				c.logger.Error("Failed to set write deadline", zap.Error(err))
+				c.logger.Error("Failed to set write deadline", slog.String("error", err.Error()))
 				return
 			}
 
 			if err := c.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
 
-				c.logger.Error("Failed to write message", zap.Error(err))
+				c.logger.Error("Failed to write message", slog.String("error", err.Error()))
 				return
 			}
 			c.logger.Info("Message sent")
@@ -93,13 +92,13 @@ func (c *conn) writePump() {
 				return
 			}
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeTimeout)); err != nil {
-				c.logger.Error("Failed to set write deadline", zap.Error(err))
+				c.logger.Error("Failed to set write deadline", slog.String("error", err.Error()))
 				return
 			}
 
 			log.Println("conn: ", c.conn.RemoteAddr().String())
 			if err := c.conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-				c.logger.Error("Failed to write ping message", zap.Error(err))
+				c.logger.Error("Failed to write ping message", slog.String("error", err.Error()))
 				return
 			}
 
@@ -119,11 +118,11 @@ func (c *conn) heartBeat() {
 	//Here I need to implement some sort of ping pong mechanism to keep the connection alive
 	c.conn.SetPongHandler(func(input string) error {
 
-		c.logger.Info("Received pong", zap.String("input", input))
+		c.logger.Info("Received pong", slog.String("input", input))
 
 		c.lastPongAt = time.Now()
 		if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
-			c.logger.Error("Failed to set read deadline", zap.Error(err))
+			c.logger.Error("Failed to set read deadline", slog.String("error", err.Error()))
 			c.cleanup()
 		}
 
@@ -157,7 +156,7 @@ func (c *conn) cleanup() {
 		err := c.conn.Close()
 		if err != nil {
 
-			c.logger.Error("Failed to close connection", zap.Error(err))
+			c.logger.Error("Failed to close connection", slog.String("error", err.Error()))
 		}
 		c.logger.Info("Connection closed")
 
@@ -184,6 +183,6 @@ func (c *conn) Close(wg *sync.WaitGroup) {
 func (c *conn) writeClose() {
 	err := c.conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(writeTimeout))
 	if err != nil {
-		c.logger.Error("failed to write close message", zap.Error(err))
+		c.logger.Error("failed to write close message", slog.String("error", err.Error()))
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"log/slog"
 
 	"github.com/go-redis/redis/v8"
-	"go.uber.org/zap"
 )
 
 type client struct {
@@ -14,7 +13,7 @@ type client struct {
 
 	logger *slog.Logger
 
-	broker Broker
+	/* broker Broker */
 }
 
 type clientOptions struct {
@@ -23,7 +22,7 @@ type clientOptions struct {
 
 	logger *slog.Logger
 
-	broker Broker
+	/* broker Broker */
 }
 
 func newClient(o *clientOptions) *client {
@@ -32,7 +31,7 @@ func newClient(o *clientOptions) *client {
 		conn: o.conn,
 		id:   o.id,
 
-		broker: o.broker,
+		/* broker: o.broker, */
 
 		logger: o.logger,
 	}
@@ -59,7 +58,7 @@ func (c *client) run() {
 
 	pubsub, err := c.broker.Subscribe(context.TODO())
 	if err != nil {
-		c.logger.Error("Failed to subscribe to channel", zap.Error(err))
+		c.logger.Error("Failed to subscribe to channel", slog.String("error", err.Error()))
 		return
 	}
 
@@ -70,7 +69,7 @@ func (c *client) run() {
 	//Close the pubsub channel
 	err = c.broker.Unsubscribe(context.TODO(), pubsub)
 	if err != nil {
-		c.logger.Error("Failed to unsubscribe from channel", zap.Error(err))
+		c.logger.Error("Failed to unsubscribe from channel", slog.String("error", err.Error()))
 		return
 	}
 	pubsub.Close()
