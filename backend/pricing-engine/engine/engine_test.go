@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nohns/semesterproject4/backend/pricing-engine/engine"
+	"github.com/nohns/semesterproject4/pricing-engine/engine"
 )
 
 func TestMain(m *testing.M) {
