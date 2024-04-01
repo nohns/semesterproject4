@@ -1,9 +1,11 @@
 package websocket
 
 import (
+	"log"
 	"log/slog"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/google/uuid"
@@ -55,6 +57,8 @@ func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 	}, nil
 }
 
+var count int64
+
 func (m *manager) Broadcast(message []byte) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -86,6 +90,18 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 	defer m.removeClient(ws)
 
 	ws.run()
+
+	n := atomic.AddInt64(&count, 1)
+	if n%100 == 0 {
+		log.Printf("Total number of connections: %v", n)
+	}
+	defer func() {
+		n := atomic.AddInt64(&count, -1)
+		if n%100 == 0 {
+			log.Printf("Total number of connections: %v", n)
+		}
+		conn.Close()
+	}()
 
 	//blocking statement until we are forced to cleanup
 	<-ws.shutdown
@@ -119,6 +135,7 @@ func (m *manager) ListenAndServe() error {
 		m.upgradeHandler(w, r)
 	})
 
+	//Sane defaults
 	srv := &http.Server{
 		Handler:           router,
 		Addr:              m.addr,
@@ -129,7 +146,6 @@ func (m *manager) ListenAndServe() error {
 	}
 
 	m.logger.Info("Starting websocket server on port: " + m.addr)
-	//TODO PASS IN OPTIONS
 	err := srv.ListenAndServe()
 	if err != nil {
 		m.logger.Error("Failed to start websocket server", slog.String("error", err.Error()))
