@@ -8,5 +8,6 @@
   },
   "[sql]": {
     "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
-  }
+  },
+  "css.lint.unknownAtRules": "ignore"
 }
