@@ -7,7 +7,9 @@
   "exports": {
     "./styles.css": "./dist/index.css",
     "./card": "./src/card.tsx",
-    "./button": "./src/button.tsx"
+    "./button": "./src/button.tsx",
+    "./productCard": "./src/productCard.tsx",
+    "./data/productsMock": "./src/data/productsMock.ts"
   },
   "license": "MIT",
   "scripts": {
