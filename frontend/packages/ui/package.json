@@ -5,11 +5,8 @@
     "**/*.css"
   ],
   "exports": {
-    "./styles.css": "./dist/index.css",
-    "./card": "./src/card.tsx",
-    "./button": "./src/button.tsx",
-    "./productCard": "./src/productCard.tsx",
-    "./data/productsMock": "./src/data/productsMock.ts"
+    "./styles": "./dist/index.css",
+    ".": "./src/index.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -22,6 +19,7 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^20.12.3",
     "@types/react": "^18.2.61",
     "autoprefixer": "^10.4.18",
     "postcss": "^8.4.35",
@@ -30,7 +28,9 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.364.0",
