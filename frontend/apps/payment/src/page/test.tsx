@@ -5,10 +5,11 @@ import { useWebsocket } from "@repo/api";
 import { ProductCard, ProductProps, productsMock } from "@repo/ui";
 
 function Test() {
-  useWebsocket();
+  const { isConnected } = useWebsocket("ws://localhost:9090/ws");
 
   return (
     <div>
+      {isConnected ? <p>Connected</p> : <p>Not connected</p>}
       <h1>Test</h1>
       <Button>Test</Button>
 

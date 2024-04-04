@@ -75,7 +75,7 @@ type broadcaster interface {
 
 func spam(broadcaster broadcaster) {
 	for {
-		time.Sleep(time.Second * 100)
+		time.Sleep(time.Second * 60)
 		msg := []byte("hello")
 		broadcaster.Broadcast(msg)
 

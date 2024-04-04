@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"log"
 	"log/slog"
 	"sync"
 	"time"
@@ -43,6 +42,7 @@ type connOptions struct {
 }
 
 func newConnection(o *connOptions) *conn {
+	now := time.Now()
 	return &conn{
 		conn:             o.conn,
 		id:               o.id,
@@ -51,6 +51,7 @@ func newConnection(o *connOptions) *conn {
 		shutdown:         make(chan interface{}),
 		cleanupOnce:      &sync.Once{},
 		logger:           o.logger,
+		lastPongAt:       now,
 	}
 }
 
@@ -99,9 +100,8 @@ func (c *conn) writePump() {
 				return
 			}
 
-			log.Println("conn: ", c.conn.RemoteAddr().String())
-			if err := c.conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-				c.logger.Error("Failed to write ping message", slog.String("error", err.Error()))
+			if err := c.conn.WriteControl(websocket.PingMessage, []byte("PING"), time.Now().Add(writeTimeout)); err != nil {
+				c.logger.Error("Failed to write control ping message", slog.String("error", err.Error()))
 				return
 			}
 
@@ -109,28 +109,71 @@ func (c *conn) writePump() {
 	}
 }
 
+func (c *conn) readPump() {
+	c.logger.Info("Read pump started")
+	defer func() {
+		c.logger.Debug("read pump stopped")
+		c.cleanup()
+	}()
+
+	c.conn.SetReadLimit(recieveBufferSize)
+	if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
+		c.logger.Error("failed to set read deadline", slog.String("error", err.Error()))
+	}
+
+	//Here I need to implement some sort of ping pong mechanism to keep the connection alive
+	c.conn.SetPongHandler(func(s string) error {
+		c.logger.Info("Received pong", slog.String("data", s))
+		c.lastPongAt = time.Now()
+		if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
+			c.logger.Error("Failed to set read deadline", slog.String("error", err.Error()))
+			c.cleanup()
+		}
+		return nil
+	})
+
+	errC := make(chan error, 1)
+
+	go func() {
+		for {
+			//Listen for ping messages and respond
+
+			if _, _, err := c.conn.NextReader(); err != nil {
+				errC <- err
+				return
+			}
+		}
+	}()
+
+	for {
+		select {
+		case err := <-errC:
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+				// If the connection is closed, increment metric for closing
+				c.logger.Debug("websocket connection closed unexpectedly", slog.String("error", err.Error()))
+			} else {
+				// Otherwise we failed to read from the connection, increment metric for failure
+				c.logger.Error("failed to read from connection", slog.String("error", err.Error()))
+			}
+			return
+
+		case <-c.shutdown:
+			return
+		}
+	}
+
+}
+
+// We need heartbeat to act as the reader goroutine
 func (c *conn) heartBeat() {
 
+	c.logger.Info("Heartbeat started")
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		c.logger.Info("Heartbeat stopped cleaning up the connection")
 		ticker.Stop()
 		c.cleanup()
 	}()
-
-	//Here I need to implement some sort of ping pong mechanism to keep the connection alive
-	c.conn.SetPongHandler(func(input string) error {
-
-		c.logger.Info("Received pong", slog.String("input", input))
-
-		c.lastPongAt = time.Now()
-		if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
-			c.logger.Error("Failed to set read deadline", slog.String("error", err.Error()))
-			c.cleanup()
-		}
-
-		return nil
-	})
 
 	for {
 		select {
@@ -148,8 +191,8 @@ func (c *conn) heartBeat() {
 
 func (c *conn) cleanup() {
 	c.logger.Info("Cleaning up connection")
-
 	c.cleanupOnce.Do(func() {
+		c.logger.Debug("CLEANUP ONCE")
 
 		close(c.shutdown)
 		close(c.sendChannel)
@@ -158,20 +201,18 @@ func (c *conn) cleanup() {
 		// Close the underlying websocket connection.
 		err := c.conn.Close()
 		if err != nil {
-
 			c.logger.Error("Failed to close connection", slog.String("error", err.Error()))
 		}
 		c.logger.Info("Connection closed")
-
 	})
+	c.logger.Info("outside of cleanup once")
 }
 
 func (c *conn) run() {
 	c.logger.Info("New connection starting read, write and heartbeat pumps")
-
 	go c.writePump()
+	go c.readPump()
 	go c.heartBeat()
-
 }
 
 // Close closes the connection gracefully. It waits for all goroutines to finish.
