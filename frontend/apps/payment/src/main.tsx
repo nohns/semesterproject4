@@ -14,7 +14,7 @@ const root = ReactDOM.createRoot(rootElement as HTMLElement);
 root.render(
   <React.StrictMode>
     <div>
-      <div className="mt-8 grid grid-cols-1 gap-4">
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {productsMock.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

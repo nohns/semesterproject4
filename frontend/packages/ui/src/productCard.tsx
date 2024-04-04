@@ -9,7 +9,8 @@ export interface ProductProps {
   price: string;
   imageUrl: string;
 }
-
+// Probably shouldn't be using React FC
+// This only works if the aspect ratios are all the same
 const ProductCard: React.FC<{ product: ProductProps }> = ({ product }) => {
   return (
     <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md overflow-hidden m-4">
