@@ -28,7 +28,7 @@ func main() {
 	}
 
 	opts := &slog.HandlerOptions{
-		Level: slog.LevelError,
+		/* Level: slog.LevelError, */
 	}
 
 	handler := slog.NewJSONHandler(os.Stdout, opts)

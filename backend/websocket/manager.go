@@ -1,11 +1,9 @@
 package websocket
 
 import (
-	"log"
 	"log/slog"
 	"net/http"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/google/uuid"
@@ -57,8 +55,6 @@ func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 	}, nil
 }
 
-var count int64
-
 func (m *manager) Broadcast(message []byte) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -91,18 +87,6 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	ws.run()
 
-	n := atomic.AddInt64(&count, 1)
-	if n%100 == 0 {
-		log.Printf("Total number of connections: %v", n)
-	}
-	defer func() {
-		n := atomic.AddInt64(&count, -1)
-		if n%100 == 0 {
-			log.Printf("Total number of connections: %v", n)
-		}
-		conn.Close()
-	}()
-
 	//We need to send the initial data here when the connection is established
 	ws.sendChannel <- []byte("This is the large amount of big data we need to send once 🤬")
 
@@ -113,20 +97,22 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (m *manager) addClient(c *conn) {
 	m.logger.Info("Adding client", slog.String("id", c.id))
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	m.clients[c.id] = c
-
+	m.logger.Info("Total clients", slog.Int("count", len(m.clients)))
 }
 
 func (m *manager) removeClient(c *conn) {
 	m.logger.Info("Removing client", slog.String("id", c.id))
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	delete(m.clients, c.id)
-
+	m.logger.Info("Total clients", slog.Int("count", len(m.clients)))
 }
 
 func (m *manager) ListenAndServe() error {
