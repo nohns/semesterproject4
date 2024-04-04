@@ -10,8 +10,7 @@ function Test() {
   return (
     <div>
       {isConnected ? <p>Connected</p> : <p>Not connected</p>}
-      <h1>Payment UI</h1>
-      <Button>Test</Button>
+      <h1>Bartender react app</h1>
 
       <div className="flex flex-row">
         {productsMock.map((product: ProductProps) => (

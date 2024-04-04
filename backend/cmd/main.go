@@ -35,6 +35,7 @@ func main() {
 
 	logger := slog.New(handler)
 
+	//Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
 	websocketManager, err := websocket.NewWebsocketManager(&websocket.ManagerOptions{
 		Addr:   ":9090",
 		Logger: logger,
