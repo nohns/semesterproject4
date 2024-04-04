@@ -14,7 +14,7 @@ export interface ProductProps {
 const ProductCard: React.FC<{ product: ProductProps }> = ({ product }) => {
   return (
     <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md overflow-hidden m-4">
-      <img className="w-full" src={product.imageUrl} alt={product.name} />
+      <img className="w-full object-cover" src={product.imageUrl} alt={product.name} />
       <div className="p-5">
         <h5 className="text-gray-900 font-bold text-2xl tracking-tight mb-2">{product.name}</h5>
         <p className="font-normal text-gray-700 mb-3">{product.description}</p>
