@@ -103,6 +103,9 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		conn.Close()
 	}()
 
+	//We need to send the initial data here when the connection is established
+	ws.sendChannel <- []byte("This is the large amount of big data we need to send once 🤬")
+
 	//blocking statement until we are forced to cleanup
 	<-ws.shutdown
 
