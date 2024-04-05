@@ -8,3 +8,5 @@ export * from "./components/TestCard";
 export * from "./components/theme-provider";
 export * from "./components/productCard";
 export * from "./data/productsMock";
+export * from "./components/Apple";
+export * from "./components/Google";

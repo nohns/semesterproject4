@@ -10,6 +10,7 @@ import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
 import Test from "./page/test";
+import Selection from "./page/Selection";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -21,7 +22,7 @@ root.render(
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <TooltipProvider delayDuration={100}>
         <ReactQueryClientProvider>
-          <Test />
+          <Selection />
         </ReactQueryClientProvider>
       </TooltipProvider>
     </ThemeProvider>
