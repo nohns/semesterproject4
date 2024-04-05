@@ -3,6 +3,7 @@
 import ProductCard from "@/components/ProductCard";
 import { FooBar, Apple, Google } from "@repo/ui";
 import React from "react";
+
 import { Ampersands } from "lucide-react";
 
 function Selection() {
@@ -12,6 +13,7 @@ function Selection() {
     <>
       <div className="flex flex-col items-center max-w-full overflow-hidden">
         <FooBar />
+
         <div className="flex flex-col items-center w-full gap-6">
           {test.map((item) => (
             <React.Fragment key={item}>

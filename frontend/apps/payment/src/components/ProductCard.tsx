@@ -10,9 +10,22 @@ import {
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
 
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  originalPrice: number;
+  currentPrice: number;
+  timeStamp: string;
+}
+
+interface ProductCardProps {
+  product: Product;
+}
+
 function ProductCard() {
   return (
-    <Card className="w-10/12">
+    <Card className="w-10/12 ">
       <div className="flex flex-row justify-center items-center p-4">
         <img
           alt="Product Image"

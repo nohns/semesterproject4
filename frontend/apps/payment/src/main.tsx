@@ -5,11 +5,11 @@ import ReactDOM from "react-dom/client";
 
 import { ThemeProvider, TooltipProvider } from "@repo/ui";
 import { ReactQueryClientProvider } from "@repo/api";
+import { Navigate, Route, Routes as RouterRoutes } from "react-router-dom";
 
 import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
-import Test from "./page/test";
 import Selection from "./page/Selection";
 
 const rootElement = document.getElementById("root");
@@ -22,7 +22,10 @@ root.render(
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <TooltipProvider delayDuration={100}>
         <ReactQueryClientProvider>
-          <Selection />
+          <RouterRoutes>
+            <Route path="/" element={<Selection />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </RouterRoutes>
         </ReactQueryClientProvider>
       </TooltipProvider>
     </ThemeProvider>
