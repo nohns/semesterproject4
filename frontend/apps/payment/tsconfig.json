@@ -6,10 +6,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    //Shadcn stuff
+    /* Path configuration */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/api/*": ["../../packages/api/src/*"]
     },
 
     /* Bundler mode */
