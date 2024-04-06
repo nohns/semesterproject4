@@ -1,0 +1,11 @@
+bartender.foobar.local {
+	reverse_proxy http://localhost:5175
+}
+
+payment.foobar.local {
+	reverse_proxy http://localhost:5174
+}
+
+overview.foobar.local {
+	reverse_proxy http://localhost:5173
+}
