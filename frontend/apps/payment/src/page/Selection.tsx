@@ -10,9 +10,9 @@ import { Ampersands } from "Lucide-react";
 function Selection() {
   const navigate = useNavigate();
 
-  const handleProductClick = () => {
-    navigate("/selected");
-  };
+  const handleProductClick = (itemId: number) => {
+    navigate('/selected', { state: { itemId: itemId.toString() } });
+};
 
   const test = [1, 2, 3, 4, 5];
 
@@ -24,7 +24,7 @@ function Selection() {
         <div className="flex flex-col items-center w-full gap-6">
           {test.map((item) => (
             <React.Fragment key={item}>
-              <div onClick={handleProductClick}>
+              <div onClick={() => handleProductClick(item)}>
                 <ProductCard />
               </div>
             </React.Fragment>
