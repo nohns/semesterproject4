@@ -18,6 +18,8 @@ import (
 )
 
 func main() {
+	// Varied seed for random number generator
+	rand.Seed(time.Now().UnixNano())
 
 	// Increase resources limitations
 	var rLimit syscall.Rlimit
@@ -165,7 +167,19 @@ func spam(broadcaster broadcaster) {
 
 }
 
-// function which generates a random number between 0 and 100
+// Function which generates a random number between 0 and 100
+// 70% of the time the number will be between 15 and 40
+// 5% of the time the number will be between 0 and 15
+// 25% of the time the number will be between 40 and 100
 func randomPrice() float64 {
-	return rand.Float64() * 100
+    segment := rand.Float64()
+
+    if segment < 0.7 {
+        return 15 + rand.Float64()*(40-15)
+    } else if segment < 0.75 {
+        return rand.Float64() * 15
+    } else {
+        return 40 + rand.Float64()*(100-40)
+    }
 }
+
