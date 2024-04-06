@@ -1,14 +1,13 @@
 /** @format */
 
 import ProductCard from "@/components/ProductCard";
-import { FooBar, Apple, Google } from "@repo/ui";
-import React from "react";
+import { Apple, Google } from "@repo/ui";
+
 import { useNavigate } from "react-router-dom";
 
 import { Ampersands } from "Lucide-react";
 import { Product, useWebsocket } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
-import AnimationPage from "./AnimationPage";
 import { motion } from "framer-motion";
 
 function Selection() {
@@ -25,8 +24,7 @@ function Selection() {
   //console.log(message[0].name);
   return (
     <>
-      {/* <AnimationPage> */}
-      <MobileContainer shouldAnimate={false}>
+      <MobileContainer>
         <div className="flex flex-col items-center w-full gap-6">
           {/*Loading screen*/}
           {products.length === 0 && (
@@ -57,7 +55,12 @@ function Selection() {
             ))}
         </div>
 
-        <div className="flex flex-col mt-4  border-t w-full items-center ">
+        <motion.div
+          className="flex flex-col mt-4  border-t w-full items-center "
+          initial={{ y: 50, opacity: 0 }} // start from a slightly lower position and with 0 opacity
+          animate={{ y: 0, opacity: 1 }} // animate to the original position and full opacity
+          transition={{ duration: 0.5 }} // control the speed of the animation
+        >
           <span className="font-mono font-light mt-4 text-xs my-auto">
             Supported methods for payment
           </span>
@@ -71,9 +74,8 @@ function Selection() {
           <span className="font-mono font-extralight text-xs border-t w-10/12 text-center py-2">
             @Copyright FooBar.dk
           </span>
-        </div>
+        </motion.div>
       </MobileContainer>
-      {/* </AnimationPage> */}
     </>
   );
 }
