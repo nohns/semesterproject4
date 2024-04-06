@@ -13,12 +13,10 @@ type item struct {
 }
 
 func newItem(params ItemParams) item {
-	decaycoef := toDecayCoefficient(params.HalfTime)
-
 	return item{
 		params:    params,
 		initprice: params.InitialPrice,
-		decaycoef: decaycoef,
+		decaycoef: toDecayCoefficient(params.HalfTime),
 		lastorder: time.Now(),
 	}
 }
@@ -35,9 +33,12 @@ func (i *item) order(qty int) {
 
 func (i *item) price() float64 {
 	x := time.Now().Sub(i.lastorder) / time.Second
+	if x == 0 {
+		return i.initprice
+	}
+	// log decaycoef
 	b := i.initprice - i.params.MinPrice
-
-	return i.params.MinPrice + b*math.Pow(i.decaycoef, float64(x))
+	return i.params.MinPrice + b*math.Pow(math.E, i.decaycoef*float64(x))
 }
 
 func (i *item) tweakParams(params ItemParams) {
