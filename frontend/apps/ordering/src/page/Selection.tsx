@@ -25,7 +25,7 @@ function Selection() {
   return (
     <>
       <MobileContainer>
-        <div className="flex flex-col items-center w-full gap-6">
+        <div className="h-full flex flex-col items-center w-full gap-6">
           {/*Loading screen*/}
           {products.length === 0 && (
             <div className="flex flex-col justify-center items-center">

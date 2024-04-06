@@ -9,9 +9,9 @@ interface MobileContainerProps {
 
 function MobileContainer({ children }: MobileContainerProps) {
   return (
-    <div className="flex flex-col items-center max-w-full min-h-[100dvh] justify-between">
+    <div className="flex flex-col items-center max-w-full min-h-[100dvh] justify-start">
       <FooBar />
-      {children}
+      <main className="flex-1 w-full">{children}</main>
     </div>
   );
 }
