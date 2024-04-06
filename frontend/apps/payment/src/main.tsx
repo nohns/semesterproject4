@@ -16,6 +16,7 @@ import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
 import Selection from "./page/Selection";
+import Selected from "./page/Selected";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -31,6 +32,7 @@ root.render(
             <RouterRoutes>
               <Route path="/" element={<Selection />} />
               <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/selected" element={<Selected />} />
             </RouterRoutes>
           </BrowserRouter>
         </ReactQueryClientProvider>

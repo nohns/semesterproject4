@@ -3,11 +3,18 @@
 import ProductCard from "@/components/ProductCard";
 import { FooBar, Apple, Google } from "@repo/ui";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Ampersands } from "Lucide-react";
 import { useWebsocket } from "@repo/api";
 
 function Selection() {
+  const navigate = useNavigate();
+
+  const handleProductClick = (itemId: number) => {
+    navigate('/selected', { state: { itemId: itemId.toString() } });
+};
+
   const test = [1, 2, 3, 4, 5];
 
   const { isConnected, message } = useWebsocket("wss://localhost:9090/ws");
@@ -22,7 +29,9 @@ function Selection() {
         <div className="flex flex-col items-center w-full gap-6">
           {test.map((item) => (
             <React.Fragment key={item}>
-              <ProductCard />
+              <div onClick={() => handleProductClick(item)}>
+                <ProductCard />
+              </div>
             </React.Fragment>
           ))}
         </div>
