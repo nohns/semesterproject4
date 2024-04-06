@@ -110,6 +110,26 @@ func spam(broadcaster broadcaster) {
 			TimeStamp:     time.Now().Format(time.RFC3339),
 		}
 
+		product3 := Product{
+			ID:            "3",
+			Name:          "Sort vand",
+			Description:   "Vand og blåt vand",
+			Image:         "/images/vand.jpg",
+			OriginalPrice: randomPrice(),
+			CurrentPrice:  randomPrice(),
+			TimeStamp:     time.Now().Format(time.RFC3339),
+		}
+
+		product4 := Product{
+			ID:            "4",
+			Name:          "Rødt vand",
+			Description:   "Vand og blåt vand",
+			Image:         "/images/vand.jpg",
+			OriginalPrice: randomPrice(),
+			CurrentPrice:  randomPrice(),
+			TimeStamp:     time.Now().Format(time.RFC3339),
+		}
+
 		//Convert product 1 to json slice of bytes
 		product1Json, err := json.Marshal(product1)
 		if err != nil {
@@ -122,8 +142,20 @@ func spam(broadcaster broadcaster) {
 			log.Println("Failed to marshal product 2")
 		}
 
+		//Convert product 3 to json slice of bytes
+		product3Json, err := json.Marshal(product3)
+		if err != nil {
+			log.Println("Failed to marshal product 3")
+		}
+
+		//Convert product 4 to json slice of bytes
+		product4Json, err := json.Marshal(product4)
+		if err != nil {
+			log.Println("Failed to marshal product 4")
+		}
+
 		//Send the data as an array of json
-		msg := []byte("[" + string(product1Json) + "," + string(product2Json) + "]")
+		msg := []byte("[" + string(product1Json) + "," + string(product2Json) + "," + string(product3Json) + "," + string(product4Json) + "]")
 
 		time.Sleep(time.Second * 5)
 

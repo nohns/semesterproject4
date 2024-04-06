@@ -22,7 +22,7 @@ export interface Product {
 
 export const useWebsocket = (url: string) => {
   const wsRef = useRef<WebSocket | null>(null);
-  const [message, setMessage] = useState<Product>();
+  const [products, setProducts] = useState<Product[]>();
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,7 +68,12 @@ export const useWebsocket = (url: string) => {
         clearTimeout(heartbeatTimeoutRef.current);
       } else {
         console.log("Message received:", event.data);
-        setMessage(event.data);
+        try {
+          const data = JSON.parse(event.data) as Product[];
+          setProducts(data);
+        } catch (error) {
+          console.error("Failed to parse event data:", error);
+        }
       }
     };
 
@@ -96,5 +101,5 @@ export const useWebsocket = (url: string) => {
     };
   }, [url, startHeartbeat]);
 
-  return { message, isConnected };
+  return { products, isConnected };
 };
