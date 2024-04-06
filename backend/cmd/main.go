@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/nohns/semesterproject4/pricing-engine/engine"
+	"github.com/nohns/semesterproject4/engine"
 	"github.com/nohns/semesterproject4/websocket"
 
 	"net/http"

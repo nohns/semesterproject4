@@ -36,9 +36,13 @@ const (
 
 type Engine struct {
 	// actors keeps track of actors registered. ONLY interact with it when mu lock is acquired
-	actors  map[string]*actor
-	updates chan PriceUpdate
-	state   engineState
+	actors map[string]*actor
+
+	actorout chan PriceUpdate
+	updates  chan PriceUpdate
+	termbuf  chan struct{}
+
+	state engineState
 	// conf is set when New() is called. Should be read-only from here on out.
 	conf Config
 	mu   sync.RWMutex
@@ -61,10 +65,11 @@ var DefaultConfig = Config{
 // New instantiates a pricing engine, which can track items over time.
 func New(conf Config) *Engine {
 	return &Engine{
-		actors:  make(map[string]*actor),
-		updates: make(chan PriceUpdate, priceUpdateBufSize),
-		state:   engineStateIdle,
-		conf:    conf,
+		actors:   make(map[string]*actor),
+		actorout: make(chan PriceUpdate),
+		updates:  make(chan PriceUpdate),
+		state:    engineStateIdle,
+		conf:     conf,
 	}
 }
 
@@ -114,7 +119,7 @@ func (e *Engine) TrackItem(id string, params ItemParams) error {
 	}
 	e.actors[id] = newActor(id, actorConfig{
 		params: params,
-		out:    e.updates,
+		out:    e.actorout,
 		econf:  e.conf,
 	})
 
@@ -177,14 +182,18 @@ func (e *Engine) ReadUpdate() (PriceUpdate, error) {
 
 // Start will fire up the item price tracking, and the engine will start producing price updates.
 func (e *Engine) Start() error {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.mu.Lock()
+	defer e.mu.Unlock()
 
 	// Engine only able to start when idling beforehand
 	// TODO: make better errors
 	if e.state != engineStateIdle {
 		return ErrEngineNotIdle
 	}
+	e.state = engineStateRunning
+
+	// Keep receiving updates from actors, as to prevent updates from getting dropped
+	go e.bufferUpdates()
 
 	for _, a := range e.actors {
 		a.start()
@@ -210,5 +219,38 @@ func (e *Engine) Terminate() {
 	e.mu.Unlock()
 
 	wg.Wait()
+
+    e.termbuf <- struct{}{}
+    close(e.termbuf)
+    close(e.actorout)
 	close(e.updates)
+}
+
+func (e *Engine) bufferUpdates() {
+	updates := make([]PriceUpdate, 0, 1)
+	for {
+		// Reset the updates slice
+		updates = updates[:0]
+
+		// Drain the input channel
+		qempty := false
+		for !qempty {
+			select {
+			case pu := <-e.actorout:
+				updates = append(updates, pu)
+            case <-e.termbuf:
+                close(e.updates)
+                return
+			default:
+				qempty = true
+			}
+		}
+
+		// Send out the updates
+		go func() {
+			for _, pu := range updates {
+				e.updates <- pu
+			}
+		}()
+	}
 }
