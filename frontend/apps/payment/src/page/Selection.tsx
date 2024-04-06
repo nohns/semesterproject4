@@ -26,9 +26,8 @@ function Selection() {
       <MobileContainer>
         <div className="flex flex-col items-center w-full gap-6">
           {/*Loading screen*/}
-          {isConnected ||
-            products === null ||
-            ([] && (
+          {!isConnected ||
+            (products.length === 0 && (
               <div className="flex flex-col justify-center items-center">
                 <div className="loader" />
                 <span className="font-mono text-xs">

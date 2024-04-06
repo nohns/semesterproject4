@@ -22,7 +22,7 @@ export interface Product {
 
 export const useWebsocket = (url: string) => {
   const wsRef = useRef<WebSocket | null>(null);
-  const [products, setProducts] = useState<Product[]>();
+  const [products, setProducts] = useState<Product[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
