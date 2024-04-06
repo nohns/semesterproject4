@@ -10,9 +10,19 @@ export const DEFAULT_HEARTBEAT = {
 
 //
 
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  originalPrice: number;
+  currentPrice: number;
+  timeStamp: string;
+}
+
 export const useWebsocket = (url: string) => {
   const wsRef = useRef<WebSocket | null>(null);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<Product>();
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -86,5 +96,5 @@ export const useWebsocket = (url: string) => {
     };
   }, [url, startHeartbeat]);
 
-  return { sendMessage, message, isConnected };
+  return { message, isConnected };
 };

@@ -14,6 +14,7 @@ interface Product {
   id: string;
   name: string;
   description: string;
+  image: string;
   originalPrice: number;
   currentPrice: number;
   timeStamp: string;

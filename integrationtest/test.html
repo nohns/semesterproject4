@@ -33,6 +33,13 @@
       console.log('WebSocket connection closed');
   });
 
+  //ping pong
+  socket.addEventListener('ping', function (event) {
+      console.log('WebSocket ping:', event.data);
+      socket.send('pong');
+  });
+
+
   // Connection error
   socket.addEventListener('error', function (event) {
       console.error('WebSocket connection error:', event);

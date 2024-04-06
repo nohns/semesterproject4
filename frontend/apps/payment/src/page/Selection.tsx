@@ -5,9 +5,14 @@ import { FooBar, Apple, Google } from "@repo/ui";
 import React from "react";
 
 import { Ampersands } from "Lucide-react";
+import { useWebsocket } from "@repo/api";
 
 function Selection() {
   const test = [1, 2, 3, 4, 5];
+
+  const { isConnected, message } = useWebsocket("wss://localhost:9090/ws");
+
+  console.log("isConnected", isConnected);
 
   return (
     <>

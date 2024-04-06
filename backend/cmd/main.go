@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"log/slog"
+	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
@@ -70,16 +72,68 @@ func main() {
 
 }
 
+type Product struct {
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	Description   string  `json:"description"`
+	Image         string  `json:"image"`
+	OriginalPrice float64 `json:"originalPrice"`
+	CurrentPrice  float64 `json:"currentPrice"`
+	TimeStamp     string  `json:"timeStamp"`
+}
+
 type broadcaster interface {
 	Broadcast([]byte)
 }
 
 func spam(broadcaster broadcaster) {
 	for {
+
+		product1 := Product{
+			ID:            "1",
+			Name:          "Øl",
+			Description:   "Refreshing beverage",
+			Image:         "/images/øl.jpg",
+			OriginalPrice: randomPrice(),
+			CurrentPrice:  randomPrice(),
+			TimeStamp:     time.Now().Format(time.RFC3339),
+		}
+
+		//Create product 2
+		product2 := Product{
+			ID:            "2",
+			Name:          "Blå vand",
+			Description:   "Vand og blåt vand",
+			Image:         "/images/vand.jpg",
+			OriginalPrice: randomPrice(),
+			CurrentPrice:  randomPrice(),
+			TimeStamp:     time.Now().Format(time.RFC3339),
+		}
+
+		//Convert product 1 to json slice of bytes
+		product1Json, err := json.Marshal(product1)
+		if err != nil {
+			log.Println("Failed to marshal product 1")
+		}
+
+		//Convert product 2 to json slice of bytes
+		product2Json, err := json.Marshal(product2)
+		if err != nil {
+			log.Println("Failed to marshal product 2")
+		}
+
+		//Send the data as an array of json
+		msg := []byte("[" + string(product1Json) + "," + string(product2Json) + "]")
+
 		time.Sleep(time.Second * 5)
-		msg := []byte("this is our periodic data")
+
 		broadcaster.Broadcast(msg)
 
 	}
 
+}
+
+// function which generates a random number between 0 and 100
+func randomPrice() float64 {
+	return rand.Float64() * 100
 }
