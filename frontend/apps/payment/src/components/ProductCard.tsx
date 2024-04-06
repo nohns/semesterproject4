@@ -22,9 +22,13 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
+  handleProductClick: (product: Product) => void;
 }
 
-function ProductCard({ product }: ProductCardProps): JSX.Element {
+function ProductCard({
+  product,
+  handleProductClick,
+}: ProductCardProps): JSX.Element {
   return (
     <Card className="w-10/12 ">
       <div className="flex flex-row justify-center items-center p-4">
@@ -38,12 +42,14 @@ function ProductCard({ product }: ProductCardProps): JSX.Element {
         <div className="flex flex-col w-2/3  ">
           <h1 className="font-mono text-4xl">{product.name}</h1>
           <h3 className="font-thin mb-2">{product.description}</h3>
-          {/* <span className="text-slate-700">Består af vand og blå</span> */}
 
           <span className="line-through text-gray-600 text-center font-mono">
             {product.originalPrice.toFixed(0)} kr
           </span>
-          <Button className="font-mono">
+          <Button
+            className="font-mono"
+            onClick={() => handleProductClick(product)}
+          >
             {product.currentPrice.toFixed(0)} kr
           </Button>
         </div>

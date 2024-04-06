@@ -6,13 +6,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Ampersands } from "Lucide-react";
-import { useWebsocket } from "@repo/api";
+import { Product, useWebsocket } from "@repo/api";
+import MobileContainer from "@/components/MobileContainer";
 
 function Selection() {
   const navigate = useNavigate();
 
-  const handleProductClick = (itemId: number) => {
-    navigate("/selected", { state: { itemId: itemId.toString() } });
+  const handleProductClick = (product: Product) => {
+    console.log("Clicked");
+    navigate("/selected", { state: { product } });
   };
 
   const { isConnected, products } = useWebsocket("ws://localhost:9090/ws");
@@ -21,18 +23,29 @@ function Selection() {
   //console.log(message[0].name);
   return (
     <>
-      <div className="flex flex-col items-center max-w-full overflow-hidden min-h-[100dvh] justify-between">
-        <FooBar />
-
+      <MobileContainer>
         <div className="flex flex-col items-center w-full gap-6">
+          {/*Loading screen*/}
+          {isConnected ||
+            products === null ||
+            ([] && (
+              <div className="flex flex-col justify-center items-center">
+                <div className="loader" />
+                <span className="font-mono text-xs">
+                  Indlæser blå vand opskriften
+                </span>
+              </div>
+            ))}
+
+          {/*All drinks spawned*/}
           {isConnected &&
             products !== null &&
             products?.map((product) => (
               <React.Fragment key={product.id}>
-                {/* <div onClick={() => handleProductClick(item)}> */}{" "}
-                {/*Det går ikke med en div det breaker layout du kan pass onClick functionen ind som en prop i stedet*/}
-                <ProductCard product={product} />
-                {/* </div> */}
+                <ProductCard
+                  product={product}
+                  handleProductClick={handleProductClick}
+                />
               </React.Fragment>
             ))}
         </div>
@@ -52,7 +65,7 @@ function Selection() {
             @Copyright FooBar.dk
           </span>
         </div>
-      </div>
+      </MobileContainer>
     </>
   );
 }
