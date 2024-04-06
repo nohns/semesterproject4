@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import { FooBar, Apple, Google } from "@repo/ui";
 import React from "react";
 
-import { Ampersands } from "lucide-react";
+import { Ampersands } from "Lucide-react";
 
 function Selection() {
   const test = [1, 2, 3, 4, 5];
