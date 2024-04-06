@@ -98,3 +98,37 @@ func TestEngineTrackItem_invalidParams(t *testing.T) {
 		}
 	}
 }
+
+func TestEngineReadUpdate_success(t *testing.T) {
+	eng := engine.New(engine.Config{
+		FirstUpdateMaxDelay: 0,
+		UpdateInterval:      1 * time.Second,
+	})
+	// Create a new item
+	params := engine.ItemParams{
+		MaxPrice:      50,
+		MinPrice:      10,
+		InitialPrice:  50,
+		HalfTime:      10,
+		BuyMultiplier: 1.05,
+	}
+	err := eng.TrackItem("itm1", params)
+	if err != nil {
+		t.Errorf("could not track item. expected no error, got %v", err)
+        return
+	}
+
+	eng.Start()
+	defer eng.Terminate()
+
+	for range params.HalfTime {
+		// Update the price
+		p, err := eng.ReadUpdate()
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if true {
+			t.Errorf("expected positive price, got %v", p)
+		}
+	}
+}
