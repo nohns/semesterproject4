@@ -69,7 +69,9 @@ func main() {
 	websocketManager.Stop()
 
 	//Idk what to do with this shit 😡
-	engine := engine.New()
+	engine := engine.New(
+		engine.DefaultConfig,
+	)
 	engine.Start()
 
 }
@@ -172,14 +174,13 @@ func spam(broadcaster broadcaster) {
 // 5% of the time the number will be between 0 and 15
 // 25% of the time the number will be between 40 and 100
 func randomPrice() float64 {
-    segment := rand.Float64()
+	segment := rand.Float64()
 
-    if segment < 0.7 {
-        return 15 + rand.Float64()*(40-15)
-    } else if segment < 0.75 {
-        return rand.Float64() * 15
-    } else {
-        return 40 + rand.Float64()*(100-40)
-    }
+	if segment < 0.7 {
+		return 15 + rand.Float64()*(40-15)
+	} else if segment < 0.75 {
+		return rand.Float64() * 15
+	} else {
+		return 40 + rand.Float64()*(100-40)
+	}
 }
-

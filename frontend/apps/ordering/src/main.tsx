@@ -17,6 +17,7 @@ import "./index.css"; // Import your own css
 
 import Selection from "./page/Selection";
 import Selected from "./page/Selected";
+import { AnimatePresence } from "framer-motion";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -29,11 +30,13 @@ root.render(
       <TooltipProvider delayDuration={100}>
         <ReactQueryClientProvider>
           <BrowserRouter>
-            <RouterRoutes>
-              <Route path="/" element={<Selection />} />
-              <Route path="*" element={<Navigate to="/" />} />
-              <Route path="/selected" element={<Selected />} />
-            </RouterRoutes>
+            <AnimatePresence mode="wait">
+              <RouterRoutes>
+                <Route path="/" element={<Selection />} />
+                <Route path="*" element={<Navigate to="/" />} />
+                <Route path="/selected" element={<Selected />} />
+              </RouterRoutes>
+            </AnimatePresence>
           </BrowserRouter>
         </ReactQueryClientProvider>
       </TooltipProvider>
