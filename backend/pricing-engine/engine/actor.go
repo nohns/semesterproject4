@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-const (
-	updateInterval = 30 * time.Second
-	// maxStartDelay defines the upper bound for a random start delay, so prices seem to be updating in an arbitrary order
-	maxStartDelay = 10 * time.Second
-)
-
 type actor struct {
 	id         string
 	terminated bool
@@ -27,17 +21,25 @@ type actor struct {
 	out chan<- PriceUpdate
 	// t ticker schedules price updates to be outputted
 	t *time.Ticker
+	// econf holds the engine configuration. Replaces the need for globals
+	econf Config
 }
 
-func newActor(id string, params ItemParams, out chan<- PriceUpdate) *actor {
+type actorConfig struct {
+	params ItemParams
+	out    chan<- PriceUpdate
+	econf  Config
+}
+
+func newActor(id string, conf actorConfig) *actor {
 	return &actor{
-		id: id,
-		itm: item{
-			params: params,
-		},
+		id:     id,
+		itm:    newItem(conf.params),
 		orders: make(chan int),
 		params: make(chan ItemParams),
-		out:    out,
+		term:   make(chan struct{}),
+		out:    conf.out,
+		econf:  conf.econf,
 	}
 }
 
@@ -63,18 +65,21 @@ func (a *actor) terminate() {
 // Start intiates the pricing algorithm
 func (a *actor) start() {
 	a.starter.Do(func() {
+		a.primeUpdateScheduler()
+
 		go a.listen()
-		go a.primeUpdateScheduler()
+		a.orders <- 0 // 0 means initial order, see listen function
 	})
 }
 
 // primeUpdateScheduler sleeps for a random delay between 0 and maxStartDelay, to make price updates
 // seem more random, but still with a set interval between them, so graphs look nicer.
 func (a *actor) primeUpdateScheduler() {
-	delay := time.Duration(rand.Intn(int(maxStartDelay)))
-	time.Sleep(delay)
-	a.t = time.NewTicker(updateInterval)
-	a.orders <- 0 // 0 means initial order, see listen function
+	if a.econf.FirstUpdateMaxDelay < 0 {
+		delay := time.Duration(rand.Int63n(int64(a.econf.FirstUpdateMaxDelay)))
+		time.Sleep(delay)
+	}
+	a.t = time.NewTicker(a.econf.UpdateInterval)
 }
 
 func (a *actor) listen() {
@@ -109,9 +114,9 @@ func (a *actor) handleOrderPlaced(qty int) {
 // emitUpdate outputs an update of the current item price tracked by the actor.
 func (a *actor) emitUpdate() {
 	a.out <- PriceUpdate{
-		id:    a.id,
-		price: a.itm.price(),
-		at:    time.Now(),
+		Id:    a.id,
+		Price: a.itm.price(),
+		At:    time.Now(),
 	}
 }
 

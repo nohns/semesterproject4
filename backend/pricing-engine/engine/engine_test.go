@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/nohns/semesterproject4/pricing-engine/engine"
 )
@@ -17,7 +18,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestEngineTrackItem_success(t *testing.T) {
-	eng := engine.New()
+	eng := engine.New(engine.DefaultConfig)
 	// Create a new item
 	params := engine.ItemParams{
 		MaxPrice:      20,
@@ -33,7 +34,7 @@ func TestEngineTrackItem_success(t *testing.T) {
 }
 
 func TestEngineTrackItem_alreadyTracked(t *testing.T) {
-	eng := engine.New()
+	eng := engine.New(engine.DefaultConfig)
 	// Create a new item
 	params := engine.ItemParams{
 		MaxPrice:      20,
@@ -54,7 +55,7 @@ func TestEngineTrackItem_alreadyTracked(t *testing.T) {
 }
 
 func TestEngineTrackItem_invalidParams(t *testing.T) {
-	eng := engine.New()
+	eng := engine.New(engine.DefaultConfig)
 	// Create a new item
 	invalidparams := []engine.ItemParams{
 		// Make sure that the MaxPrice is greater than or equals to the MinPrice

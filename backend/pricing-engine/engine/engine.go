@@ -21,9 +21,9 @@ const (
 )
 
 type PriceUpdate struct {
-	id    string
-	price float64
-	at    time.Time
+	Id    string
+	Price float64
+	At    time.Time
 }
 
 type engineState int
@@ -39,14 +39,32 @@ type Engine struct {
 	actors  map[string]*actor
 	updates chan PriceUpdate
 	state   engineState
-	mu      sync.RWMutex
+	// conf is set when New() is called. Should be read-only from here on out.
+	conf Config
+	mu   sync.RWMutex
+}
+
+type Config struct {
+	// FirstUpdateMaxDelay is the maximum delay before the first price update is sent. The actual
+	// delay is a random value between 0 and FirstUpdateMaxDelay, to simulate a more realistic
+	// price development.
+	FirstUpdateMaxDelay time.Duration
+	// UpdateInterval is the interval between price updates.
+	UpdateInterval time.Duration
+}
+
+var DefaultConfig = Config{
+	FirstUpdateMaxDelay: 10 * time.Second,
+	UpdateInterval:      30 * time.Second,
 }
 
 // New instantiates a pricing engine, which can track items over time.
-func New() *Engine {
+func New(conf Config) *Engine {
 	return &Engine{
 		actors:  make(map[string]*actor),
 		updates: make(chan PriceUpdate, priceUpdateBufSize),
+		state:   engineStateIdle,
+		conf:    conf,
 	}
 }
 
@@ -94,7 +112,11 @@ func (e *Engine) TrackItem(id string, params ItemParams) error {
 	if _, ok := e.actors[id]; ok {
 		return ErrItemAlreadyTracked
 	}
-	e.actors[id] = newActor(id, params, e.updates)
+	e.actors[id] = newActor(id, actorConfig{
+		params: params,
+		out:    e.updates,
+		econf:  e.conf,
+	})
 
 	return nil
 }
