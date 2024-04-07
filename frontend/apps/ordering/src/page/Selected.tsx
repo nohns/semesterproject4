@@ -11,7 +11,7 @@ import NoWallet from "@/components/NoWallet";
 import StripeCheckout from "@/components/StripeCheckout";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import ProductQuantityCard from "@/components/ProductQuantityCard";
+import BeverageQuantityCard from "@/components/BeverageQuantityCard";
 
 const stripePromise = loadStripe("pk_test_4RxUQ9rE2xn8vIbplcQlCLQN");
 
@@ -24,7 +24,7 @@ function Selected() {
         navigate("/");
     };
 
-    const { product } = useLocation().state;
+    const { beverage } = useLocation().state;
 
     //Magi det ved jeg ikke hvordan virker mads
     //const {} = location.state;
@@ -34,7 +34,7 @@ function Selected() {
             <MobileContainer>
                 <motion.div
                     className="h-full flex flex-col w-10/12 mx-auto gap-4"
-                    key={product.id}
+                    key={beverage.id}
                     initial="initialState"
                     animate="animateState"
                     exit="exitState"
@@ -60,7 +60,7 @@ function Selected() {
                         <ArrowLeftIcon className="w-8 h-8" />
                         <span>Tilbage</span>
                     </div>
-                    <h2 className="text-5xl font-semibold">{product.name}</h2>
+                    <h2 className="text-5xl font-semibold">{beverage.name}</h2>
                     <div className="flex flex-col items-center justify-center">
                         <div>
                             <div>
@@ -78,7 +78,7 @@ function Selected() {
                                 Magisk graf som der nok kræver at endnu mere data bliver passed
                                 ind
                             </div>
-                            <ProductQuantityCard product={product} />
+                            <BeverageQuantityCard beverage={beverage} />
                         </div>
 
                         <div id="checkout-page">
