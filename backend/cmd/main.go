@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
-	"syscall"
+
 	"time"
 
 	"github.com/nohns/semesterproject4/engine"
@@ -20,16 +20,6 @@ import (
 func main() {
 	// Varied seed for random number generator
 	rand.Seed(time.Now().UnixNano())
-
-	// Increase resources limitations
-	var rLimit syscall.Rlimit
-	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-		panic(err)
-	}
-	rLimit.Cur = rLimit.Max
-	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-		panic(err)
-	}
 
 	opts := &slog.HandlerOptions{
 		/* Level: slog.LevelError, */
@@ -63,7 +53,7 @@ func main() {
 
 	//Blocking to keep the main process alive
 	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(signals, os.Interrupt /*, syscall.SIGTERM*/)
 	<-signals
 
 	websocketManager.Stop()
