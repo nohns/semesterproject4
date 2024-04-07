@@ -100,6 +100,7 @@ function ChartInner({ prices, width, height }: ChartInnerProps) {
                 transition={{ duration: 0.5, delay: FADE_IN_DELAY + 0.6 + index * 0.05 }}
                 transform={`translate(${xScale(p.date) - 15},${yScale(p.price) + yOffset
                     })`}
+                    key={index}
             >
                 <motion.rect
                     width={30}
