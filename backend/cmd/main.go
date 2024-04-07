@@ -18,9 +18,6 @@ import (
 )
 
 func main() {
-	// Varied seed for random number generator
-	rand.Seed(time.Now().UnixNano())
-
 	opts := &slog.HandlerOptions{
 		/* Level: slog.LevelError, */
 	}
