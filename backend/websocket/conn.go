@@ -22,7 +22,7 @@ const (
 	recieveBufferSize = 200
 )
 
-type conn struct {
+type Conn struct {
 	conn             *websocket.Conn
 	id               string
 	sendChannel      chan []byte
@@ -41,9 +41,9 @@ type connOptions struct {
 	logger *slog.Logger
 }
 
-func newConnection(o *connOptions) *conn {
+func newConnection(o *connOptions) *Conn {
 	now := time.Now()
-	return &conn{
+	return &Conn{
 		conn:             o.conn,
 		id:               o.id,
 		sendChannel:      make(chan []byte, sendBufferSize),
@@ -55,7 +55,15 @@ func newConnection(o *connOptions) *conn {
 	}
 }
 
-func (c *conn) writePump() {
+func (c *Conn) Send(msg []byte) {
+	select {
+	case c.sendChannel <- msg:
+	default:
+		c.logger.Error("Send buffer full, dropping message")
+	}
+}
+
+func (c *Conn) writePump() {
 	c.logger.Info("Write pump started")
 
 	ticker := time.NewTicker(pingPeriod)
@@ -109,7 +117,7 @@ func (c *conn) writePump() {
 	}
 }
 
-func (c *conn) readPump() {
+func (c *Conn) readPump() {
 	c.logger.Info("Read pump started")
 	defer func() {
 		c.logger.Debug("read pump stopped")
@@ -165,7 +173,7 @@ func (c *conn) readPump() {
 }
 
 // We need heartbeat to act as the reader goroutine
-func (c *conn) heartBeat() {
+func (c *Conn) heartBeat() {
 
 	c.logger.Info("Heartbeat started")
 	ticker := time.NewTicker(pingPeriod)
@@ -189,7 +197,7 @@ func (c *conn) heartBeat() {
 	}
 }
 
-func (c *conn) cleanup() {
+func (c *Conn) cleanup() {
 	c.logger.Info("Cleaning up connection")
 	c.cleanupOnce.Do(func() {
 		c.logger.Debug("CLEANUP ONCE")
@@ -208,7 +216,7 @@ func (c *conn) cleanup() {
 	c.logger.Info("outside of cleanup once")
 }
 
-func (c *conn) run() {
+func (c *Conn) run() {
 	c.logger.Info("New connection starting read, write and heartbeat pumps")
 	go c.writePump()
 	go c.readPump()
@@ -216,14 +224,13 @@ func (c *conn) run() {
 }
 
 // Close closes the connection gracefully. It waits for all goroutines to finish.
-func (c *conn) Close(wg *sync.WaitGroup) {
-	defer wg.Done()
+func (c *Conn) Close() {
 	c.writeClose()
 	c.cleanup()
 }
 
 // writeClose sends a close message to the websocket connection.
-func (c *conn) writeClose() {
+func (c *Conn) writeClose() {
 	err := c.conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(writeTimeout))
 	if err != nil {
 		c.logger.Error("failed to write close message", slog.String("error", err.Error()))

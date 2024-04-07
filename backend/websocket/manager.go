@@ -13,24 +13,22 @@ import (
 
 type manager struct {
 	addr string
-
-	clients map[string]*conn
-
+	clients map[string]*Conn
 	upgrader websocket.Upgrader
-
+    initconn InitConnFunc
 	mu sync.RWMutex
-
 	logger *slog.Logger
 }
 
+type InitConnFunc func(c *Conn)
+
 type ManagerOptions struct {
 	Addr string
-
 	Logger *slog.Logger
+    InitConnFunc InitConnFunc
 }
 
-func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
-
+func NewManager(o *ManagerOptions) (*manager, error) {
 	if o.Addr == "" {
 		o.Addr = ":10000"
 		o.Logger.Info("No port specified, defaulting to 10000")
@@ -39,7 +37,7 @@ func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 	return &manager{
 		addr: o.Addr,
 
-		clients: make(map[string]*conn),
+		clients: make(map[string]*Conn),
 
 		mu: sync.RWMutex{},
 
@@ -52,6 +50,8 @@ func NewWebsocketManager(o *ManagerOptions) (*manager, error) {
 				return true
 			},
 		},
+
+        initconn: o.InitConnFunc,
 	}, nil
 }
 
@@ -88,14 +88,16 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 	ws.run()
 
 	//We need to send the initial data here when the connection is established
-	ws.sendChannel <- []byte("This is the large amount of big data we need to send once 🤬")
+    if m.initconn != nil {
+        m.initconn(ws)
+    }
 
 	//blocking statement until we are forced to cleanup
 	<-ws.shutdown
 
 }
 
-func (m *manager) addClient(c *conn) {
+func (m *manager) addClient(c *Conn) {
 	m.logger.Info("Adding client", slog.String("id", c.id))
 
 	m.mu.Lock()
@@ -105,7 +107,7 @@ func (m *manager) addClient(c *conn) {
 	m.logger.Info("Total clients", slog.Int("count", len(m.clients)))
 }
 
-func (m *manager) removeClient(c *conn) {
+func (m *manager) removeClient(c *Conn) {
 	m.logger.Info("Removing client", slog.String("id", c.id))
 
 	m.mu.Lock()
@@ -150,9 +152,12 @@ func (m *manager) Stop() {
 	wg := &sync.WaitGroup{}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+    wg.Add(len(m.clients))
 	for _, client := range m.clients {
-		wg.Add(1)
-		go client.Close(wg)
+        go func() {
+            defer wg.Done()
+            client.Close()
+        }()
 	}
 	wg.Wait()
 	m.logger.Info("Websocket server stopped")

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"log/slog"
@@ -10,7 +11,9 @@ import (
 	"os/signal"
 	"time"
 
+	pe "github.com/nohns/semesterproject4"
 	"github.com/nohns/semesterproject4/engine"
+	"github.com/nohns/semesterproject4/mock"
 	"github.com/nohns/semesterproject4/websocket"
 
 	_ "net/http/pprof"
@@ -21,14 +24,34 @@ func main() {
 		/* Level: slog.LevelError, */
 	}
 
+	// Initialize logger
 	handler := slog.NewJSONHandler(os.Stdout, opts)
-
 	logger := slog.New(handler)
 
+	// Initialize domain dependencies
+	var hp pe.HistoryProvider = &mock.Data
+
 	// Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
-	websocketManager, err := websocket.NewWebsocketManager(&websocket.ManagerOptions{
+	websocketManager, err := websocket.NewManager(&websocket.ManagerOptions{
 		Addr:   ":9090",
 		Logger: logger,
+		InitConnFunc: func(c *websocket.Conn) {
+			// Gather price histories
+			histories, err := hp.Histories(context.TODO())
+			if err != nil {
+				logger.Error("Failed to get histories when initiating ws connection", slog.String("error", err.Error()))
+				c.Close()
+				return
+			}
+			// Convert to message to be sent to frontend
+			b, err := json.Marshal(pe.NewHistoryMsg(histories))
+			if err != nil {
+				logger.Error("Failed to json marshal histories when initiating ws connection", slog.String("error", err.Error()))
+				c.Close()
+				return
+			}
+			c.Send(b)
+		},
 	})
 	if err != nil {
 		logger.Error("Failed to initialize websocket manager,", slog.String("error", err.Error()))
