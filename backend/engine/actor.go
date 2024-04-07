@@ -75,7 +75,7 @@ func (a *actor) start() {
 // primeUpdateScheduler sleeps for a random delay between 0 and maxStartDelay, to make price updates
 // seem more random, but still with a set interval between them, so graphs look nicer.
 func (a *actor) primeUpdateScheduler() {
-	if a.econf.FirstUpdateMaxDelay < 0 {
+	if a.econf.FirstUpdateMaxDelay > 0 {
 		delay := time.Duration(rand.Int63n(int64(a.econf.FirstUpdateMaxDelay)))
 		time.Sleep(delay)
 	}

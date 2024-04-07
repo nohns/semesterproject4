@@ -119,7 +119,7 @@ func (e *Engine) TrackItem(id string, params ItemParams) error {
 	}
 	e.actors[id] = newActor(id, actorConfig{
 		params: params,
-		out:    e.actorout,
+		out:    e.updates,
 		econf:  e.conf,
 	})
 

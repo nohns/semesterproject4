@@ -30,6 +30,8 @@ func main() {
 
 	// Initialize domain dependencies
 	var hp pe.HistoryProvider = &mock.Data
+	var cp pe.CurrPricer = &mock.Data
+	var bevrepo pe.BeverageRepo = &mock.Data
 
 	// Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
 	websocketManager, err := websocket.NewManager(&websocket.ManagerOptions{
@@ -67,7 +69,61 @@ func main() {
 		log.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
 
-	go spam(websocketManager)
+	// Run princing eng and broadcast updates
+	eng := engine.New(engine.Config{
+		FirstUpdateMaxDelay: 10 * time.Second,
+		UpdateInterval:      10 * time.Second,
+	})
+	bevs, err := bevrepo.FindBeverages(context.TODO())
+    if err != nil {
+        logger.Error("Failed to get beverages", slog.String("error", err.Error()))
+        return
+    }
+    for _, bev := range bevs {
+        price, err := cp.CurrentPrice(context.TODO(), bev.ID)
+        if err != nil {
+            logger.Error("Failed to get current price", slog.String("error", err.Error()))
+            return
+        }
+
+        err = eng.TrackItem(bev.ID, engine.ItemParams{
+            MaxPrice: bev.Params.MaxPrice,
+            MinPrice: bev.Params.MinPrice,
+            InitialPrice: price,
+            BuyMultiplier: bev.Params.BuyMultiplier,
+            HalfTime: int(bev.Params.HalfTime/time.Second),
+        })
+        if err != nil {
+            logger.Error("Failed to track item", slog.String("error", err.Error()), slog.Any("item", bev), slog.Float64("price", price))
+            return
+        }
+    }
+
+    eng.Start()
+	go func() {
+		defer eng.Terminate()
+
+		for {
+			u, err := eng.ReadUpdate()
+			if err != nil {
+				logger.Error("Could not read update from pricing engine,", slog.String("error", err.Error()))
+				return
+			}
+            logger.Info("Received price update", slog.Any("update", u))
+
+			msg := pe.NewUpdateMsg(pe.Update{
+				BevID: u.Id,
+				Price: u.Price,
+				At:    u.At,
+			})
+			b, err := json.Marshal(msg)
+			if err != nil {
+				logger.Error("Could not marshal price update msg,", slog.String("error", err.Error()), slog.Any("msg", msg))
+				return
+			}
+			websocketManager.Broadcast(b)
+		}
+	}()
 
 	// Blocking to keep the main process alive
 	signals := make(chan os.Signal, 1)
@@ -75,12 +131,6 @@ func main() {
 	<-signals
 
 	websocketManager.Stop()
-
-	// Idk what to do with this shit 😡
-	engine := engine.New(
-		engine.DefaultConfig,
-	)
-	engine.Start()
 }
 
 type Product struct {

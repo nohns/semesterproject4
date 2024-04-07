@@ -7,7 +7,7 @@ type Msg[T any] struct {
 	Data T      `json:"data"`
 }
 
-func newUpdateMsg(u Update) Msg[Update] {
+func NewUpdateMsg(u Update) Msg[Update] {
 	return Msg[Update]{
 		Kind: "priceUpdate",
 		Data: u,

@@ -77,31 +77,31 @@ var Data = mockData{
 			},
 			Prices: []pe.HistoryEntry{
 				{
-					Price: 35.42,
+					Price: 15.42,
 				},
 				{
-					Price: 30.76,
+					Price: 16.56,
 				},
 				{
-					Price: 32.54,
+					Price: 18.01,
 				},
 				{
-					Price: 28.39,
+					Price: 17.39,
 				},
 				{
-					Price: 29.65,
+					Price: 19.65,
 				},
 				{
-					Price: 31.41,
+					Price: 21.41,
 				},
 				{
-					Price: 33.56,
+					Price: 20.18,
 				},
 				{
-					Price: 30.45,
+					Price: 18.45,
 				},
 				{
-					Price: 32.33,
+					Price: 17.22,
 				},
 			},
 		},
@@ -112,8 +112,8 @@ var Data = mockData{
 				Desc:     "Falsk blå vand 🤬",
 				ImageSrc: "/images/vand.jpg",
 				Params: pe.PricingParams{
-					MaxPrice:      25,
-					MinPrice:      10,
+					MaxPrice:      50,
+					MinPrice:      15,
 					BuyMultiplier: 1.025,
 					HalfTime:      2 * time.Minute,
 				},
