@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nohns/semesterproject4/pricing-engine/engine"
+	"github.com/nohns/semesterproject4/engine"
 )
 
 func TestMain(m *testing.M) {
