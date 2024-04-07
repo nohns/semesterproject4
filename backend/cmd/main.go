@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/nohns/semesterproject4/engine"
@@ -49,7 +48,7 @@ func main() {
 
 	// Blocking to keep the main process alive
 	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(signals, os.Interrupt /*, syscall.SIGTERM*/)
 	<-signals
 
 	websocketManager.Stop()
