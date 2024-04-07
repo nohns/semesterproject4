@@ -24,11 +24,11 @@ function ProductQuantityCard({ product }: ProductCardProps): JSX.Element {
           <h1 className="font-mono text-4xl">{product.name}</h1>
           {/* <h3 className="font-thin mb-2">{product.description}</h3> */}
           <div className="flex flex-row justify-center items-center">
-            <Button className="bg-red-500 rounded-full w-10 h-10 flex items-center justify-center">
+            <Button className="bg-red-500 rounded-full w-10 h-10 flex items-center justify-center mr-2">
               <span className="text-xl">-</span>
             </Button>
-            <span className="font-mono text-4xl font-mono">1</span>
-            <Button className="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center ml-4">
+            <span className="font-mono text-4xl">1</span>
+            <Button className="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center ml-2">
               <span className="text-xl">+</span>
             </Button>
           </div>
