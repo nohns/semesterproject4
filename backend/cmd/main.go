@@ -5,6 +5,7 @@ import (
 	"log"
 	"log/slog"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,23 +14,12 @@ import (
 	"github.com/nohns/semesterproject4/engine"
 	"github.com/nohns/semesterproject4/websocket"
 
-	"net/http"
 	_ "net/http/pprof"
 )
 
 func main() {
 	// Varied seed for random number generator
 	rand.Seed(time.Now().UnixNano())
-
-	// Increase resources limitations
-	var rLimit syscall.Rlimit
-	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-		panic(err)
-	}
-	rLimit.Cur = rLimit.Max
-	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-		panic(err)
-	}
 
 	opts := &slog.HandlerOptions{
 		/* Level: slog.LevelError, */
@@ -39,13 +29,12 @@ func main() {
 
 	logger := slog.New(handler)
 
-	//Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
+	// Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
 	websocketManager, err := websocket.NewWebsocketManager(&websocket.ManagerOptions{
 		Addr:   ":9090",
 		Logger: logger,
 	})
 	if err != nil {
-
 		logger.Error("Failed to initialize websocket manager,", slog.String("error", err.Error()))
 	}
 
@@ -61,19 +50,18 @@ func main() {
 
 	go spam(websocketManager)
 
-	//Blocking to keep the main process alive
+	// Blocking to keep the main process alive
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	<-signals
 
 	websocketManager.Stop()
 
-	//Idk what to do with this shit 😡
+	// Idk what to do with this shit 😡
 	engine := engine.New(
 		engine.DefaultConfig,
 	)
 	engine.Start()
-
 }
 
 type Product struct {
@@ -103,7 +91,7 @@ func spam(broadcaster broadcaster) {
 			TimeStamp:     time.Now().Format(time.RFC3339),
 		}
 
-		//Create product 2
+		// Create product 2
 		product2 := Product{
 			ID:            "2",
 			Name:          "Blå vand",
@@ -134,31 +122,31 @@ func spam(broadcaster broadcaster) {
 			TimeStamp:     time.Now().Format(time.RFC3339),
 		}
 
-		//Convert product 1 to json slice of bytes
+		// Convert product 1 to json slice of bytes
 		product1Json, err := json.Marshal(product1)
 		if err != nil {
 			log.Println("Failed to marshal product 1")
 		}
 
-		//Convert product 2 to json slice of bytes
+		// Convert product 2 to json slice of bytes
 		product2Json, err := json.Marshal(product2)
 		if err != nil {
 			log.Println("Failed to marshal product 2")
 		}
 
-		//Convert product 3 to json slice of bytes
+		// Convert product 3 to json slice of bytes
 		product3Json, err := json.Marshal(product3)
 		if err != nil {
 			log.Println("Failed to marshal product 3")
 		}
 
-		//Convert product 4 to json slice of bytes
+		// Convert product 4 to json slice of bytes
 		product4Json, err := json.Marshal(product4)
 		if err != nil {
 			log.Println("Failed to marshal product 4")
 		}
 
-		//Send the data as an array of json
+		// Send the data as an array of json
 		msg := []byte("[" + string(product1Json) + "," + string(product2Json) + "," + string(product3Json) + "," + string(product4Json) + "]")
 
 		time.Sleep(time.Second * 5)
@@ -166,7 +154,6 @@ func spam(broadcaster broadcaster) {
 		broadcaster.Broadcast(msg)
 
 	}
-
 }
 
 // Function which generates a random number between 0 and 100
