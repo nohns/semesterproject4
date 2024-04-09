@@ -40,7 +40,6 @@ type Engine struct {
 
 	actorout chan PriceUpdate
 	updates  chan PriceUpdate
-	termbuf  chan struct{}
 
 	state engineState
 	// conf is set when New() is called. Should be read-only from here on out.
@@ -192,9 +191,6 @@ func (e *Engine) Start() error {
 	}
 	e.state = engineStateRunning
 
-	// Keep receiving updates from actors, as to prevent updates from getting dropped
-	go e.bufferUpdates()
-
 	for _, a := range e.actors {
 		a.start()
 	}
@@ -219,38 +215,6 @@ func (e *Engine) Terminate() {
 	e.mu.Unlock()
 
 	wg.Wait()
-
-    e.termbuf <- struct{}{}
-    close(e.termbuf)
-    close(e.actorout)
+	close(e.actorout)
 	close(e.updates)
-}
-
-func (e *Engine) bufferUpdates() {
-	updates := make([]PriceUpdate, 0, 1)
-	for {
-		// Reset the updates slice
-		updates = updates[:0]
-
-		// Drain the input channel
-		qempty := false
-		for !qempty {
-			select {
-			case pu := <-e.actorout:
-				updates = append(updates, pu)
-            case <-e.termbuf:
-                close(e.updates)
-                return
-			default:
-				qempty = true
-			}
-		}
-
-		// Send out the updates
-		go func() {
-			for _, pu := range updates {
-				e.updates <- pu
-			}
-		}()
-	}
 }
