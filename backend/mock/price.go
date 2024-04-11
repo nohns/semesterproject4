@@ -36,3 +36,15 @@ func (pm *mockData) CurrentPrice(ctx context.Context, bevID string) (float64, er
     return h.Prices[len(h.Prices)-1].Price, nil
 }
 
+func (pm *mockData) StorePrice(ctx context.Context, u pe.Update) error {
+	for i, h := range pm.histories {
+		if h.Beverage.ID == u.BevID {
+			pm.histories[i].Beverage.LastUpdate = u.At
+			pm.histories[i].Prices = append(pm.histories[i].Prices, pe.HistoryEntry{
+				Price: u.Price,
+				At:    u.At,
+			})
+		}
+	}
+	return nil
+}

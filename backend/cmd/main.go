@@ -32,6 +32,7 @@ func main() {
 	var hp pe.HistoryProvider = &mock.Data
 	var cp pe.CurrPricer = &mock.Data
 	var bevrepo pe.BeverageRepo = &mock.Data
+	var ps pe.PriceStorer = &mock.Data
 
 	// Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
 	websocketManager, err := websocket.NewManager(&websocket.ManagerOptions{
@@ -109,7 +110,16 @@ func main() {
 				logger.Error("Could not read update from pricing engine,", slog.String("error", err.Error()))
 				return
 			}
-            logger.Info("Received price update", slog.Any("update", u))
+			logger.Info("Received price update", slog.Any("update", u))
+
+			err = ps.StorePrice(context.TODO(), pe.Update{
+				BevID: u.Id,
+				Price: u.Price,
+				At:    u.At,
+			})
+			if err != nil {
+				logger.Error("Could not store price update", slog.String("error", err.Error()), slog.Any("update", u))
+			}
 
 			msg := pe.NewUpdateMsg(pe.Update{
 				BevID: u.Id,

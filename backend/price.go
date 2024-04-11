@@ -29,14 +29,15 @@ type MsgBroadcaster interface {
 	Broadcast(msg any)
 }
 
-type PriceRepo interface {
-	Store(ctx context.Context, u Update) error
+type PriceStorer interface {
+	StorePrice(ctx context.Context, u Update) error
 }
 
 type HistoryProvider interface {
 	History(ctx context.Context, bevId string) (History, error)
 	Histories(ctx context.Context) ([]History, error)
 }
+
 
 type BeverageRepo interface {
     FindBeverages(ctx context.Context) ([]Beverage, error)
@@ -48,7 +49,7 @@ type CurrPricer interface {
 
 type PricingSvc struct {
 	broadcaster MsgBroadcaster
-	repo        PriceRepo
+	repo        PriceStorer
 	hp          HistoryProvider
 }
 
@@ -64,7 +65,7 @@ func (p *PricingSvc) UpdatePrice(ctx context.Context, u Update) error {
 		return err
 	}
 
-	if err := p.repo.Store(ctx, u); err != nil {
+	if err := p.repo.StorePrice(ctx, u); err != nil {
 		return err
 	}
 
