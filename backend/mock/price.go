@@ -29,11 +29,11 @@ func (pm *mockData) Histories(ctx context.Context) ([]pe.History, error) {
 }
 
 func (pm *mockData) CurrentPrice(ctx context.Context, bevID string) (float64, error) {
-    h, err := pm.History(ctx, bevID)
-    if err != nil {
-        return 0, err
-    }
-    return h.Prices[len(h.Prices)-1].Price, nil
+	h, err := pm.History(ctx, bevID)
+	if err != nil {
+		return 0, err
+	}
+	return h.Prices[len(h.Prices)-1].Price, nil
 }
 
 func (pm *mockData) StorePrice(ctx context.Context, u pe.Update) error {
