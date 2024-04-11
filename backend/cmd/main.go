@@ -14,6 +14,7 @@ import (
 	pe "github.com/nohns/semesterproject4"
 	"github.com/nohns/semesterproject4/engine"
 	"github.com/nohns/semesterproject4/mock"
+	"github.com/nohns/semesterproject4/trigger"
 	"github.com/nohns/semesterproject4/websocket"
 
 	_ "net/http/pprof"
@@ -27,6 +28,14 @@ func main() {
 	// Initialize logger
 	handler := slog.NewJSONHandler(os.Stdout, opts)
 	logger := slog.New(handler)
+
+	server := trigger.New(":8080", logger)
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			logger.Error("Failed to start server,", slog.String("error", err.Error()))
+		}
+	}()
 
 	// Initialize domain dependencies
 	var hp pe.HistoryProvider = &mock.Data

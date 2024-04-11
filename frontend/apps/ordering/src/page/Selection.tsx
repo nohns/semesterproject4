@@ -1,7 +1,7 @@
 /** @format */
 
 import BeverageCard from "@/components/BeverageCard";
-import { Apple, Google } from "@repo/ui";
+import { Apple, Google, Money } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
@@ -67,7 +67,7 @@ function Selection() {
 
                     <div className="flex flex-row justify-center  w-full gap-x-8 ">
                         <Apple />
-                        <Ampersands strokeWidth={"0.6"} className="my-auto w-12 h-12 " />
+                        <div className="transform scale-75"><Money /></div>  
                         <Google />
                     </div>
 
