@@ -14,6 +14,7 @@ import (
 	pe "github.com/nohns/semesterproject4"
 	"github.com/nohns/semesterproject4/engine"
 	"github.com/nohns/semesterproject4/mock"
+	"github.com/nohns/semesterproject4/trigger"
 	"github.com/nohns/semesterproject4/websocket"
 
 	_ "net/http/pprof"
@@ -27,6 +28,14 @@ func main() {
 	// Initialize logger
 	handler := slog.NewJSONHandler(os.Stdout, opts)
 	logger := slog.New(handler)
+
+	server := trigger.New(":8080", logger)
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			logger.Error("Failed to start server,", slog.String("error", err.Error()))
+		}
+	}()
 
 	// Initialize domain dependencies
 	var hp pe.HistoryProvider = &mock.Data
@@ -75,31 +84,31 @@ func main() {
 		UpdateInterval:      10 * time.Second,
 	})
 	bevs, err := bevrepo.FindBeverages(context.TODO())
-    if err != nil {
-        logger.Error("Failed to get beverages", slog.String("error", err.Error()))
-        return
-    }
-    for _, bev := range bevs {
-        price, err := cp.CurrentPrice(context.TODO(), bev.ID)
-        if err != nil {
-            logger.Error("Failed to get current price", slog.String("error", err.Error()))
-            return
-        }
+	if err != nil {
+		logger.Error("Failed to get beverages", slog.String("error", err.Error()))
+		return
+	}
+	for _, bev := range bevs {
+		price, err := cp.CurrentPrice(context.TODO(), bev.ID)
+		if err != nil {
+			logger.Error("Failed to get current price", slog.String("error", err.Error()))
+			return
+		}
 
-        err = eng.TrackItem(bev.ID, engine.ItemParams{
-            MaxPrice: bev.Params.MaxPrice,
-            MinPrice: bev.Params.MinPrice,
-            InitialPrice: price,
-            BuyMultiplier: bev.Params.BuyMultiplier,
-            HalfTime: int(bev.Params.HalfTime/time.Second),
-        })
-        if err != nil {
-            logger.Error("Failed to track item", slog.String("error", err.Error()), slog.Any("item", bev), slog.Float64("price", price))
-            return
-        }
-    }
+		err = eng.TrackItem(bev.ID, engine.ItemParams{
+			MaxPrice:      bev.Params.MaxPrice,
+			MinPrice:      bev.Params.MinPrice,
+			InitialPrice:  price,
+			BuyMultiplier: bev.Params.BuyMultiplier,
+			HalfTime:      int(bev.Params.HalfTime / time.Second),
+		})
+		if err != nil {
+			logger.Error("Failed to track item", slog.String("error", err.Error()), slog.Any("item", bev), slog.Float64("price", price))
+			return
+		}
+	}
 
-    eng.Start()
+	eng.Start()
 	go func() {
 		defer eng.Terminate()
 
@@ -109,7 +118,7 @@ func main() {
 				logger.Error("Could not read update from pricing engine,", slog.String("error", err.Error()))
 				return
 			}
-            logger.Info("Received price update", slog.Any("update", u))
+			logger.Info("Received price update", slog.Any("update", u))
 
 			msg := pe.NewUpdateMsg(pe.Update{
 				BevID: u.Id,
