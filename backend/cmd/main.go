@@ -72,35 +72,35 @@ func main() {
 
 	// Run princing eng and broadcast updates
 	eng := engine.New(engine.Config{
-		FirstUpdateMaxDelay: 10 * time.Second,
-		UpdateInterval:      10 * time.Second,
+		FirstUpdateMode: engine.FirstUpdateModeFollow,
+		UpdateInterval:  10 * time.Second,
 	})
 	bevs, err := bevrepo.FindBeverages(context.TODO())
-    if err != nil {
-        logger.Error("Failed to get beverages", slog.String("error", err.Error()))
-        return
-    }
-    for _, bev := range bevs {
-        price, err := cp.CurrentPrice(context.TODO(), bev.ID)
-        if err != nil {
-            logger.Error("Failed to get current price", slog.String("error", err.Error()))
-            return
-        }
+	if err != nil {
+		logger.Error("Failed to get beverages", slog.String("error", err.Error()))
+		return
+	}
+	for _, bev := range bevs {
+		price, err := cp.CurrentPrice(context.TODO(), bev.ID)
+		if err != nil {
+			logger.Error("Failed to get current price", slog.String("error", err.Error()))
+			return
+		}
 
-        err = eng.TrackItem(bev.ID, engine.ItemParams{
-            MaxPrice: bev.Params.MaxPrice,
-            MinPrice: bev.Params.MinPrice,
-            InitialPrice: price,
-            BuyMultiplier: bev.Params.BuyMultiplier,
-            HalfTime: int(bev.Params.HalfTime/time.Second),
-        })
-        if err != nil {
-            logger.Error("Failed to track item", slog.String("error", err.Error()), slog.Any("item", bev), slog.Float64("price", price))
-            return
-        }
-    }
+		err = eng.TrackItem(bev.ID, engine.ItemParams{
+			MaxPrice:      bev.Params.MaxPrice,
+			MinPrice:      bev.Params.MinPrice,
+			InitialPrice:  price,
+			BuyMultiplier: bev.Params.BuyMultiplier,
+			HalfTime:      int(bev.Params.HalfTime / time.Second),
+		})
+		if err != nil {
+			logger.Error("Failed to track item", slog.String("error", err.Error()), slog.Any("item", bev), slog.Float64("price", price))
+			return
+		}
+	}
 
-    eng.Start()
+	eng.Start()
 	go func() {
 		defer eng.Terminate()
 

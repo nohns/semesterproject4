@@ -65,21 +65,34 @@ func (a *actor) terminate() {
 // Start intiates the pricing algorithm
 func (a *actor) start() {
 	a.starter.Do(func() {
-		a.primeUpdateScheduler()
+        switch a.econf.FirstUpdateMode {
+        case FirstUpdateModeFollow:
+            a.waitForNextTick()
+        case FirstUpdateModeRandom:
+            a.waitForRandomDelay()
+        }
+        a.t = time.NewTicker(a.econf.UpdateInterval)
 
 		go a.listen()
 		a.orders <- 0 // 0 means initial order, see listen function
 	})
 }
 
-// primeUpdateScheduler sleeps for a random delay between 0 and maxStartDelay, to make price updates
+// waitForNextTick sleeps until the next possible tick is hit, taking into
+// account the last update for item. See FirstUpdateModeFollow value.
+func (a *actor) waitForNextTick() {
+    durfromlast := time.Now().Sub(a.itm.params.LastUpdate) % a.econf.UpdateInterval
+    durtonext := a.econf.UpdateInterval - durfromlast
+    time.Sleep(durtonext)
+}
+
+// waitForRandomDelay sleeps for a random delay between 0 and FirstUpdateRandomMaxDelay, to make price updates
 // seem more random, but still with a set interval between them, so graphs look nicer.
-func (a *actor) primeUpdateScheduler() {
-	if a.econf.FirstUpdateMaxDelay > 0 {
-		delay := time.Duration(rand.Int63n(int64(a.econf.FirstUpdateMaxDelay)))
+func (a *actor) waitForRandomDelay() {
+	if a.econf.FirstUpdateRandomMaxDelay > 0 {
+		delay := time.Duration(rand.Int63n(int64(a.econf.FirstUpdateRandomMaxDelay)))
 		time.Sleep(delay)
 	}
-	a.t = time.NewTicker(a.econf.UpdateInterval)
 }
 
 func (a *actor) listen() {
@@ -87,14 +100,14 @@ func (a *actor) listen() {
 		select {
 		case qty := <-a.orders:
 			a.handleOrderPlaced(qty)
-			// Initial order needs to produce a price update
+            // Initial order needs to produce a price update
 			if qty == 0 {
 				a.emitUpdate()
 			}
-		case <-a.t.C:
-			a.emitUpdate()
 		case params := <-a.params:
 			a.handleParamsUpdated(params)
+        case <-a.t.C:
+            a.emitUpdate()
 		case <-a.term:
 			a.terminated = true
 		}
