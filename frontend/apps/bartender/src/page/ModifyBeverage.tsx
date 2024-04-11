@@ -1,10 +1,10 @@
 /** @format */
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { useWebsocket } from "@repo/api";
 import { ProductCard, ProductProps, productsMock } from "@repo/ui";
+import  NewDrinkCard from "@/components/ui/NewDrinkCard";
 
-function Test() {
+function ModifyBeverage() {
   const { isConnected } = useWebsocket("ws://localhost:9090/ws");
 
   return (
@@ -12,6 +12,7 @@ function Test() {
       {isConnected ? <p>Connected</p> : <p>Not connected</p>}
       <h1>Bartender react app</h1>
 
+      <NewDrinkCard />
       <div className="flex flex-row">
         {productsMock.map((product: ProductProps) => (
           <React.Fragment key={product.id}>
@@ -23,4 +24,4 @@ function Test() {
   );
 }
 
-export default Test;
+export default ModifyBeverage;
