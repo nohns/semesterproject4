@@ -60,13 +60,6 @@ function Dashboard() {
           <TableBody>
             <TableRow>
               <TableCell className="hidden sm:table-cell">
-                {/*  <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                /> */}
                 <img
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
@@ -104,13 +97,6 @@ function Dashboard() {
             </TableRow>
             <TableRow>
               <TableCell className="hidden sm:table-cell">
-                {/* <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                /> */}
                 <img
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
@@ -148,13 +134,6 @@ function Dashboard() {
             </TableRow>
             <TableRow>
               <TableCell className="hidden sm:table-cell">
-                {/* <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                /> */}
                 <img
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
@@ -190,13 +169,6 @@ function Dashboard() {
             </TableRow>
             <TableRow>
               <TableCell className="hidden sm:table-cell">
-                {/*  <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                /> */}
                 <img
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
@@ -234,13 +206,6 @@ function Dashboard() {
             </TableRow>
             <TableRow>
               <TableCell className="hidden sm:table-cell">
-                {/* <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                /> */}
                 <img
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
@@ -278,13 +243,6 @@ function Dashboard() {
             </TableRow>
             <TableRow>
               <TableCell className="hidden sm:table-cell">
-                {/* <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                /> */}
                 <img
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
