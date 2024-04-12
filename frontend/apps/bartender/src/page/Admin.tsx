@@ -13,13 +13,13 @@ function Admin() {
             beverageId: "1",
             name: "Øl",
             description: "A refreshing drink",
-            imageSrc: "../../public/images/bajselademad.jpg"
+            imageSrc: "/images/bajselademad.jpg"
         },
         {
             beverageId: "2",
             name: "Snaps",
             description: "A really refreshing drink",
-            imageSrc: "../../public/images/snaps.jpg"
+            imageSrc: "/images/snaps.jpg"
         },
         {
             beverageId: "3",
