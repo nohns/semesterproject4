@@ -7,7 +7,7 @@ interface BigScreenWrapperProps {
   children: ReactNode;
 }
 
-function BigScreenWrapper({ children }: BigScreenWrapperProps) {
+export function BigScreenWrapper({ children }: BigScreenWrapperProps) {
   return (
     <div className="flex flex-col items-center max-w-full min-h-[100vh] justify-start">
       <FooBar />
@@ -15,5 +15,3 @@ function BigScreenWrapper({ children }: BigScreenWrapperProps) {
     </div>
   );
 }
-
-export default BigScreenWrapper;
