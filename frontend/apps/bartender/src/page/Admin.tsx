@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import NewDrinkCard from "@/components/ui/NewDrinkCard";
+import NewDrinkCard from "@/components/ui/NewBeverageCard";
 import { BigScreenWrapper } from "@repo/ui";
 
 

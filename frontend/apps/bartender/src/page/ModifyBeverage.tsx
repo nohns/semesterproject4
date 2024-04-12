@@ -2,7 +2,7 @@
 import React from "react";
 
 import { ProductCard, ProductProps, productsMock } from "@repo/ui";
-import NewDrinkCard from "@/components/ui/NewDrinkCard";
+import NewDrinkCard from "@/components/ui/NewBeverageCard";
 import { useGetBeverages, useLogin } from "@repo/api";
 import { Button } from "@/components/ui/button";
 

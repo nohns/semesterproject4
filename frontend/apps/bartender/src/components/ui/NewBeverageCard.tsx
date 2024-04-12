@@ -2,12 +2,12 @@
 
 import { Button } from "./button";
 
-interface NewDrinkCardProps {}
+interface NewBeverageCardProps {}
 
-function NewDrinkCard({}: NewDrinkCardProps) {
+function NewBeverageCard({}: NewBeverageCardProps) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-lg mb-4 font-semibold">Ny drink</h2>
+        <h2 className="text-lg mb-4 font-semibold">Ny Beverage</h2>
         <form>
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -59,4 +59,4 @@ function NewDrinkCard({}: NewDrinkCardProps) {
     );
   }
   
-  export default NewDrinkCard;
+  export default NewBeverageCard;
