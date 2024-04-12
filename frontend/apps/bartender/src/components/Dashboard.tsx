@@ -61,6 +61,42 @@ function Dashboard() {
       totalSales: 50,
       imageSrc: "/images/vand.jpg",
     },
+    {
+      beverageId: "4",
+      name: "Spejlæg",
+      status: "Active",
+      price: 75,
+      description: "Kande med spejlæg",
+      totalSales: 20,
+      imageSrc: "/images/spejlegg.webp",
+    },
+    {
+      beverageId: "5",
+      name: "Jägerbomb",
+      status: "Active",
+      price: 25,
+      description: "Woooooooooo",
+      totalSales: 100,
+      imageSrc: "/images/jagerbomb.jpg",
+    },
+    {
+      beverageId: "6",
+      name: "Fadøl",
+      status: "Active",
+      price: 25,
+      description: "Stor øl",
+      totalSales: 1,
+      imageSrc: "/images/fadbams.webp",
+    },
+    {
+      beverageId: "7",
+      name: "Minttu",
+      status: "Active",
+      price: 100,
+      description: "Shooots",
+      totalSales: 77,
+      imageSrc: "/images/minttu.jpg",
+    }
   ];
 
   return (
