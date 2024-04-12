@@ -13,3 +13,4 @@ export * from "./data/productsMock";
 export * from "./components/Apple";
 export * from "./components/Google";
 export * from "./components/Money";
+export * from "./components/BigScreenWrapper";
