@@ -102,9 +102,9 @@ function Dashboard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Products</CardTitle>
+        <CardTitle>Produkter</CardTitle>
         <CardDescription>
-          Manage your products and view their sales performance.
+          Administrér dine produkter and se deres salg.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -112,16 +112,16 @@ function Dashboard() {
           <TableHeader>
             <TableRow>
               <TableHead className="hidden w-[100px] sm:table-cell">
-                <span className="sr-only">Image</span>
+                <span className="sr-only">Billede</span>
               </TableHead>
-              <TableHead>Name</TableHead>
+              <TableHead>Navn</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead>Pris</TableHead>
               <TableHead className="hidden md:table-cell">
-                Total Sales
+                Solgte enheder
               </TableHead>
               <TableHead>
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">Handlinger</span>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -156,9 +156,9 @@ function Dashboard() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Handlinger</DropdownMenuLabel>
+                      <DropdownMenuItem>Redigér</DropdownMenuItem>
+                      <DropdownMenuItem>Slet</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -169,7 +169,7 @@ function Dashboard() {
       </CardContent>
       <CardFooter>
         <div className="text-xs text-muted-foreground">
-          Showing <strong>1-10</strong> of <strong>32</strong> products
+          Viser <strong>{mock.length}</strong> af <strong>{mock.length}</strong> produkter
         </div>
       </CardFooter>
     </Card>
