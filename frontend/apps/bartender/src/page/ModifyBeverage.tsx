@@ -1,19 +1,35 @@
 /** @format */
 import React from "react";
-import { useWebsocket } from "@repo/api";
+
 import { ProductCard, ProductProps, productsMock } from "@repo/ui";
-import  NewDrinkCard from "@/components/ui/NewDrinkCard";
+import NewDrinkCard from "@/components/ui/NewDrinkCard";
+import { useGetBeverages, useLogin } from "@repo/api";
+import { Button } from "@/components/ui/button";
 
 function ModifyBeverage() {
-  const { isConnected } = useWebsocket("ws://localhost:9090/ws");
+  const mutate = useLogin();
+
+  const { data, error, isLoading } = useGetBeverages();
+
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  //https://ui.shadcn.com/docs/components/form
+
+  //mindst 8 bogstaver store tegn og tal
+
+  const handleLogin = () => {
+    mutate.mutate({ username: username, password: password });
+  };
 
   return (
     <div>
-      {isConnected ? <p>Connected</p> : <p>Not connected</p>}
       <h1>Bartender react app</h1>
 
+      <Button onClick={handleLogin}>Login</Button>
+
       <NewDrinkCard />
-      <div className="flex flex-row">
+      <div className="flex flex-row  ">
         {productsMock.map((product: ProductProps) => (
           <React.Fragment key={product.id}>
             <ProductCard product={product} />
