@@ -11,33 +11,36 @@ function Admin() {
     const mock: Beverage[] = [
         {
             beverageId: "1",
-            name: "Coca Cola",
+            name: "Øl",
             description: "A refreshing drink",
-            imageSrc: "https://www.coca-cola.dk/content/dam/journey/dk/da/private/stories/history/2016/2016-06-10-coca-cola-100-ar/1915-1919-coca-cola-bottle.jpg"
+            imageSrc: "../../public/images/bajselademad.jpg"
         },
         {
             beverageId: "2",
-            name: "Fanta",
+            name: "Snaps",
             description: "A really refreshing drink",
-            imageSrc: "https://www.coca-cola.dk/content/dam/journey/dk/da/private/stories/history/2016/2016-06-10-coca-cola-100-ar/1915-1919-coca-cola-bottle.jpg"
+            imageSrc: "../../public/images/snaps.jpg"
         },
         {
             beverageId: "3",
-            name: "Sprite",
+            name: "Vand",
             description: "An incredibly refreshing drink",
-            imageSrc: "https://www.coca-cola.dk/content/dam/journey/dk/da/private/stories/history/2016/2016-06-10-coca-cola-100-ar/1915-1919-coca-cola-bottle.jpg"
+            imageSrc: "../../public/images/vand.jpg"
         }
     ]
 
     return (
         <>
             <BigScreenWrapper>
-                {mock.map((beverage) => (
-                    <BeverageCard key={beverage.beverageId} beverage={beverage} handleBeverageClick={() => {
-                        console.log("Clicked");
-                    }} />
-                ))}
+                <div className="h-full flex-col items-center w-6/12 gap-6">
+                    {mock.map((beverage) => (
+                        <BeverageCard key={beverage.beverageId} beverage={beverage} handleBeverageClick={() => {
+                            console.log("Clicked");
+                        }} />
+                    ))}
+                </div>
             </BigScreenWrapper>
+            
         </>
 
     )

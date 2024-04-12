@@ -9,9 +9,9 @@ interface BigScreenWrapperProps {
 
 export function BigScreenWrapper({ children }: BigScreenWrapperProps) {
   return (
-    <div className="flex flex-col items-center max-w-full min-h-[100vh] justify-start">
+    <div className="flex flex-col items-center max-w-full min-h-[100vh]">
       <FooBar />
-      <main className="flex-1 w-full">{children}</main>
+    {children}
     </div>
   );
 }
