@@ -40,7 +40,6 @@ type Engine struct {
 
 	actorout chan PriceUpdate
 	updates  chan PriceUpdate
-	termbuf  chan struct{}
 
 	state engineState
 	// conf is set when New() is called. Should be read-only from here on out.
@@ -48,18 +47,32 @@ type Engine struct {
 	mu   sync.RWMutex
 }
 
+type firstUpdateMode int
+
+const (
+	FirstUpdateModeFollow firstUpdateMode = iota
+	FirstUpdateModeRandom
+)
+
 type Config struct {
-	// FirstUpdateMaxDelay is the maximum delay before the first price update is sent. The actual
-	// delay is a random value between 0 and FirstUpdateMaxDelay, to simulate a more realistic
+	// FirstUpdateMode is how the pricing engine decides when to start publishing its updates.
+	//  - FirstUpdateModeFollow (default) looks at the last time the item was updated, and uses
+	//    that information to trigger first update next time a multiple of UpdateInterval is encountered.
+	//  - FirstUpdateModeRandom triggers first update with a delay from 0 to FirstUpdateRandomMaxDelay.
+	FirstUpdateMode firstUpdateMode
+
+	// FirstUpdateRandomMaxDelay is the maximum delay before the first price update is sent. The actual
+	// delay is a random value between 0 and FirstUpdateRandomMaxDelay, to simulate a more realistic
 	// price development.
-	FirstUpdateMaxDelay time.Duration
+	FirstUpdateRandomMaxDelay time.Duration
+
 	// UpdateInterval is the interval between price updates.
 	UpdateInterval time.Duration
 }
 
 var DefaultConfig = Config{
-	FirstUpdateMaxDelay: 10 * time.Second,
-	UpdateInterval:      30 * time.Second,
+	FirstUpdateRandomMaxDelay: 10 * time.Second,
+	UpdateInterval:            30 * time.Second,
 }
 
 // New instantiates a pricing engine, which can track items over time.
@@ -87,6 +100,9 @@ type ItemParams struct {
 	// HalfTime specifies the amount of time before a price reaches half
 	// its orignal price, assuming no orders placed.
 	HalfTime int
+
+	// LastUpdate is the last time the item was updated.
+	LastUpdate time.Time
 }
 
 func (ip *ItemParams) validate() error {
@@ -169,9 +185,11 @@ func (e *Engine) actor(id string) (*actor, error) {
 }
 
 // Read update gets the next update in the queue. When engine is started it is imperative,
-// that this method is called continuously, otherwise the actors will all stall. The goroutine
-// from where this method is called, must not call any of the engine mutating methods. Doing so,
-// will most certainly result in a deadlock as nobody is then reading the updates.
+// that this method is called continuously, otherwise the actors will all stall.
+//
+// Secondly, the goroutine from where this method is called, must not call any of the
+// engine mutating methods. Doing so, will most certainly result in a deadlock as nobody
+// is then flusing updates out of the engine.
 func (e *Engine) ReadUpdate() (PriceUpdate, error) {
 	u, ok := <-e.updates
 	if !ok {
@@ -191,9 +209,6 @@ func (e *Engine) Start() error {
 		return ErrEngineNotIdle
 	}
 	e.state = engineStateRunning
-
-	// Keep receiving updates from actors, as to prevent updates from getting dropped
-	go e.bufferUpdates()
 
 	for _, a := range e.actors {
 		a.start()
@@ -219,38 +234,6 @@ func (e *Engine) Terminate() {
 	e.mu.Unlock()
 
 	wg.Wait()
-
-    e.termbuf <- struct{}{}
-    close(e.termbuf)
-    close(e.actorout)
+	close(e.actorout)
 	close(e.updates)
-}
-
-func (e *Engine) bufferUpdates() {
-	updates := make([]PriceUpdate, 0, 1)
-	for {
-		// Reset the updates slice
-		updates = updates[:0]
-
-		// Drain the input channel
-		qempty := false
-		for !qempty {
-			select {
-			case pu := <-e.actorout:
-				updates = append(updates, pu)
-            case <-e.termbuf:
-                close(e.updates)
-                return
-			default:
-				qempty = true
-			}
-		}
-
-		// Send out the updates
-		go func() {
-			for _, pu := range updates {
-				e.updates <- pu
-			}
-		}()
-	}
 }
