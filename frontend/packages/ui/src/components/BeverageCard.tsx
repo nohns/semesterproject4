@@ -4,12 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { Beverage } from "@repo/api";
 
-interface BeverageCardProps {
+export interface BeverageCardProps {
   beverage: Beverage;
   handleBeverageClick: (beverage: Beverage) => void;
 }
 
-function BeverageCard({
+export function BeverageCard({
   beverage,
   handleBeverageClick,
 }: BeverageCardProps): JSX.Element {
@@ -41,5 +41,3 @@ function BeverageCard({
     </Card>
   );
 }
-
-export default BeverageCard;
