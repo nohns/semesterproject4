@@ -4,9 +4,10 @@ import { BeverageCard } from "@repo/ui";
 import { BigScreenWrapper } from "@repo/ui";
 import { Beverage } from "@repo/api";
 import { motion } from "framer-motion";
+import Dashboard from "@/components/Dashboard";
 
 function Admin() {
-  const mock: Beverage[] = [
+  /* const mock: Beverage[] = [
     {
       beverageId: "1",
       name: "Øl",
@@ -25,14 +26,17 @@ function Admin() {
       description: "An incredibly refreshing drink",
       imageSrc: "../../public/images/vand.jpg",
     },
-  ];
+  ]; */
 
   return (
     <>
       <BigScreenWrapper>
         <div className="h-full flex flex-col items-center w-full gap-6">
           {/*All drinks spawned*/}
-          {mock.length > 0 &&
+
+          <Dashboard />
+
+          {/*   {mock.length > 0 &&
             mock.map((history, index) => (
               <motion.div
                 className="flex justify-center w-3/12"
@@ -47,7 +51,7 @@ function Admin() {
                   handleBeverageClick={() => {}}
                 />
               </motion.div>
-            ))}
+            ))} */}
         </div>
       </BigScreenWrapper>
     </>
