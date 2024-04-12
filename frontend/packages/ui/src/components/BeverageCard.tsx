@@ -1,6 +1,6 @@
 /** @format */
 
-import { Card } from "@/components/ui/card";
+import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Beverage } from "@repo/api";
 
