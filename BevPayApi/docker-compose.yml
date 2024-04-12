@@ -1,0 +1,6 @@
+﻿services:
+  bevpay.web:
+    image: bevpay.web
+    build:
+      context: .
+      dockerfile: BevPay.Web/Dockerfile
