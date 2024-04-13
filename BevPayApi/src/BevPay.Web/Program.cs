@@ -1,3 +1,6 @@
+using BevPay.Core.Models;
+using BevPay.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,3 +28,18 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+static void Seed()
+{
+    using (var context = new BarContext())
+    {
+        var beverage = new Beverage()
+        {
+            Name = "Blå Vand"
+        };
+        
+        context.Beverage.Add(beverage);
+        
+        context.SaveChanges();
+    }
+}

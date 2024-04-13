@@ -6,8 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\BevPay.Infrastructure\BevPay.Infrastructure.csproj" />
-    </ItemGroup>
-
 </Project>
