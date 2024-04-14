@@ -5,7 +5,6 @@ import { Apple, Google, Money } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
-import { Ampersands } from "Lucide-react";
 import { Beverage, useWebsocket } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";

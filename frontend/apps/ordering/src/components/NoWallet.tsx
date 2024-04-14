@@ -1,7 +1,6 @@
 /** @format */
 
 import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
 import { TriangleAlert } from "Lucide-react";
 import { motion } from "framer-motion";
 
