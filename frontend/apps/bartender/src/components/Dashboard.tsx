@@ -101,11 +101,15 @@ function Dashboard() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Produkter</CardTitle>
-        <CardDescription>
-          Administrér dine produkter and se deres salg.
-        </CardDescription>
+      <CardHeader className="flex justify-between items-center">
+        <div className="flex flex-col w-full gap-y-2" >
+          <CardTitle className="" >Produkter</CardTitle>
+          <CardDescription className=""  >
+            Administrér dine produkter and se deres salg.
+          </CardDescription>
+          <Button className="" >Tilføj produkter</Button>
+        </div>
+       
       </CardHeader>
       <CardContent>
         <Table>
@@ -125,10 +129,9 @@ function Dashboard() {
               </TableHead>
             </TableRow>
           </TableHeader>
-
           <TableBody>
             {mock.map((beverage) => (
-              <TableRow>
+              <TableRow key={beverage.beverageId}>
                 <TableCell className="hidden sm:table-cell">
                   <img
                     alt="Product image"
@@ -146,7 +149,6 @@ function Dashboard() {
                 <TableCell className="hidden md:table-cell">
                   {beverage.totalSales}
                 </TableCell>
-
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
