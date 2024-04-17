@@ -3,12 +3,10 @@ using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
-namespace BevPay.Infrastructure.Migrations
+namespace BeveragePaymentApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,35 +15,28 @@ namespace BevPay.Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Beverage",
+                name: "Beverages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
+                    UpperBoundary = table.Column<int>(type: "int", nullable: false),
+                    LowerBoundary = table.Column<int>(type: "int", nullable: false),
+                    BaseValue = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Beverage", x => x.Id);
+                    table.PrimaryKey("PK_Beverages", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.InsertData(
-                table: "Beverage",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Blå Vand" },
-                    { 2, "Spejlæg" },
-                    { 3, "Øl" }
-                });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Beverage");
+                name: "Beverages");
         }
     }
 }
