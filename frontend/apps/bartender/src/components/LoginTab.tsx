@@ -42,7 +42,7 @@ export default function LoginTab() {
             </CardContent>
             <CardFooter>
               <div className="space-x-6">
-                <Button>Enter</Button>
+                <Button>Log in</Button>
                 <CreateAccount />
               </div>
             </CardFooter>
