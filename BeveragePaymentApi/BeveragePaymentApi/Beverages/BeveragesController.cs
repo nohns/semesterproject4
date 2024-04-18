@@ -59,6 +59,7 @@ public  class BeveragesController : Controller
     /// </remarks>
     [HttpPost]
     [ProducesResponseType<Beverage>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Beverage>> Post(Beverage beverage)
     {
         var beverageCreated = await _beverageService.Create(beverage);
@@ -74,6 +75,7 @@ public  class BeveragesController : Controller
     [HttpPut("{id}")]
     [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Beverage>> Put(int id, Beverage beverage)
     {
         try

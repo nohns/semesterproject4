@@ -33,14 +33,16 @@ public class BeverageService : IBeverageService
 
     public async Task<Beverage> Update(Beverage beverage)
     {
-        var _ = _beverageRepository.GetById(beverage.Id);
+        //Check if beverage exist
+        await _beverageRepository.GetById(beverage.Id);
         
         return await _beverageRepository.Update(beverage);
     }
 
     public async Task Delete(int id)
     {
-        var _ = await _beverageRepository.GetById(id);
+        //Check if beverage exist
+        await _beverageRepository.GetById(id);
         
         await _beverageRepository.Delete(id);
     }
