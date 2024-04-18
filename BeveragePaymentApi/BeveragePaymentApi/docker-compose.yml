@@ -5,8 +5,6 @@
 #      context: .
 #      dockerfile: BevPay.Web/Dockerfile
 
-version: '3.8'
-
 services:
   mysql:
     image: mysql:latest
