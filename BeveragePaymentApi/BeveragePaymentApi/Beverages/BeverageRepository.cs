@@ -40,11 +40,9 @@ public class BeverageRepository : IBeverageRepository
     public async Task Delete(int id)
     {
         var beverageToDelete = await _context.Beverages.FindAsync(id);
-        if (beverageToDelete != null)
-        {
-            _context.Beverages.Remove(beverageToDelete);
-            await _context.SaveChangesAsync();
-        }
+        if (beverageToDelete != null) _context.Beverages.Remove(beverageToDelete);
+        await _context.SaveChangesAsync();
+        
     }
 }
 

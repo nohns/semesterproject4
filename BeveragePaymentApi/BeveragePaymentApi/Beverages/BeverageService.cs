@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Exceptions;
 
 namespace BeveragePaymentApi.Beverages;
 
@@ -18,7 +19,11 @@ public class BeverageService : IBeverageService
 
     public async Task<Beverage?> GetById(int id)
     {
-        return await _beverageRepository.GetById(id);
+        var beverage = await _beverageRepository.GetById(id);
+        
+        if (beverage == null) throw new NotFoundException("Beverage was not found.");
+        
+        return beverage;
     }
 
     public async Task<Beverage> Create(Beverage beverage)
@@ -28,11 +33,15 @@ public class BeverageService : IBeverageService
 
     public async Task<Beverage> Update(Beverage beverage)
     {
+        var _ = _beverageRepository.GetById(beverage.Id);
+        
         return await _beverageRepository.Update(beverage);
     }
 
     public async Task Delete(int id)
     {
+        var _ = await _beverageRepository.GetById(id);
+        
         await _beverageRepository.Delete(id);
     }
 }

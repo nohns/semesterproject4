@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeveragePaymentApi.Beverages;
@@ -33,6 +34,8 @@ public  class BeveragesController : Controller
     /// <param name="id"></param>
     /// <returns>A specific Beverage</returns>
     [HttpGet("{id}", Name = "GetById")]
+    [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Beverage>> GetById(int id)
     {
         var beverage = await _beverageService.GetById(id);
@@ -48,10 +51,14 @@ public  class BeveragesController : Controller
     /// Sample request:
     /// 
     ///     {   
-    ///         "name": "Blå vand"
+    ///         "name": "Blå vand",
+    ///         "upperBoundary": 15,
+    ///         "lowerBoundary": 25,
+    ///         "baseValue": 20
     ///     }
     /// </remarks>
     [HttpPost]
+    [ProducesResponseType<Beverage>(StatusCodes.Status201Created)]
     public async Task<ActionResult<Beverage>> Post(Beverage beverage)
     {
         var beverageCreated = await _beverageService.Create(beverage);
@@ -65,13 +72,22 @@ public  class BeveragesController : Controller
     /// <param name="beverage"></param>
     /// <returns>The updated Beverage</returns>
     [HttpPut("{id}")]
+    [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Beverage>> Put(int id, Beverage beverage)
     {
-        beverage.Id = id;
+        try
+        {
+            beverage.Id = id;
 
-        var updatedBeverage = await _beverageService.Update(beverage);
+            var updatedBeverage = await _beverageService.Update(beverage);
 
-        return Ok(updatedBeverage);
+            return Ok(updatedBeverage);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     /// <summary>
@@ -80,6 +96,8 @@ public  class BeveragesController : Controller
     /// <param name="id"></param>
     /// <returns>Nothing.</returns>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(int id)
     {
         await _beverageService.Delete(id);
