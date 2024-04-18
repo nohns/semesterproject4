@@ -16,6 +16,7 @@ import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
 import Admin from "./page/Admin";
+import Login from "./page/Login";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -29,8 +30,7 @@ root.render(
         <ReactQueryClientProvider>
           <BrowserRouter>
             <RouterRoutes>
-              {/* <Route path="/login" element={<Login />} /> */}
-
+              <Route path="/login" element={<Login />} /> 
               <Route path="/" element={<Admin />} />
               <Route path="*" element={<Navigate to="/" />} />
             </RouterRoutes>
