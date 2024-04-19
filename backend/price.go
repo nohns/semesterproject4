@@ -7,7 +7,7 @@ import (
 )
 
 type Update struct {
-	BevID string    `json:"bevId"`
+	BevID string    `json:"beverageId"`
 	Price float64   `json:"price"`
 	At    time.Time `json:"at"`
 }
@@ -38,13 +38,12 @@ type HistoryProvider interface {
 	Histories(ctx context.Context) ([]History, error)
 }
 
-
 type BeverageRepo interface {
-    FindBeverages(ctx context.Context) ([]Beverage, error)
+	FindBeverages(ctx context.Context) ([]Beverage, error)
 }
 
 type CurrPricer interface {
-    CurrentPrice(ctx context.Context, bevId string) (float64, error)
+	CurrentPrice(ctx context.Context, bevId string) (float64, error)
 }
 
 type PricingSvc struct {

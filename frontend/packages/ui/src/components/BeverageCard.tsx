@@ -14,7 +14,7 @@ export function BeverageCard({
   handleBeverageClick,
 }: BeverageCardProps): JSX.Element {
   return (
-    <Card className="w-10/12 ">
+    <Card className="w-10/12">
       <div className="flex flex-row justify-center items-center p-4">
         <img
           alt="Beverage Image"

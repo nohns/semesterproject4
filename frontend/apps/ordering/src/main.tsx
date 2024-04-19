@@ -5,19 +5,12 @@ import ReactDOM from "react-dom/client";
 
 import { ThemeProvider, TooltipProvider } from "@repo/ui";
 import { ReactQueryClientProvider } from "@repo/api";
-import {
-  Navigate,
-  BrowserRouter,
-  Route,
-  Routes as RouterRoutes,
-} from "react-router-dom";
 
 import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
-import Selection from "./page/Selection";
-import Selected from "./page/Selected";
-import { AnimatePresence } from "framer-motion";
+import { BrowserRouter } from "react-router-dom";
+import Routes from "./routes";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -30,13 +23,7 @@ root.render(
       <TooltipProvider delayDuration={100}>
         <ReactQueryClientProvider>
           <BrowserRouter>
-            <AnimatePresence mode="wait">
-              <RouterRoutes>
-                <Route path="/" element={<Selection />} />
-                <Route path="*" element={<Navigate to="/" />} />
-                <Route path="/selected" element={<Selected />} />
-              </RouterRoutes>
-            </AnimatePresence>
+            <Routes />
           </BrowserRouter>
         </ReactQueryClientProvider>
       </TooltipProvider>
