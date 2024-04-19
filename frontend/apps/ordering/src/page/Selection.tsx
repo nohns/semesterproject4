@@ -17,11 +17,9 @@ interface SelectionProps {
 function Selection({ histories, isConnected }: SelectionProps) {
   const navigate = useNavigate();
 
-  histories[0].prices;
-
   const handleBeverageClick = (
     beverage: Beverage,
-    priceHistory: HistoryEntry
+    priceHistory: HistoryEntry[]
   ) => {
     console.log("beverage", beverage);
     navigate("/selected", { state: { beverage, priceHistory } });
@@ -56,7 +54,7 @@ function Selection({ histories, isConnected }: SelectionProps) {
               >
                 <BeverageCard
                   beverage={history.beverage}
-                  price={history.prices[history.prices.length - 1].price}
+                  history={history.prices}
                   handleBeverageClick={handleBeverageClick}
                 />
               </motion.div>

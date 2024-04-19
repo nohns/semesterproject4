@@ -2,17 +2,20 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "./ui/button";
-import { Beverage } from "@repo/api/index";
+import { Beverage, HistoryEntry } from "@repo/api";
 
 interface BeverageCardProps {
   beverage: Beverage;
-  price: number;
-  handleBeverageClick: (beverage: Beverage) => void;
+  history: HistoryEntry[];
+  handleBeverageClick: (
+    beverage: Beverage,
+    priceHistory: HistoryEntry[]
+  ) => void;
 }
 
 function BeverageCard({
   beverage,
-  price,
+  history,
   handleBeverageClick,
 }: BeverageCardProps): JSX.Element {
   return (
@@ -34,9 +37,9 @@ function BeverageCard({
           </span>
           <Button
             className="font-mono"
-            onClick={() => handleBeverageClick(beverage)}
+            onClick={() => handleBeverageClick(beverage, history)}
           >
-            {price.toFixed(1)} kr
+            {history[history.length - 1].price.toFixed(1)} kr
           </Button>
         </div>
       </div>

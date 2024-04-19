@@ -71,7 +71,7 @@ function Selected() {
                   prisudvikling seneste time
                 </h3>
                 <div className="h-60">
-                  <Chart prices={beverages[1].prices} />
+                  {/* <Chart prices={beverages[1].prices} /> */}
                 </div>
               </div>
 
