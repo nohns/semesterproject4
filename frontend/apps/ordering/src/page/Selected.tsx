@@ -16,82 +16,79 @@ import BeverageQuantityCard from "@/components/BeverageQuantityCard";
 const stripePromise = loadStripe("pk_test_4RxUQ9rE2xn8vIbplcQlCLQN");
 
 function Selected() {
-    const [noWallet, setNoWallet] = useState(false);
+  const [noWallet, setNoWallet] = useState(false);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleReturnClick = () => {
-        navigate("/");
-    };
+  const handleReturnClick = () => {
+    navigate("/");
+  };
 
-    const { beverage } = useLocation().state;
+  const { beverage } = useLocation().state;
 
-    //Magi det ved jeg ikke hvordan virker mads
-    //const {} = location.state;
+  //Magi det ved jeg ikke hvordan virker mads
+  //const {} = location.state;
 
-    return (
-        <>
-            <MobileContainer>
-                <motion.div
-                    className="h-full flex flex-col w-10/12 mx-auto gap-4"
-                    key={beverage.id}
-                    initial="initialState"
-                    animate="animateState"
-                    exit="exitState"
-                    transition={{
-                        type: "tween",
-                        ease: "easeOut", // use the "ease out" easing function
-                        duration: 0.3, // increase the duration slightly
-                        delay: 0.1, // add a slight delay
-                    }}
-                    variants={{
-                        initialState: {
-                            x: "100vw",
-                        },
-                        animateState: {
-                            x: 0,
-                        },
-                        exitState: {
-                            x: "-100vw",
-                        },
-                    }}
-                >
-                    <div className="flex flex-row items-center gap-2 cursor-pointer" onClick={handleReturnClick} >
-                        <ArrowLeftIcon className="w-8 h-8" />
-                        <span>Tilbage</span>
-                    </div>
-                    <h2 className="text-5xl font-semibold">{beverage.name}</h2>
-                    <div className="flex flex-col items-center justify-center">
-                        <div>
-                            <div>
-                                <h3 className="text-gray-400 font-semibold uppercase">prisudvikling seneste time</h3>
-                                <div className="h-60">
-                                    <Chart prices={beverages[1].prices} />
-                                </div>
-                            </div>
-                            <div>
-                                Der skal nok være en timer som tæller ned hvor lang tid tilbudet
-                                er validt
-                            </div>
+  return (
+    <>
+      <MobileContainer>
+        <motion.div
+          className="h-full flex flex-col w-10/12 mx-auto gap-4 max-w-[600px]"
+          key={beverage.id}
+          initial="initialState"
+          animate="animateState"
+          exit="exitState"
+          transition={{
+            type: "tween",
+            ease: "easeOut", // use the "ease out" easing function
+            duration: 0.3, // increase the duration slightly
+            delay: 0.1, // add a slight delay
+          }}
+          variants={{
+            initialState: {
+              x: "100vw",
+            },
+            animateState: {
+              x: 0,
+            },
+            exitState: {
+              x: "-100vw",
+            },
+          }}
+        >
+          <div
+            className="flex flex-row items-center gap-2 cursor-pointer"
+            onClick={handleReturnClick}
+          >
+            <ArrowLeftIcon className="w-8 h-8" />
+            <span>Tilbage</span>
+          </div>
+          <h2 className="text-5xl font-semibold">{beverage.name}</h2>
+          <div className="flex flex-col items-center justify-center">
+            <div>
+              <div>
+                <h3 className="text-gray-400 font-semibold uppercase">
+                  prisudvikling seneste time
+                </h3>
+                <div className="h-60">
+                  <Chart prices={beverages[1].prices} />
+                </div>
+              </div>
 
-                            <div>
-                                Magisk graf som der nok kræver at endnu mere data bliver passed
-                                ind
-                            </div>
-                            <BeverageQuantityCard beverage={beverage} />
-                        </div>
+              <BeverageQuantityCard beverage={beverage} />
+            </div>
 
-                        <div id="checkout-page">
-                            <Elements stripe={stripePromise}>
-                                <StripeCheckout setNoWallet={setNoWallet} />
-                            </Elements>
-                            {noWallet && <NoWallet />}
-                        </div>
-                    </div>
-                </motion.div>
-            </MobileContainer>
-        </>
-    );
+            <div id="checkout-page">
+              <Elements stripe={stripePromise}>
+                <StripeCheckout setNoWallet={setNoWallet} />
+              </Elements>
+              {!noWallet && <NoWallet />}
+            </div>
+          </div>
+        </motion.div>
+      </MobileContainer>
+    </>
+  );
 }
 
 export default Selected;

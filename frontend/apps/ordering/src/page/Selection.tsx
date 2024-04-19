@@ -5,7 +5,7 @@ import { Apple, Google, Money } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
-import { Beverage, History, useWebsocket } from "@repo/api";
+import { Beverage, History, HistoryEntry, useWebsocket } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";
 
@@ -17,9 +17,14 @@ interface SelectionProps {
 function Selection({ histories, isConnected }: SelectionProps) {
   const navigate = useNavigate();
 
-  const handleBeverageClick = (beverage: Beverage) => {
-    console.log("Clicked");
-    navigate("/selected", { state: { beverage } });
+  histories[0].prices;
+
+  const handleBeverageClick = (
+    beverage: Beverage,
+    priceHistory: HistoryEntry
+  ) => {
+    console.log("beverage", beverage);
+    navigate("/selected", { state: { beverage, priceHistory } });
   };
 
   console.log("histories", histories);
