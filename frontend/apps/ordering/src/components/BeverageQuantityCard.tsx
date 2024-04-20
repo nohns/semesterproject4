@@ -10,7 +10,7 @@ interface BeverageCardProps {
 
 function BeverageQuantityCard({ beverage }: BeverageCardProps): JSX.Element {
   return (
-    <Card className="w-10/12 ">
+    <Card className="full">
       <div className="flex flex-row justify-center items-center p-4">
         <img
           alt="Beverage Image"

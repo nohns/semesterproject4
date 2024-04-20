@@ -5,7 +5,7 @@ import { Apple, Google, Money } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
-import { Beverage, History, HistoryEntry, useWebsocket } from "@repo/api";
+import { Beverage, History, HistoryEntry } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";
 
@@ -52,9 +52,10 @@ function Selection({ histories, isConnected }: SelectionProps) {
                 exit={{ opacity: 0, y: 50 }} // animate out on exit
                 transition={{ delay: index * 0.1 }} // delay each item's animation by its index to create a staggered effect
               >
+                {/*Make deep copy so state isn't updated :)*/}
                 <BeverageCard
-                  beverage={history.beverage}
-                  history={history.prices}
+                  beverage={JSON.parse(JSON.stringify(history.beverage))}
+                  history={JSON.parse(JSON.stringify(history.prices))}
                   handleBeverageClick={handleBeverageClick}
                 />
               </motion.div>
@@ -73,9 +74,7 @@ function Selection({ histories, isConnected }: SelectionProps) {
 
           <div className="flex flex-row justify-center  w-full gap-x-8 ">
             <Apple />
-            <div className="transform scale-75">
-              <Money />
-            </div>
+            <div className="transform scale-75">{/* <Money /> */}</div>
             <Google />
           </div>
 
