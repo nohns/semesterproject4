@@ -1,9 +1,6 @@
 /** @format */
 
-import { BeverageCard } from "@repo/ui";
 import { BigScreenWrapper } from "@repo/ui";
-import { Beverage } from "@repo/api";
-import { motion } from "framer-motion";
 import Dashboard from "@/components/Dashboard";
 
 function Admin() {

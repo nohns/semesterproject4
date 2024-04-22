@@ -28,7 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Beverage, useGetBeverages } from "@repo/api";
 
 function Dashboard() {
   //const { data, isLoading, isError } = useGetBeverages();

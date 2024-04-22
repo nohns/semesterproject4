@@ -7,7 +7,7 @@ import (
 )
 
 type Update struct {
-	BevID string    `json:"bevId"`
+	BevID string    `json:"beverageId"`
 	Price float64   `json:"price"`
 	At    time.Time `json:"at"`
 }

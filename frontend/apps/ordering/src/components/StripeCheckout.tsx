@@ -7,7 +7,6 @@ import {
 } from "@stripe/react-stripe-js";
 import {
   ConfirmationToken,
-  ExpressCheckoutWalletsOption,
   StripeElementsOptions,
   StripeError,
   StripeExpressCheckoutElementConfirmEvent,
