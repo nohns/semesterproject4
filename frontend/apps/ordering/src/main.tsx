@@ -9,7 +9,6 @@ import { ReactQueryClientProvider } from "@repo/api";
 import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
-import { BrowserRouter } from "react-router-dom";
 import Routes from "./routes";
 
 const rootElement = document.getElementById("root");
@@ -22,9 +21,7 @@ root.render(
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <TooltipProvider delayDuration={100}>
         <ReactQueryClientProvider>
-          <BrowserRouter>
-            <Routes />
-          </BrowserRouter>
+          <Routes />
         </ReactQueryClientProvider>
       </TooltipProvider>
     </ThemeProvider>

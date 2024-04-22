@@ -15,8 +15,7 @@ import { Beverage, HistoryEntry } from "@repo/api/index";
 import { BeveragePrice } from "@repo/ui/model/Beverage";
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import Countdown from "react-countdown";
-import React from "react";
+import Countdown from "@/components/Countdown";
 
 const stripePromise = loadStripe("pk_test_4RxUQ9rE2xn8vIbplcQlCLQN");
 
@@ -36,20 +35,22 @@ function Selected() {
     navigate("/");
   };
 
-  /* const location = useLocation();
+  console.log("RERENDERING");
+
+  const location = useLocation();
   const memoizedLocation = useMemo(() => location, [location]);
 
-  const { state }: Location<LocationState> = memoizedLocation; */
+  const { state }: Location<LocationState> = memoizedLocation;
 
   //const { state }: Location<LocationState> = useLocation();
   //const { beverage, priceHistory } = locationState;
 
-  /*   if (!state?.beverage || !state?.priceHistory) {
+  if (!state?.beverage || !state?.priceHistory) {
     return <div>Maybe screen or perhabs we jsut force navigate user back</div>;
-  } */
+  }
 
   //We must take the priceHistory array and reduce it to only prices within the last hour
-  /*  const lastHourPrices = state?.priceHistory?.filter((price) => {
+  const lastHourPrices = state?.priceHistory?.filter((price) => {
     //Check if price.at is within the last hour and only return the price not the whole object
     return new Date(price.at) > new Date(Date.now() - 3600 * 1000);
   });
@@ -59,10 +60,7 @@ function Selected() {
       price: parseFloat(price.price.toFixed(1)),
     };
   });
-  console.log(state); */
-
-  //conver tstring to number
-  console.log("RERENDERING");
+  console.log(state);
 
   return (
     <>
@@ -70,6 +68,7 @@ function Selected() {
         <motion.div
           className="h-full flex flex-col w-10/12 gap-4 mx-auto max-w-[600px] font-mono"
           /* key={state?.beverage?.beverageId} */
+          key={"beverageId"}
           initial="initialState"
           animate="animateState"
           exit="exitState"
@@ -92,14 +91,8 @@ function Selected() {
           }}
         >
           <div className="border p-1.5 text-sm bg-green-500 rounded-sm text-center">
-            Tilbudet er tilgængeligt i{" "}
-            {/*     <Countdown
-              zeroPadDays={0}
-              zeroPadTime={0}
-              date={Date.now() + 10000}
-              onComplete={() => handleReturnClick()}
-            /> */}
-            ,
+            Tilbudet er tilgængeligt indtil c# backenden giver os et endpoint 🤬{" "}
+            <Countdown />
           </div>
           <div
             className="flex flex-row items-center gap-2 cursor-pointer"
@@ -108,15 +101,14 @@ function Selected() {
             <ArrowLeftIcon className="w-8 h-8" />
             <span className="">Tilbage</span>
           </div>
-          <Countdown date={Date.now() + 10000} />
 
-          {/*  <h2 className="text-5xl font-semibold">{state.beverage.name}</h2>
+          <h2 className="text-5xl font-semibold">{state.beverage.name}</h2>
           <span className="text-muted-foreground font-semibold uppercase text-xs">
             prisudvikling seneste time
           </span>
           <div className="grow h-60">
             <Chart prices={beveragePrices} />
-          </div> */}
+          </div>
 
           {/* <BeverageQuantityCard beverage={state?.beverage} /> */}
           <div className="flex align-middle items-center gap-4 ml-auto">
@@ -143,7 +135,7 @@ function Selected() {
             </Button>
           </div>
 
-          {/* <div className="flex justify-between ">
+          <div className="flex justify-between ">
             <span className=" text-xl">Total</span>
             <motion.span
               className="text-xl"
@@ -164,11 +156,12 @@ function Selected() {
               <StripeCheckout setNoWallet={setNoWallet} />
             </Elements>
             {!noWallet && <NoWallet />}
-          </div> */}
+          </div>
         </motion.div>
       </MobileContainer>
     </>
   );
 }
 
+//export default React.memo(Selected);
 export default Selected;

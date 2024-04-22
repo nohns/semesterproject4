@@ -9,14 +9,17 @@ import { Beverage, History, HistoryEntry } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
+import { useWebSocket } from "@/routes";
 
-interface SelectionProps {
+/* interface SelectionProps {
   histories: History[];
   isConnected: boolean;
-}
+} */
 
-function Selection({ histories, isConnected }: SelectionProps) {
+function Selection(/* { histories, isConnected }: SelectionProps */) {
   const navigate = useNavigate();
+
+  const { isConnected, histories } = useWebSocket();
 
   /*   const handleBeverageClick = (
     beverage: Beverage,
