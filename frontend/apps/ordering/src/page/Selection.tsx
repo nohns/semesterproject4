@@ -1,13 +1,14 @@
 /** @format */
 
 import BeverageCard from "@/components/BeverageCard";
-import { Apple, Google, Money } from "@repo/ui";
+import { Apple, Google } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
 import { Beverage, History, HistoryEntry } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";
+import { useCallback } from "react";
 
 interface SelectionProps {
   histories: History[];
@@ -17,13 +18,20 @@ interface SelectionProps {
 function Selection({ histories, isConnected }: SelectionProps) {
   const navigate = useNavigate();
 
-  const handleBeverageClick = (
+  /*   const handleBeverageClick = (
     beverage: Beverage,
     priceHistory: HistoryEntry[]
   ) => {
     console.log("beverage", beverage);
     navigate("/selected", { state: { beverage, priceHistory } });
-  };
+  }; */
+  const handleBeverageClick = useCallback(
+    (beverage: Beverage, priceHistory: HistoryEntry[]) => {
+      console.log("beverage", beverage);
+      navigate("/selected", { state: { beverage, priceHistory } });
+    },
+    [navigate]
+  );
 
   console.log("histories", histories);
   console.log("isConnected", isConnected);

@@ -8,21 +8,22 @@ import Selection from "./page/Selection";
 import Selected from "./page/Selected";
 
 const Routes = () => {
-  const { isConnected, histories } = useWebsocket("ws://localhost:9090/ws");
+  const { histories, isConnected } = useWebsocket("ws://localhost:9090/ws");
 
+  {
+    /* <AnimatePresence mode="wait"> */
+  }
   return (
-    <AnimatePresence mode="wait">
-      <RouterRoutes>
-        <Route
+    <RouterRoutes>
+      {/*      <Route
           path="/"
           element={
             <Selection isConnected={isConnected} histories={histories} />
           }
-        />
-        <Route path="*" element={<Navigate to="/" />} />
-        <Route path="/selected" element={<Selected />} />
-      </RouterRoutes>
-    </AnimatePresence>
+        /> */}
+      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="/selected" element={<Selected />} />
+    </RouterRoutes>
   );
 };
 
