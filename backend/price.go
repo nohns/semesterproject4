@@ -7,7 +7,7 @@ import (
 )
 
 type Update struct {
-	BevID string    `json:"bevId"`
+	BevID string    `json:"beverageId"`
 	Price float64   `json:"price"`
 	At    time.Time `json:"at"`
 }
@@ -29,8 +29,8 @@ type MsgBroadcaster interface {
 	Broadcast(msg any)
 }
 
-type PriceRepo interface {
-	Store(ctx context.Context, u Update) error
+type PriceStorer interface {
+	StorePrice(ctx context.Context, u Update) error
 }
 
 type HistoryProvider interface {
@@ -39,16 +39,16 @@ type HistoryProvider interface {
 }
 
 type BeverageRepo interface {
-    FindBeverages(ctx context.Context) ([]Beverage, error)
+	FindBeverages(ctx context.Context) ([]Beverage, error)
 }
 
 type CurrPricer interface {
-    CurrentPrice(ctx context.Context, bevId string) (float64, error)
+	CurrentPrice(ctx context.Context, bevId string) (float64, error)
 }
 
 type PricingSvc struct {
 	broadcaster MsgBroadcaster
-	repo        PriceRepo
+	repo        PriceStorer
 	hp          HistoryProvider
 }
 
@@ -64,7 +64,7 @@ func (p *PricingSvc) UpdatePrice(ctx context.Context, u Update) error {
 		return err
 	}
 
-	if err := p.repo.Store(ctx, u); err != nil {
+	if err := p.repo.StorePrice(ctx, u); err != nil {
 		return err
 	}
 

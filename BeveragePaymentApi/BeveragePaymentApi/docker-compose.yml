@@ -1,0 +1,16 @@
+﻿#services:
+#  bevpay.web:
+#    image: bevpay.web
+#    build:
+#      context: .
+#      dockerfile: BevPay.Web/Dockerfile
+
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: SuperSecretPassword123
+      MYSQL_DATABASE: FooBarDb
+    ports:
+      - "3306:3306"

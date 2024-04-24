@@ -101,8 +101,8 @@ func TestEngineTrackItem_invalidParams(t *testing.T) {
 
 func TestEngineReadUpdate_success(t *testing.T) {
 	eng := engine.New(engine.Config{
-		FirstUpdateMaxDelay: 0,
-		UpdateInterval:      1 * time.Second,
+		FirstUpdateRandomMaxDelay: 0,
+		UpdateInterval:            1 * time.Second,
 	})
 	// Create a new item
 	params := engine.ItemParams{
@@ -115,7 +115,7 @@ func TestEngineReadUpdate_success(t *testing.T) {
 	err := eng.TrackItem("itm1", params)
 	if err != nil {
 		t.Errorf("could not track item. expected no error, got %v", err)
-        return
+		return
 	}
 
 	eng.Start()

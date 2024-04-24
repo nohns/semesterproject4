@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type manager struct {
+type Manager struct {
 	addr string
 	clients map[string]*Conn
 	upgrader websocket.Upgrader
@@ -28,13 +28,13 @@ type ManagerOptions struct {
     InitConnFunc InitConnFunc
 }
 
-func NewManager(o *ManagerOptions) (*manager, error) {
+func NewManager(o *ManagerOptions) (*Manager, error) {
 	if o.Addr == "" {
 		o.Addr = ":10000"
 		o.Logger.Info("No port specified, defaulting to 10000")
 	}
 
-	return &manager{
+	return &Manager{
 		addr: o.Addr,
 
 		clients: make(map[string]*Conn),
@@ -55,7 +55,7 @@ func NewManager(o *ManagerOptions) (*manager, error) {
 	}, nil
 }
 
-func (m *manager) Broadcast(message []byte) {
+func (m *Manager) Broadcast(message []byte) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -69,7 +69,7 @@ func (m *manager) Broadcast(message []byte) {
 	}
 }
 
-func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
+func (m *Manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := m.upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -97,7 +97,7 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (m *manager) addClient(c *Conn) {
+func (m *Manager) addClient(c *Conn) {
 	m.logger.Info("Adding client", slog.String("id", c.id))
 
 	m.mu.Lock()
@@ -107,7 +107,7 @@ func (m *manager) addClient(c *Conn) {
 	m.logger.Info("Total clients", slog.Int("count", len(m.clients)))
 }
 
-func (m *manager) removeClient(c *Conn) {
+func (m *Manager) removeClient(c *Conn) {
 	m.logger.Info("Removing client", slog.String("id", c.id))
 
 	m.mu.Lock()
@@ -117,7 +117,7 @@ func (m *manager) removeClient(c *Conn) {
 	m.logger.Info("Total clients", slog.Int("count", len(m.clients)))
 }
 
-func (m *manager) ListenAndServe() error {
+func (m *Manager) ListenAndServe() error {
 
 	router := http.NewServeMux()
 
@@ -147,7 +147,7 @@ func (m *manager) ListenAndServe() error {
 	return nil
 }
 
-func (m *manager) Stop() {
+func (m *Manager) Stop() {
 
 	wg := &sync.WaitGroup{}
 	m.mu.Lock()
