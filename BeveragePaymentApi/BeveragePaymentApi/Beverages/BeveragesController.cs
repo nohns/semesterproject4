@@ -2,6 +2,8 @@ using Asp.Versioning;
 using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeveragePaymentApi.Beverages;
 
