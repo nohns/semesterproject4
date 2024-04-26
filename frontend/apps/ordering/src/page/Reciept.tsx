@@ -52,9 +52,9 @@ function Reciept() {
             </div>
 
             <div className="relative w-full mb-10">
-              <div className="absolute top-0 -left-4  w-8 h-8 bg-background rounded-r-full" />
-              <div className="absolute top-4 left-4 right-4 border-t-4 border-dotted border-background" />
-              <div className="absolute top-0 -right-4  w-8 h-8 bg-background rounded-l-full" />
+              <div className="absolute top-0 -left-8  w-8 h-8 bg-background rounded-r-full" />
+              <div className="absolute top-4 left-2 right-2 border-t-4 border-dotted border-background" />
+              <div className="absolute top-0 -right-8  w-8 h-8 bg-background rounded-l-full" />
             </div>
 
             <div className="text-2xl text-center mb-8">100 kr.</div>
