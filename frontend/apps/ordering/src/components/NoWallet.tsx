@@ -13,7 +13,7 @@ function NoWallet() {
 
   return (
     <motion.div
-      className="border rounded-sm bg-muted p-2"
+      className="border rounded-sm  p-2"
       initial={{ opacity: 0, y: 50 }} // changed from -50 to 50
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -50 }} // changed from 50 to -50

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -21,8 +21,6 @@ import MiniFoobar from "./MiniFoobar";
 import { useLogin } from "@repo/api";
 
 export default function LoginTab() {
-
-  const {PostLoginRequest, }
   return (
     <div className="flex flex-row justify-center items-center">
       <Tabs defaultValue="account" className="w-[500px]">
