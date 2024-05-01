@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { CircleCheck, CalendarDays, Clock9 } from "Lucide-react";
 import { useEffect, useState } from "react";
 
-//Reciept page
-function Reciept() {
+//Receipt page
+function Receipt() {
   const [rotation, setRotation] = useState(0);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function Reciept() {
           exit={{ opacity: 0, y: 500 }} // animate out on exit
           transition={{ delay: 0.4, duration: 1 }} // delay each item's animation by its index to create a staggered effect
         >
-          {/*Reciept itself*/}
+          {/*Receipt itself*/}
           <div className="flex flex-col bg-muted h-[75dvh] rounded-lg px-4">
             <div className="mx-auto mt-6">
               <CircleCheck className="w-16 h-16 text-background bg-green-600 rounded-full mx-auto" />
@@ -93,4 +93,4 @@ function Reciept() {
   );
 }
 
-export default Reciept;
+export default Receipt;

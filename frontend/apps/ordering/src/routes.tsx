@@ -8,7 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import Selected from "./page/Selected";
 import Selection from "./page/Selection";
 import { ReactNode, createContext, useContext } from "react";
-import Reciept from "./page/Reciept";
+import Receipt from "./page/Receipt";
 
 interface WebSocketContextType {
   isConnected: boolean;
@@ -47,7 +47,7 @@ export const Routes = () => {
           <RouterRoutes>
             <Route path="/" element={<Selection />} />
             <Route path="/selected" element={<Selected />} />;
-            <Route path="/reciept" element={<Reciept />} />;
+            <Route path="/Receipt" element={<Receipt />} />;
           </RouterRoutes>
         </AnimatePresence>
       </BrowserRouter>
