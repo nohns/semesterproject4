@@ -30,9 +30,9 @@ root.render(
         <ReactQueryClientProvider>
           <BrowserRouter>
             <RouterRoutes>
-              <Route path="/login" element={<Login />} /> 
-              <Route path="/" element={<Admin />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </RouterRoutes>
           </BrowserRouter>
         </ReactQueryClientProvider>
