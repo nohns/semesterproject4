@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
 

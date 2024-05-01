@@ -1,11 +1,9 @@
 using BeveragePaymentApi.Domain;
-using BeveragePaymentApi.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApiUser>
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : base(options)
