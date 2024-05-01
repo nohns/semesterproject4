@@ -1,11 +1,9 @@
 using BeveragePaymentApi.Domain;
-using BeveragePaymentApi.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApiUser>
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : base(options)
@@ -18,7 +16,7 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Beverage>()
-            .Property(b => b.Id)
+            .Property(b => b.BeverageId)
             .ValueGeneratedOnAdd();
 
         base.OnModelCreating(modelBuilder);

@@ -7,11 +7,14 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace BeveragePaymentApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Identity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySQL:Charset", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -51,6 +54,25 @@ namespace BeveragePaymentApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Beverages",
+                columns: table => new
+                {
+                    BeverageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "longtext", nullable: true),
+                    ImageSrc = table.Column<string>(type: "longtext", nullable: true),
+                    MaxPrice = table.Column<double>(type: "double", nullable: false),
+                    MinPrice = table.Column<double>(type: "double", nullable: false),
+                    BasePrice = table.Column<double>(type: "double", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Beverages", x => x.BeverageId);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -220,6 +242,9 @@ namespace BeveragePaymentApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Beverages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
