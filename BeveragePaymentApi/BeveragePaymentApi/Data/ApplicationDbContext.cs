@@ -18,7 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Beverage>()
-            .Property(b => b.Id)
+            .Property(b => b.BeverageId)
             .ValueGeneratedOnAdd();
 
         base.OnModelCreating(modelBuilder);
