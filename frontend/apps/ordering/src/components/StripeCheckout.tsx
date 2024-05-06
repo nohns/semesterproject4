@@ -7,6 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import {
   ConfirmationToken,
+  ExpressCheckoutWalletsOption,
   StripeElementsOptions,
   StripeError,
   StripeExpressCheckoutElementConfirmEvent,
@@ -24,12 +25,12 @@ function StripeCheckout({ setNoWallet }: StripeCheckoutProps) {
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<StripeError | undefined>();
 
-  const option: StripeExpressCheckoutElementOptions = {
+  /*   const option: StripeExpressCheckoutElementOptions = {
     wallets: {
       applePay: "always",
       googlePay: "always",
     },
-  };
+  }; */
 
   const onConfirm = async (event: StripeExpressCheckoutElementConfirmEvent) => {
     if (!stripe || !elements) {
@@ -83,7 +84,12 @@ function StripeCheckout({ setNoWallet }: StripeCheckoutProps) {
           onReady={() => {
             console.log("Express checkout ready");
           }}
-          options={option}
+          options={{
+            wallets: {
+              applePay: "always",
+              googlePay: "always",
+            },
+          }}
         />
         {errorMessage && <div>{errorMessage.message}</div>}
       </div>

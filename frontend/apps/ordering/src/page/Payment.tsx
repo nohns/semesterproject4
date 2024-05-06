@@ -6,7 +6,9 @@ import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 
-const stripePromise = loadStripe("pk_test_4RxUQ9rE2xn8vIbplcQlCLQN");
+const stripePromise = loadStripe(
+  "pk_test_51PDTdFKZetYTOPv9c33nH1XHOD3aCvfEvnMjVHoHjS75xhoHdXbsNAO7V4V6sP4EnYk2JQlZzDE8SSZemUML72tS00JXrXClGv"
+);
 
 interface PaymentProps {
   price: number;
