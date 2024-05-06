@@ -21,14 +21,34 @@ public static class ApplicationDbContextSeed
                 Name = "Blå vand",
                 UpperBoundary = 20,
                 LowerBoundary = 10,
-                BaseValue = 15
+                BaseValue = 15,
+                PricingHistory = new PricingHistory
+                {
+                    PricingHistoryEntries = new List<PricingHistoryEntry>
+                    {
+                        new PricingHistoryEntry
+                        {
+                            Price = 10, Timestamp = DateTime.Now
+                        }
+                    }
+                }
             },
             new Beverage
             {
                 Name = "Sodavand",
                 UpperBoundary = 25,
                 LowerBoundary = 15,
-                BaseValue = 20
+                BaseValue = 20,
+                PricingHistory = new PricingHistory
+                {
+                    PricingHistoryEntries = new List<PricingHistoryEntry>
+                    {
+                        new PricingHistoryEntry
+                        {
+                            Price = 10, Timestamp = DateTime.Now
+                        }
+                    }
+                }
             }
         };
 

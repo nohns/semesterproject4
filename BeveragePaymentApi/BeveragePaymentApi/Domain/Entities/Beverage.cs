@@ -11,4 +11,6 @@ public class Beverage
     public int UpperBoundary { get; set; }
     public int LowerBoundary { get; set; }
     public int BaseValue { get; set; }
+    public PricingHistory? PricingHistory { get; set; }
+
 }
