@@ -40,17 +40,15 @@ function Selected() {
     return <div>Maybe screen or perhabs we jsut force navigate user back</div>;
   }
 
-  //We must take the priceHistory array and reduce it to only prices within the last hour
-  const lastHourPrices = state?.priceHistory?.filter((price) => {
-    //Check if price.at is within the last hour and only return the price not the whole object
-    return new Date(price.at) > new Date(Date.now() - 3600 * 1000);
-  });
-  const beveragePrices: BeveragePrice[] = lastHourPrices?.map((price) => {
-    return {
-      date: new Date(price.at),
-      price: parseFloat(price.price.toFixed(1)),
-    };
-  });
+  const beveragePrices: BeveragePrice[] = state?.priceHistory
+    .slice(state.priceHistory.length - 20)
+    .map((price) => {
+      return {
+        date: new Date(price.at),
+        price: parseFloat(price.price.toFixed(2)),
+      };
+    });
+  console.log(state);
 
   return (
     <>
@@ -94,7 +92,7 @@ function Selected() {
 
           <h2 className="text-5xl font-semibold">{state.beverage.name}</h2>
           <span className="text-muted-foreground font-semibold uppercase text-xs">
-            prisudvikling seneste time
+            prisudvikling seneste 10 min
           </span>
           <div className="grow h-60">
             <Chart prices={beveragePrices} />

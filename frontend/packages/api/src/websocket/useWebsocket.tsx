@@ -51,7 +51,6 @@ export const useWebsocket = (url: string) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to send messages
   const sendMessage = useCallback((message: string) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(message);

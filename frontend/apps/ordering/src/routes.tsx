@@ -16,7 +16,7 @@ interface WebSocketContextType {
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(
-  undefined
+  undefined,
 );
 
 // Component to provide WebSocket context to children
@@ -41,17 +41,15 @@ export const useWebSocket = () => {
 
 export const Routes = () => {
   return (
-    <WebSocketProvider>
-      <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <RouterRoutes>
-            <Route path="/" element={<Selection />} />
-            <Route path="/selected" element={<Selected />} />;
-            <Route path="/Receipt" element={<Receipt />} />;
-          </RouterRoutes>
-        </AnimatePresence>
-      </BrowserRouter>
-    </WebSocketProvider>
+    <BrowserRouter>
+      <AnimatePresence mode="wait">
+        <RouterRoutes>
+          <Route path="/" element={<Selection />} />
+          <Route path="/selected" element={<Selected />} />;
+          <Route path="/Receipt" element={<Receipt />} />;
+        </RouterRoutes>
+      </AnimatePresence>
+    </BrowserRouter>
   );
 };
 
