@@ -24,7 +24,17 @@ public static class ApplicationDbContextSeed
                 ImageSrc = "https://via.placeholder.com/150",
                 BasePrice = 10,
                 MaxPrice = 15,
-                MinPrice = 5
+                MinPrice = 5,
+                PricingHistory = new PricingHistory
+                {
+                    PricingHistoryEntries = new List<PricingHistoryEntry>
+                    {
+                        new PricingHistoryEntry
+                        {
+                            Price = 10, Timestamp = DateTime.Now
+                        }
+                    }
+                }
             },
             new Beverage
             {
@@ -33,7 +43,17 @@ public static class ApplicationDbContextSeed
                 ImageSrc = "https://via.placeholder.com/150",
                 BasePrice = 10,
                 MaxPrice = 15,
-                MinPrice = 5
+                MinPrice = 5,
+                PricingHistory = new PricingHistory
+                {
+                    PricingHistoryEntries = new List<PricingHistoryEntry>
+                    {
+                        new PricingHistoryEntry
+                        {
+                            Price = 10, Timestamp = DateTime.Now
+                        }
+                    }
+                }
             },
         };
 
