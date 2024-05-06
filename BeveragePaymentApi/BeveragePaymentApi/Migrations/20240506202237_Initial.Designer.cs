@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeveragePaymentApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240506201346_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240506202237_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,24 +24,30 @@ namespace BeveragePaymentApi.Migrations
 
             modelBuilder.Entity("BeveragePaymentApi.Domain.Beverage", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("BeverageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("BaseValue")
-                        .HasColumnType("int");
+                    b.Property<double>("BasePrice")
+                        .HasColumnType("double");
 
-                    b.Property<int>("LowerBoundary")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageSrc")
+                        .HasColumnType("longtext");
+
+                    b.Property<double>("MaxPrice")
+                        .HasColumnType("double");
+
+                    b.Property<double>("MinPrice")
+                        .HasColumnType("double");
 
                     b.Property<string>("Name")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("UpperBoundary")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
+                    b.HasKey("BeverageId");
 
                     b.ToTable("Beverages");
                 });

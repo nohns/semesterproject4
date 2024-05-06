@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace BeveragePaymentApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,16 +19,18 @@ namespace BeveragePaymentApi.Migrations
                 name: "Beverages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    BeverageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
-                    UpperBoundary = table.Column<int>(type: "int", nullable: false),
-                    LowerBoundary = table.Column<int>(type: "int", nullable: false),
-                    BaseValue = table.Column<int>(type: "int", nullable: false)
+                    Description = table.Column<string>(type: "longtext", nullable: true),
+                    ImageSrc = table.Column<string>(type: "longtext", nullable: true),
+                    BasePrice = table.Column<double>(type: "double", nullable: false),
+                    MaxPrice = table.Column<double>(type: "double", nullable: false),
+                    MinPrice = table.Column<double>(type: "double", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Beverages", x => x.Id);
+                    table.PrimaryKey("PK_Beverages", x => x.BeverageId);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -47,7 +49,7 @@ namespace BeveragePaymentApi.Migrations
                         name: "FK_PricingHistories_Beverages_BeverageId",
                         column: x => x.BeverageId,
                         principalTable: "Beverages",
-                        principalColumn: "Id",
+                        principalColumn: "BeverageId",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");

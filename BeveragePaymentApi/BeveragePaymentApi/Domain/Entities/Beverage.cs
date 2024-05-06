@@ -5,12 +5,19 @@ namespace BeveragePaymentApi.Domain;
 public class Beverage
 {
     [Key]
-    public int Id { get; set; }
+    public int BeverageId { get; set; }
     [MaxLength(100)]
     public string? Name { get; set; }
-    public int UpperBoundary { get; set; }
-    public int LowerBoundary { get; set; }
-    public int BaseValue { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? ImageSrc { get; set; }
+
+    public double BasePrice { get; set; }
+
+    public double MaxPrice { get; set; }
+
+    public double MinPrice { get; set; }
     public PricingHistory? PricingHistory { get; set; }
 
 }
