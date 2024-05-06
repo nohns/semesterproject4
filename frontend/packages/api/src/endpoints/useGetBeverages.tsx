@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 
 import { client } from "../axios/axios";
 
+//GET
+export interface GetBeverageRequest {}
+
 export interface GetBeverageResponse {
   beverages: Beverage[];
 }
-
-//Import this from somewhere else probaly
-interface Beverage {}
 
 const getBeverages = async () => {
   return await client.get<GetBeverageResponse>("/beverages");

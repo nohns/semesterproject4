@@ -2,6 +2,8 @@ using Asp.Versioning;
 using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeveragePaymentApi.Beverages;
 
@@ -63,7 +65,7 @@ public  class BeveragesController : Controller
     public async Task<ActionResult<Beverage>> Post(Beverage beverage)
     {
         var beverageCreated = await _beverageService.Create(beverage);
-        return CreatedAtRoute("GetById", new { id = beverageCreated.Id }, value: beverageCreated);
+        return CreatedAtRoute("GetById", new { id = beverageCreated.BeverageId }, value: beverageCreated);
     }
     
     /// <summary>
@@ -80,7 +82,7 @@ public  class BeveragesController : Controller
     {
         try
         {
-            beverage.Id = id;
+            beverage.BeverageId = id;
 
             var updatedBeverage = await _beverageService.Update(beverage);
 

@@ -34,7 +34,7 @@ public class BeverageService : IBeverageService
     public async Task<Beverage> Update(Beverage beverage)
     {
         //Check if beverage exist
-        await _beverageRepository.GetById(beverage.Id);
+        await _beverageRepository.GetById(beverage.BeverageId);
         
         return await _beverageRepository.Update(beverage);
     }

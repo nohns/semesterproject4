@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import Selected from "./page/Selected";
 import Selection from "./page/Selection";
 import { ReactNode, createContext, useContext } from "react";
+import Receipt from "./page/Receipt";
 
 interface WebSocketContextType {
   isConnected: boolean;
@@ -15,7 +16,7 @@ interface WebSocketContextType {
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(
-  undefined
+  undefined,
 );
 
 // Component to provide WebSocket context to children
@@ -40,16 +41,15 @@ export const useWebSocket = () => {
 
 export const Routes = () => {
   return (
-    <WebSocketProvider>
-      <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <RouterRoutes>
-            <Route path="/" element={<Selection />} />
-            <Route path="/selected" element={<Selected />} />;
-          </RouterRoutes>
-        </AnimatePresence>
-      </BrowserRouter>
-    </WebSocketProvider>
+    <BrowserRouter>
+      <AnimatePresence mode="wait">
+        <RouterRoutes>
+          <Route path="/" element={<Selection />} />
+          <Route path="/selected" element={<Selected />} />;
+          <Route path="/Receipt" element={<Receipt />} />;
+        </RouterRoutes>
+      </AnimatePresence>
+    </BrowserRouter>
   );
 };
 

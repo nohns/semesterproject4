@@ -39,7 +39,7 @@ function BeverageCard({
             className="font-mono"
             onClick={() => handleBeverageClick(beverage, history)}
           >
-            {history[history.length - 1].price.toFixed(1)} kr
+            {history[history.length - 1].price.toFixed(2)} kr
           </Button>
         </div>
       </div>

@@ -18,7 +18,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Beverage>()
-            .Property(b => b.Id)
+            .Property(b => b.BeverageId)
             .ValueGeneratedOnAdd();
         
         modelBuilder.Entity<Beverage>()
@@ -32,5 +32,8 @@ public class ApplicationDbContext : DbContext
             .WithOne(p => p.PricingHistory)
             .HasForeignKey(p => p.PricingHistoryId)
             .IsRequired();
+
+        base.OnModelCreating(modelBuilder);
+        
     }
 }

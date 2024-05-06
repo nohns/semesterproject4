@@ -4,6 +4,10 @@ using Asp.Versioning;
 using BeveragePaymentApi.Beverages;
 using BeveragePaymentApi.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+
+using BeveragePaymentApi.Domain;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +33,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "BeveragePaymentApi", 
+        Title = "BeveragePaymentApi",
         Version = "v1.0",
         Description = "Beverage and Payment API of FooBar"
     });
@@ -43,6 +47,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 builder.Services.AddScoped<IBeverageService, BeverageService>();
 builder.Services.AddScoped<IBeverageRepository, BeverageRepository>();
 
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/v1/auth/login";
+    options.AccessDeniedPath = "/v1/auth/accessdenied";
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,7 +66,7 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint($"/swagger/v1/swagger.json", $"BeveragePaymentApi v1");
     });
-    
+
     using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -63,7 +76,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

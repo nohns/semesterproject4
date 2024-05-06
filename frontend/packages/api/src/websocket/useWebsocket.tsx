@@ -51,7 +51,6 @@ export const useWebsocket = (url: string) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to send messages
   const sendMessage = useCallback((message: string) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(message);
@@ -84,13 +83,13 @@ export const useWebsocket = (url: string) => {
     const onStructuredMsg = (msg: Message) => {
       switch (msg.kind) {
         case "priceHistories":
-          console.log("Price Histories");
+          //console.log("Price Histories");
           setHistories(msg.data);
           break;
         case "priceUpdate":
-          console.log(msg.data);
+          //console.log(msg.data);
           setHistories((prevHistories) => {
-            console.log(prevHistories.length); // should print the updated length
+            //console.log(prevHistories.length); // should print the updated length
 
             const updatedHistories = prevHistories.map((history) => {
               if (history.beverage.beverageId === msg.data.beverageId) {
@@ -123,7 +122,7 @@ export const useWebsocket = (url: string) => {
         console.log("Pong received");
         clearTimeout(heartbeatTimeoutRef.current);
       } else {
-        console.log("Message received:", event.data);
+        //console.log("Message received:", event.data);
         try {
           const data = JSON.parse(event.data);
           if (!isPriceHistoriesMessage(data)) {

@@ -4,15 +4,7 @@
 import { MoreHorizontal } from "Lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../../../packages/ui/src/components/ui/card";
+import { Button } from "../../../../packages/ui/src/components/ui/button";
 
 function Dashboard() {
   //const { data, isLoading, isError } = useGetBeverages();
@@ -95,20 +96,19 @@ function Dashboard() {
       description: "Shooots",
       totalSales: 77,
       imageSrc: "/images/minttu.jpg",
-    }
+    },
   ];
 
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
-        <div className="flex flex-col w-full gap-y-2" >
-          <CardTitle className="" >Produkter</CardTitle>
-          <CardDescription className=""  >
+        <div className="flex flex-col w-full gap-y-2">
+          <CardTitle className="">Produkter</CardTitle>
+          <CardDescription className="">
             Administrér dine produkter and se deres salg.
           </CardDescription>
-          <Button className="" >Tilføj produkter</Button>
+          <Button className="">Tilføj produkter</Button>
         </div>
-       
       </CardHeader>
       <CardContent>
         <Table>
@@ -170,7 +170,8 @@ function Dashboard() {
       </CardContent>
       <CardFooter>
         <div className="text-xs text-muted-foreground">
-          Viser <strong>{mock.length}</strong> af <strong>{mock.length}</strong> produkter
+          Viser <strong>{mock.length}</strong> af <strong>{mock.length}</strong>{" "}
+          produkter
         </div>
       </CardFooter>
     </Card>
