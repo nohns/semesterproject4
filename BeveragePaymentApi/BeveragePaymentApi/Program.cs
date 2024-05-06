@@ -47,8 +47,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 builder.Services.AddScoped<IBeverageService, BeverageService>();
 builder.Services.AddScoped<IBeverageRepository, BeverageRepository>();
 
-builder.Services.AddIdentityApiEndpoints<ApiUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -82,7 +80,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityApi<ApiUser>();
 
 app.MapControllers();
 

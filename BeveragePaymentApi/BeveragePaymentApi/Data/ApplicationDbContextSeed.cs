@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
 
@@ -19,17 +20,21 @@ public static class ApplicationDbContextSeed
             new Beverage
             {
                 Name = "Blå vand",
-                UpperBoundary = 20,
-                LowerBoundary = 10,
-                BaseValue = 15
+                Description = "En flaske blå vand",
+                ImageSrc = "https://via.placeholder.com/150",
+                BasePrice = 10,
+                MaxPrice = 15,
+                MinPrice = 5
             },
             new Beverage
             {
-                Name = "Sodavand",
-                UpperBoundary = 25,
-                LowerBoundary = 15,
-                BaseValue = 20
-            }
+                Name = "Rød vand",
+                Description = "En flaske rød vand",
+                ImageSrc = "https://via.placeholder.com/150",
+                BasePrice = 10,
+                MaxPrice = 15,
+                MinPrice = 5
+            },
         };
 
         await context.Beverages.AddRangeAsync(beverages);

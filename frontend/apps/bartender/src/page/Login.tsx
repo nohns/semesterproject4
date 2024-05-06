@@ -1,13 +1,15 @@
 /** @format */
 import LoginTab from "@/components/LoginTab";
+import { BigScreenWrapper } from "@repo/ui";
 
 function Login() {
   return (
     <div>
-      {/* {isConnected ? <p>Connected</p> : <p>Not connected</p>} */}
-      <div className="login-tab-container">
-        <LoginTab />
-      </div>
+      <BigScreenWrapper>
+        <div className="flex flex-row justify-center items-center">
+          <LoginTab />
+        </div>
+      </BigScreenWrapper>
     </div>
   );
 }

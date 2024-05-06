@@ -20,7 +20,7 @@ public class BeverageRepository : IBeverageRepository
 
     public async Task<Beverage?> GetById(int id)
     {
-        return await _context.Beverages.FirstOrDefaultAsync(b => b.Id == id);
+        return await _context.Beverages.FirstOrDefaultAsync(b => b.BeverageId == id);
     }
 
     public async Task<Beverage> Create(Beverage beverage)

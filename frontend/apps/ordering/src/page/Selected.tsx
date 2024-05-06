@@ -5,28 +5,19 @@ import MobileContainer from "@/components/MobileContainer";
 import { ArrowLeftIcon } from "Lucide-react";
 import { motion } from "framer-motion";
 import { Chart } from "@repo/ui";
-
 import { useMemo, useState } from "react";
-import NoWallet from "@/components/NoWallet";
-import StripeCheckout from "@/components/StripeCheckout";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { Beverage, HistoryEntry } from "@repo/api/index";
 import { BeveragePrice } from "@repo/ui/model/Beverage";
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import Countdown from "@/components/Countdown";
-
-const stripePromise = loadStripe("pk_test_4RxUQ9rE2xn8vIbplcQlCLQN");
-
+import Payment from "./Payment";
 interface LocationState {
   beverage: Beverage | undefined;
   priceHistory: HistoryEntry[] | undefined;
 }
 
 function Selected() {
-  const [noWallet, setNoWallet] = useState(false);
-
   const [counter, setCounter] = useState(1);
 
   const navigate = useNavigate();
@@ -148,12 +139,11 @@ function Selected() {
               kr.
             </motion.span>
           </div>
-          <div id="checkout-page">
-            <Elements stripe={stripePromise}>
-              <StripeCheckout setNoWallet={setNoWallet} />
-            </Elements>
-            {!noWallet && <NoWallet />}
-          </div>
+          <Payment
+            price={
+              counter * state.priceHistory[state.priceHistory.length - 1].price
+            }
+          />
         </motion.div>
       </MobileContainer>
     </>
