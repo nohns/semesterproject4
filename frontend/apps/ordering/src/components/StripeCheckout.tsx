@@ -46,10 +46,15 @@ function StripeCheckout({ setNoWallet }: StripeCheckoutProps) {
     }
 
     // Create the PaymentIntent and obtain clientSecret
-    const res = await fetch("/create-intent", {
+    const res = await fetch("/payment/create-intent", {
       method: "POST",
     });
     const { client_secret: clientSecret } = await res.json();
+    //Check if we error on client secret or not
+    if (!clientSecret) {
+      alert("Error creating payment intent");
+      return;
+    }
 
     // Confirm the PaymentIntent using the details collected by the Express Checkout Element
     const { error } = await stripe.confirmPayment({
