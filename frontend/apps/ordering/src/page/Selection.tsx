@@ -40,7 +40,7 @@ function Selection(/* { histories, isConnected }: SelectionProps */) {
     [navigate],
   );
 
-  console.log("histories", history);
+  console.log("histories", histories);
   console.log("isConnected", connected);
   return (
     <>
