@@ -15,15 +15,21 @@ const FADE_IN_DELAY = 0.3;
 
 interface ChartProps {
   prices: BeveragePrice[];
+  minimal?: boolean;
 }
 
 // Sourced from: https://gist.github.com/samselikoff/4aff333f7c8538bb44f1806931c39be5
-export function Chart({ prices }: ChartProps) {
+export function Chart({ prices, minimal = false }: ChartProps) {
   const [ref, bounds] = useMeasure();
 
   return (
     <div ref={ref} className="h-full w-full relative">
-      <ChartInner prices={prices} width={bounds.width} height={bounds.height} />
+      <ChartInner
+        prices={prices}
+        width={bounds.width}
+        height={bounds.height}
+        minimal={minimal}
+      />
     </div>
   );
 }
@@ -31,15 +37,25 @@ interface ChartInnerProps {
   prices: BeveragePrice[];
   width: number;
   height: number;
+  minimal: boolean;
 }
 
-function ChartInner({ prices, width, height }: ChartInnerProps) {
-  const margin = {
-    top: 10,
-    right: 5,
-    bottom: 50,
-    left: 30,
-  };
+const NORMAL_MARGIN = {
+  top: 10,
+  right: 5,
+  bottom: 50,
+  left: 30,
+} as const;
+
+const MINIMAL_MARGIN = {
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+} as const;
+
+function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
+  const margin = !minimal ? NORMAL_MARGIN : MINIMAL_MARGIN;
 
   const pricesToRender = useMemo(() => {
     const compareEvenOdd = prices.length % 2 === 0 ? 1 : 0;
@@ -70,7 +86,7 @@ function ChartInner({ prices, width, height }: ChartInnerProps) {
   }
   // Make more room in top and bottom of chart for showing price tips
   const yDiff = minMaxPrices[1] - minMaxPrices[0];
-  const yPadding = yDiff * 0.3;
+  const yPadding = yDiff * (!minimal ? 0.3 : 0);
   minMaxPrices[0] -= yPadding;
   minMaxPrices[1] += yPadding;
 
@@ -182,51 +198,53 @@ function ChartInner({ prices, width, height }: ChartInnerProps) {
       </defs>
 
       {/* X axis */}
-      {xScale.ticks(width / 100).map((min) => (
-        <motion.g
-          key={min.getTime()}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: FADE_IN_DELAY }}
-          className="text-gray-400"
-          transform={`translate(${xScale(min)},0)`}
-        >
-          <text
-            y={height - 10}
-            textAnchor="middle"
-            fill="currentColor"
-            className="text-[10px]"
+      {!minimal &&
+        xScale.ticks(width / 100).map((min) => (
+          <motion.g
+            key={min.getTime()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: FADE_IN_DELAY }}
+            className="text-gray-400"
+            transform={`translate(${xScale(min)},0)`}
           >
-            {format(min, "HH.mm.ss")}
-          </text>
-        </motion.g>
-      ))}
+            <text
+              y={height - 10}
+              textAnchor="middle"
+              fill="currentColor"
+              className="text-[10px]"
+            >
+              {format(min, "HH.mm.ss")}
+            </text>
+          </motion.g>
+        ))}
 
       {/* Y axis */}
-      {yScale.ticks(5).map((max) => (
-        <motion.g
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: FADE_IN_DELAY }}
-          transform={`translate(0,${yScale(max)})`}
-          className="text-gray-400"
-          key={max}
-        >
-          <line
-            x1={margin.left}
-            x2={width - margin.right}
-            stroke="currentColor"
-            strokeDasharray="1,3"
-          />
-          <text
-            alignmentBaseline="middle"
-            className="text-[10px]"
-            fill="currentColor"
+      {!minimal &&
+        yScale.ticks(5).map((max) => (
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: FADE_IN_DELAY }}
+            transform={`translate(0,${yScale(max)})`}
+            className="text-gray-400"
+            key={max}
           >
-            {max}
-          </text>
-        </motion.g>
-      ))}
+            <line
+              x1={margin.left}
+              x2={width - margin.right}
+              stroke="currentColor"
+              strokeDasharray="1,3"
+            />
+            <text
+              alignmentBaseline="middle"
+              className="text-[10px]"
+              fill="currentColor"
+            >
+              {max}
+            </text>
+          </motion.g>
+        ))}
 
       {/* Line */}
       <motion.path
@@ -255,26 +273,27 @@ function ChartInner({ prices, width, height }: ChartInnerProps) {
       />
 
       {/* Price tips */}
-      {pricesToRender.map((_, i) => renderPriceTip(i))}
+      {!minimal && pricesToRender.map((_, i) => renderPriceTip(i))}
 
       {/* Circles */}
-      {pricesToRender.map((p, i) => (
-        <motion.circle
-          key={p.date.getTime()}
-          initial={{ r: 0 }}
-          animate={{ r: 5 }}
-          transition={{ duration: 0.5, delay: FADE_IN_DELAY + i * 0.05 }}
-          cx={xScale(p.date)}
-          cy={yScale(p.price)}
-          fill="currentColor"
-          strokeWidth={2}
-          stroke={
-            minutes.findIndex((m) => isSameMinute(m, p.date)) % 2 === 1
-              ? "#f5f5f4"
-              : "white"
-          }
-        />
-      ))}
+      {!minimal &&
+        pricesToRender.map((p, i) => (
+          <motion.circle
+            key={p.date.getTime()}
+            initial={{ r: 0 }}
+            animate={{ r: 5 }}
+            transition={{ duration: 0.5, delay: FADE_IN_DELAY + i * 0.05 }}
+            cx={xScale(p.date)}
+            cy={yScale(p.price)}
+            fill="currentColor"
+            strokeWidth={2}
+            stroke={
+              minutes.findIndex((m) => isSameMinute(m, p.date)) % 2 === 1
+                ? "#f5f5f4"
+                : "white"
+            }
+          />
+        ))}
     </svg>
   );
 }
