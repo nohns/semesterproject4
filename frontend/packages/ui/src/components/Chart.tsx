@@ -240,9 +240,6 @@ function ChartInner({ prices, width, height }: ChartInnerProps) {
         strokeWidth="2"
       />
 
-      {/* Price tips */}
-      {pricesToRender.map((_, i) => renderPriceTip(i))}
-
       {/* Gradient */}
       <motion.rect
         x={0}
@@ -256,6 +253,9 @@ function ChartInner({ prices, width, height }: ChartInnerProps) {
         fill="url(#gradient)"
         clipPath="url(#cut-off-bottom)"
       />
+
+      {/* Price tips */}
+      {pricesToRender.map((_, i) => renderPriceTip(i))}
 
       {/* Circles */}
       {pricesToRender.map((p, i) => (
