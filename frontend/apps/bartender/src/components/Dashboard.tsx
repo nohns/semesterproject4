@@ -27,8 +27,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../../../packages/ui/src/components/ui/card";
-import { Button } from "../../../../packages/ui/src/components/ui/button";
+} from "@repo/ui";
+import { Button } from "@repo/ui";
 
 function Dashboard() {
   //const { data, isLoading, isError } = useGetBeverages();

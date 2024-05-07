@@ -3,13 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useLogin } from "@repo/api";
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "../../../../packages/ui/src/components/ui/card";
-import { Button } from "../../../../packages/ui/src/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@repo/ui";
+import { Button } from "@repo/ui";
 import { FooBar } from "@repo/ui";
 
 export default function LoginTab() {
@@ -20,7 +15,7 @@ export default function LoginTab() {
   const handleLogin = () => {
     if (username == "admin" && password == "adminpassword")
       mutate({ username, password });
-    else console.log("wrong username or password");
+    else console.log("Incorrect Username or Password");
   };
 
   return (
@@ -28,10 +23,10 @@ export default function LoginTab() {
       <Tabs defaultValue="account" className="w-[500px]">
         <TabsContent value="account">
           <Card>
-            <CardHeader className="items-center">
-              <FooBar></FooBar>
+            <CardHeader className="items-center pb-2">
+              <FooBar />
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 pt-2">
               <div className="space-y-1">
                 <Label htmlFor="username">Username</Label>
                 <Input
@@ -51,7 +46,7 @@ export default function LoginTab() {
             </CardContent>
             <CardFooter>
               <div className="space-x-6">
-                <Button onClick={handleLogin}>Enter</Button>
+                <Button onClick={handleLogin}>Sign In</Button>
               </div>
             </CardFooter>
           </Card>
