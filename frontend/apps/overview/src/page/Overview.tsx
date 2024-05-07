@@ -9,6 +9,10 @@ const mockItems = [
   { name: "Rom & Cola", imageSrc: "/images/graf.png", price: 35 },
   { name: "Gin & Tonic", imageSrc: "/images/graf.png", price: 40 },
   { name: "Øl", imageSrc: "/images/graf.png", price: 45 },
+  { name: "Vodka", imageSrc: "/images/graf.png", price: 50 },
+  { name: "Fadøl", imageSrc: "/images/graf.png", price: 55 },
+  { name: "Cider", imageSrc: "/images/graf.png", price: 60 },
+  { name: "Sodavand", imageSrc: "/images/graf.png", price: 65 },
 ];
 
 function Overview() {
@@ -18,19 +22,20 @@ function Overview() {
   ];
 
   return (
-    <div>
-      <div className="flex justify-center items-center">
+    <div className="h-screen flex flex-col">
+      <div className="flex flex-col items-center justify-center">
         <FooBar />
-        <h1>Overview</h1>
       </div>
-      <div className="flex justify-center items-center">
+      <div className="flex-grow flex items-center justify-center">
         <Chart prices={mockPrices} />
       </div>
-      <Marquee speed={50} pauseOnHover={true}>
-        {mockItems.map((item, index) => (
-          <SlidingBeverageItemCardLigmaNamingIsHard key={index} item={item} />
-        ))}
-      </Marquee>
+      <div>
+        <Marquee speed={50} pauseOnHover={true}>
+          {mockItems.map((item, index) => (
+            <SlidingBeverageItemCardLigmaNamingIsHard key={index} item={item} />
+          ))}
+        </Marquee>
+      </div>
     </div>
   );
 }
