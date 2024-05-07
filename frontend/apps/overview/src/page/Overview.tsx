@@ -23,16 +23,13 @@ function Overview() {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex-none" style={{ flex: "1" }}>
-        {" "}
+      <div className="flex flex-none" style={{ height: "20%" }}>
         <FooBar />
       </div>
-      <div className="flex-grow" style={{ flex: "2" }}>
-        {" "}
+      <div className="flex flex-grow" style={{ height: "60%" }}>
         <Chart prices={mockPrices} />
       </div>
-      <div className="flex-none" style={{ flex: "1" }}>
-        {" "}
+      <div className="flex flex-none" style={{ height: "20%" }}>
         <Marquee speed={50} pauseOnHover={true}>
           {mockItems.map((item, index) => (
             <SlidingBeverageItemCardLigmaNamingIsHard key={index} item={item} />
