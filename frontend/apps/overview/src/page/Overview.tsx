@@ -1,38 +1,21 @@
-import React from "react";
-import { motion } from "framer-motion";
+import Marquee from "react-fast-marquee";
 import { Chart, FooBar } from "@repo/ui";
+import SlidingBeverageItemCardLigmaNamingIsHard from "../components/SlidingBeverageItemCardLigmaNamingIsHard";
 
-const boxCount = 6;
-const boxWidth = 100;
+const mockItems = [
+  { name: "Blå Thor", imageSrc: "/images/graf.png", price: 20 },
+  { name: "Blå Vand", imageSrc: "/images/graf.png", price: 25 },
+  { name: "Kinderæg", imageSrc: "/images/graf.png", price: 30 },
+  { name: "Rom & Cola", imageSrc: "/images/graf.png", price: 35 },
+  { name: "Gin & Tonic", imageSrc: "/images/graf.png", price: 40 },
+  { name: "Øl", imageSrc: "/images/graf.png", price: 45 },
+];
 
 function Overview() {
   const mockPrices = [
     { date: new Date("2023-01-01T00:00:00"), price: 100 },
     { date: new Date("2023-01-02T00:00:00"), price: 105 },
   ];
-
-  const animateBox = (index: number) => {
-    const totalDistance =
-      window.innerWidth +
-      boxWidth +
-      (window.innerWidth / (boxCount + 1)) * (index + 1);
-    const baseSpeed = 0.03;
-
-    return {
-      hidden: {
-        x: -boxWidth - (window.innerWidth / (boxCount + 1)) * (index + 1),
-      },
-      visible: {
-        x: window.innerWidth,
-        transition: {
-          duration: baseSpeed * (totalDistance / 10), // Dynamic duration based on distance
-          ease: "linear",
-          repeat: Infinity,
-          repeatType: "loop",
-        },
-      },
-    };
-  };
 
   return (
     <div>
@@ -43,25 +26,11 @@ function Overview() {
       <div className="flex justify-center items-center">
         <Chart prices={mockPrices} />
       </div>
-      <div
-        className="relative w-full overflow-hidden"
-        style={{ height: "100px" }}
-      >
-        {Array.from({ length: boxCount }).map((_, index) => (
-          <motion.div
-            key={index}
-            initial="hidden"
-            animate="visible"
-            variants={animateBox(index)} // Ved ikke hvad dens problem er
-            style={{
-              width: `${boxWidth}px`,
-              height: "100px",
-              backgroundColor: "#0f62fe",
-              position: "absolute",
-            }}
-          />
+      <Marquee speed={50} pauseOnHover={true}>
+        {mockItems.map((item, index) => (
+          <SlidingBeverageItemCardLigmaNamingIsHard key={index} item={item} />
         ))}
-      </div>
+      </Marquee>
     </div>
   );
 }

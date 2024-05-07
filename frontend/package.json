@@ -23,6 +23,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "framer-motion": "^11.1.7"
+    "react-fast-marquee": "^1.6.4"
   }
 }
