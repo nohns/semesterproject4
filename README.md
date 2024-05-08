@@ -6,6 +6,6 @@ The project is a web application that allows users to create, read, update, and 
 How to run the application:
 -Navigate to backend/cmd and type "go run main.go" in your terminal
 -Navigate to frontend and type "npm install" followed by "npm run dev"
--Navigate to BeveragePaymentApi and type "docker compose -f "docker-compose.yaml" up -d --build"
+-Navigate to BeveragePaymentApi/BeveragePaymentApi and type "docker compose -f "docker-compose.yml" up -d --build"
     (Remember to have Docker open :))
 
