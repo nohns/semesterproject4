@@ -9,7 +9,7 @@ import {
 import useMeasure from "react-use-measure";
 import { motion } from "framer-motion";
 import { BeveragePrice } from "../model/Beverage";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 const FADE_IN_DELAY = 0.3;
 
@@ -48,22 +48,16 @@ const NORMAL_MARGIN = {
 } as const;
 
 const MINIMAL_MARGIN = {
-  top: 0,
+  top: 5,
   right: 0,
-  bottom: 0,
+  bottom: 5,
   left: 0,
 } as const;
 
 function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
   const margin = !minimal ? NORMAL_MARGIN : MINIMAL_MARGIN;
 
-  const pricesToRender = useMemo(() => {
-    const compareEvenOdd = prices.length % 2 === 0 ? 1 : 0;
-    if (width < 350) {
-      return prices.filter((_, i) => i % 2 === compareEvenOdd);
-    }
-    return prices;
-  }, [width, prices]);
+  const pricesToRender = prices;
 
   console.log("prices to render", pricesToRender.length);
 
@@ -84,6 +78,7 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
   if (minMaxPrices[0] === undefined || minMaxPrices[1] === undefined) {
     return <div>Error - min max could not be found from price data</div>;
   }
+
   // Make more room in top and bottom of chart for showing price tips
   const yDiff = minMaxPrices[1] - minMaxPrices[0];
   const yPadding = yDiff * (!minimal ? 0.3 : 0);
@@ -95,16 +90,19 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
     .domain(minMaxPrices)
     .range([height - margin.bottom, margin.top]);
 
+  // Coordinates for price dots on graph
   const coords = pricesToRender.map<[number, number]>((p) => [
     xScale(p.date),
     yScale(p.price),
   ]);
 
+  // Gradient
+  const gradientCutOffFromBottom = !minimal ? 25 : 0;
   const lineDataPoints = d3.line()(coords);
   const clipLine = d3.line()([
     ...coords,
-    [xScale(pricesToRender.at(-1)!.date), height - 25],
-    [xScale(pricesToRender.at(0)!.date), height - 25],
+    [xScale(pricesToRender.at(-1)!.date), height - gradientCutOffFromBottom],
+    [xScale(pricesToRender.at(0)!.date), height - gradientCutOffFromBottom],
   ]);
 
   function renderPriceTip(index: number) {
@@ -139,18 +137,12 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
         <motion.rect
           width={30}
           height={20}
-          //initial={{ opacity: 0, translateY: -10 }}
-          //animate={{ opacity: 1, translateY: 0 }}
-          //transition={{ duration: 0.5 }}
           fill="currentColor"
           rx="5"
           className="p-4 rounded-md "
         ></motion.rect>
         {isLocalTop && (
           <polygon
-            /*points={`${xScale(p.date)},${yScale(p.price)} ${xScale(p.date) + 5},${
-                        yScale(p.price) - 5
-                      } ${xScale(p.date) - 5},${yScale(p.price) - 5}`}*/
             points={`15,-5 22,2 8,2`}
             rx={2}
             style={{ strokeLinejoin: "round", strokeLinecap: "round" }}
@@ -159,9 +151,6 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
         )}
         {isLocalBottom && (
           <polygon
-            /*points={`${xScale(p.date)},${yScale(p.price)} ${xScale(p.date) + 5},${
-                        yScale(p.price) - 5
-                      } ${xScale(p.date) - 5},${yScale(p.price) - 5}`}*/
             points={`15,25 22,18 8,18`}
             rx={2}
             style={{ strokeLinejoin: "round", strokeLinecap: "round" }}
@@ -192,7 +181,7 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
         </clipPath>
         <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
-          <stop offset="70%" stopColor="currentColor" stopOpacity="0.5" />
+          <stop offset={"70%"} stopColor="currentColor" stopOpacity="0.5" />
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -266,7 +255,7 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
         animate={{ translateY: 0, opacity: 0.3 }}
         transition={{ duration: 0.5, delay: FADE_IN_DELAY + 0.1 }}
         width={width}
-        height={height - 25}
+        height={height - gradientCutOffFromBottom}
         className="text-red-500"
         fill="url(#gradient)"
         clipPath="url(#cut-off-bottom)"
