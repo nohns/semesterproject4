@@ -72,34 +72,15 @@ func BootstrapMocked() (*app, error) {
 			InitialPrice:  price,
 			BuyMultiplier: bev.Params.BuyMultiplier,
 			HalfTime:      int(bev.Params.HalfTime / time.Second),
+			LastUpdate:    bev.LastUpdate,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("failed to track item: %v", err)
 		}
-		// go a.tempSimulateDemand(bev)
 	}
 	a.priceEngine = eng
 
 	return a, nil
-}
-
-// Temporary method to simulate random demand
-func (a *app) tempSimulateDemand(bev pe.Beverage) {
-	for {
-		minsec := 20 + rand.Intn(20)
-		maxsec := minsec + rand.Intn(60-minsec)
-
-		// Sleep for random time to simulate martin buying all the drinks🤯
-		sleeptime := minsec + rand.Intn(maxsec-minsec+1)
-		time.Sleep(time.Duration(sleeptime) * time.Second)
-
-		qty := 1 + rand.Intn(2)
-		a.logger.Debug("Buying item", slog.String("itemID", bev.ID), slog.Int("qty", qty))
-		if err := a.priceEngine.OrderItem(bev.ID, qty); err != nil {
-			a.logger.Error("Failed to simulate ordering", slog.String("itemID", bev.ID), slog.String("error", err.Error()))
-			return
-		}
-	}
 }
 
 func (a *app) Run(ctx context.Context) error {
@@ -126,6 +107,25 @@ func (a *app) Run(ctx context.Context) error {
 	<-signals
 
 	return fmt.Errorf("recv termination")
+}
+
+// Temporary method to simulate random demand
+func (a *app) tempSimulateDemand(bev pe.Beverage) {
+	for {
+		minsec := 20 + rand.Intn(20)
+		maxsec := minsec + rand.Intn(60-minsec)
+
+		// Sleep for random time to simulate martin buying all the drinks🤯
+		sleeptime := minsec + rand.Intn(maxsec-minsec+1)
+		time.Sleep(time.Duration(sleeptime) * time.Second)
+
+		qty := 1 + rand.Intn(2)
+		a.logger.Debug("Buying item", slog.String("itemID", bev.ID), slog.Int("qty", qty))
+		if err := a.priceEngine.OrderItem(bev.ID, qty); err != nil {
+			a.logger.Error("Failed to simulate ordering", slog.String("itemID", bev.ID), slog.String("error", err.Error()))
+			return
+		}
+	}
 }
 
 func (a *app) serveWS() {

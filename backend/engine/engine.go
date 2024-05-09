@@ -211,7 +211,7 @@ func (e *Engine) Start() error {
 	e.state = engineStateRunning
 
 	for _, a := range e.actors {
-		a.start()
+		go a.start()
 	}
 
 	return nil

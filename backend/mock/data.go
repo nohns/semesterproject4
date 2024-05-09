@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"fmt"
 	"time"
 
 	pe "github.com/nohns/semesterproject4"
@@ -28,7 +29,7 @@ func makeMock() mockData {
 					Name:       "Blå vand",
 					Desc:       "Den er rimelig fucking blå og så er der vand i",
 					ImageSrc:   "/images/vand.jpg",
-					LastUpdate: time.Now().Add(-22 * time.Second),
+					LastUpdate: time.Now().Add(-7 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      50,
 						MinPrice:      15,
@@ -72,7 +73,7 @@ func makeMock() mockData {
 					Name:       "Ceres Top",
 					Desc:       "Fin aarhus øl ja tak",
 					ImageSrc:   "/images/bajselademad.jpg",
-					LastUpdate: time.Now().Add(-25 * time.Second),
+					LastUpdate: time.Now().Add(-9 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      25,
 						MinPrice:      10,
@@ -116,7 +117,7 @@ func makeMock() mockData {
 					Name:       "Sort vand",
 					Desc:       "Falsk blå vand 🤬",
 					ImageSrc:   "/images/vand.jpg",
-					LastUpdate: time.Now().Add(-18 * time.Second),
+					LastUpdate: time.Now().Add(-5 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      50,
 						MinPrice:      15,
@@ -160,7 +161,7 @@ func makeMock() mockData {
 					Name:       "Nnguaq",
 					Desc:       "En af de bedre drinks i byen",
 					ImageSrc:   "/images/vand.jpg",
-					LastUpdate: time.Now().Add(-23 * time.Second),
+					LastUpdate: time.Now().Add(-2 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      50,
 						MinPrice:      25,
@@ -202,11 +203,15 @@ func makeMock() mockData {
 	}
 
 	for i, h := range m.histories {
+		deductsecs := time.Duration(len(h.Prices)-1) * 10 * time.Second
+		at := h.Beverage.LastUpdate.Add(-deductsecs)
 		for j := range m.histories[i].Prices {
-			revj := len(m.histories[i].Prices) - j - 1
-			dur := revj * 10
-			m.histories[i].Prices[j].At = h.Beverage.LastUpdate.Add(time.Duration(dur) * time.Second)
+			m.histories[i].Prices[j].At = at
+			at = at.Add(10 * time.Second)
 		}
+
+		fmt.Printf("Latest update item %s: %v\n", h.Beverage.Name, h.Beverage.LastUpdate)
 	}
-    return m
+
+	return m
 }

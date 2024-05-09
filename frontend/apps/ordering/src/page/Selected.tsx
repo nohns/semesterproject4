@@ -54,7 +54,7 @@ function Selected() {
     <>
       <MobileContainer>
         <motion.div
-          className="h-full flex flex-col w-10/12 gap-4 mx-auto max-w-[600px] font-mono"
+          className="h-full flex flex-col w-full px-4 gap-4 mx-auto max-w-[600px] font-mono"
           /* key={state?.beverage?.beverageId} */
           key={"beverageId"}
           initial="initialState"
