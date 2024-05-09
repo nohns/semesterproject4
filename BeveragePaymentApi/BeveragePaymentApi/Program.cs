@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 using BeveragePaymentApi.Domain;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,16 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/v1/auth/login";
+        options.AccessDeniedPath = "/v1/auth/accessdenied";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.SlidingExpiration = false;
+    });
+
+
 
 var app = builder.Build();
 
@@ -70,13 +81,17 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        //ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
+        ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
 
 app.UseHttpsRedirection();
 
 
+
+app.UseCookiePolicy();
+
+//Skal måske fjernes
 app.UseAuthentication();
 app.UseAuthorization();
 
