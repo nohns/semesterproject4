@@ -5,7 +5,7 @@ import MobileContainer from "@/components/MobileContainer";
 import { ArrowLeftIcon } from "Lucide-react";
 import { motion } from "framer-motion";
 import { Chart } from "@repo/ui";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Beverage, HistoryEntry } from "@repo/api/index";
 import { BeveragePrice } from "@repo/ui/model/Beverage";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,6 @@ interface LocationState {
 
 function Selected() {
   const [counter, setCounter] = useState(1);
-
   const navigate = useNavigate();
 
   const handleReturnClick = () => {
@@ -41,7 +40,7 @@ function Selected() {
   }
 
   const beveragePrices: BeveragePrice[] = state?.priceHistory
-    .slice(state.priceHistory.length - 20)
+    .slice(Math.max(state.priceHistory.length - 20, 0))
     .map((price) => {
       return {
         date: new Date(price.at),
@@ -124,7 +123,7 @@ function Selected() {
           </div>
 
           <div className="flex justify-between ">
-            <span className=" text-xl">Total</span>
+            <span className="text-xl">Total</span>
             <motion.span
               className="text-xl"
               key={counter}
@@ -135,7 +134,7 @@ function Selected() {
               {(
                 counter *
                 state.priceHistory[state.priceHistory.length - 1].price
-              ).toFixed(1)}
+              ).toFixed(2)}
               kr.
             </motion.span>
           </div>
