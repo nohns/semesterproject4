@@ -12,8 +12,21 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using BeveragePaymentApi.Auth;
 using System.Net;
 using Microsoft.AspNetCore.Antiforgery;
+using BeveragePaymentApi;
+using BeveragePaymentApi.Images;
+using System.Drawing;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:5175")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithExposedHeaders("Content-Disposition"));
+});
 
 // Add services to the container.
 builder.Services.AddHttpClient();
@@ -52,7 +65,7 @@ builder.Services.AddScoped<IBeverageService, BeverageService>();
 builder.Services.AddScoped<IBeverageRepository, BeverageRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IImageApiService, ImageApiService>();
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -96,10 +109,24 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        try
+        {
+            if (context.Database.CanConnect())
+            {
+
+                context.Database.Migrate();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
         ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
 app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
 app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),
     System.Text.Encoding.ASCII.GetBytes(Constants.JwtTokenKey));

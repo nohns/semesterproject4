@@ -24,7 +24,7 @@ public class UserApiController : Controller
     [HttpPost]
     [Route("v1/auth/login")]
 
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    public async Task<ActionResult<UserDetailsDto>> Login([FromBody] LoginDto loginDto)
     {
         try
         {
@@ -41,13 +41,13 @@ public class UserApiController : Controller
 
             HttpContext.Response.Cookies.Append("jwt", jwtToken, new CookieOptions() { HttpOnly = true, IsEssential = true, SameSite = SameSiteMode.None, Secure = true });
 
-            return Ok();
+            return Ok(new UserDetailsDto { Username = userDto.Username });
 
 
         }
         catch (Exception e)
         {
-            return Unauthorized();
+            return Unauthorized(e.Message);
         }
         /*
     
