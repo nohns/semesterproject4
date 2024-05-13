@@ -97,7 +97,21 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
+        try
+        {
+            if (context.Database.CanConnect())
+            {
+
+                context.Database.Migrate();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        //ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
 app.UseHttpsRedirection();
