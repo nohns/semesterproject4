@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using BeveragePaymentApi.Auth;
 using System.Net;
 using Microsoft.AspNetCore.Antiforgery;
+using BeveragePaymentApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
