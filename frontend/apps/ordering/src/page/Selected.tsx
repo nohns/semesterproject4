@@ -9,9 +9,19 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Beverage, HistoryEntry } from "@repo/api/index";
 import { BeveragePrice } from "@repo/ui/model/Beverage";
 import { Button } from "@/components/ui/button";
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import {
+  ArrowBottomRightIcon,
+  ArrowTopRightIcon,
+  MinusIcon,
+  PlusIcon,
+} from "@radix-ui/react-icons";
 import Countdown from "@/components/Countdown";
 import Payment from "./Payment";
+import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
+import { da } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { dsvFormat } from "d3";
+
 interface LocationState {
   beverage: Beverage | undefined;
   priceHistory: HistoryEntry[] | undefined;
@@ -48,6 +58,12 @@ function Selected() {
       };
     });
   console.log(state);
+
+  const firstPrice = beveragePrices.at(0);
+  const lastPrice = beveragePrices.at(-1);
+  const isRising = firstPrice!.price < lastPrice!.price;
+  const percentage =
+    ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
 
   return (
     <>
@@ -89,60 +105,95 @@ function Selected() {
             <span className="">Tilbage</span>
           </div>
 
-          <h2 className="text-5xl font-semibold">{state.beverage.name}</h2>
-          <span className="text-muted-foreground font-semibold uppercase text-xs">
-            prisudvikling seneste 10 min
-          </span>
+          <header className="flex flex-col gap-2">
+            <div>
+              <h2 className="text-5xl font-semibold">{state.beverage.name}</h2>
+              {/*<span className="text-muted-foreground font-semibold uppercase text-xs">
+                prisudvikling seneste{" "}
+                {firstPrice && lastPrice
+                  ? formatDistanceStrict(firstPrice.date, lastPrice.date, {
+                      locale: da,
+                    })
+                  : "tid"}
+              </span>*/}
+            </div>
+
+            <div
+              className={cn("flex flex-col", {
+                "text-green-500": isRising,
+                "text-red-500": !isRising,
+              })}
+            >
+              <p className="text-2xl font-semibold">
+                {lastPrice && lastPrice.price.toFixed(2) + " DKK"}
+              </p>
+              <p className="text-lg flex gap-2 items-center">
+                {isRising && <ArrowTopRightIcon className="w-6 h-6" />}
+                {!isRising && <ArrowBottomRightIcon className="w-6 h-6" />}
+                <span>
+                  {isRising ? "+" : ""}
+                  {percentage.toFixed(2)} %
+                </span>
+              </p>
+            </div>
+          </header>
+
           <div className="grow h-60">
             <Chart prices={beveragePrices} />
           </div>
 
           {/* <BeverageQuantityCard beverage={state?.beverage} /> */}
-          <div className="flex align-middle items-center gap-4 ml-auto">
-            <Button
-              size="icon"
-              variant="outline"
-              className="bg-red-500"
-              onClick={() =>
-                setCounter((prevCounter) => Math.max(1, prevCounter - 1))
-              }
-            >
-              <MinusIcon className="h-4 w-4" />
-            </Button>
-            <div className="text-lg font-medium">{counter}</div>
-            <Button
-              size="icon"
-              variant="outline"
-              className="bg-green-500"
-              onClick={() =>
-                setCounter((prevCounter) => Math.min(8, prevCounter + 1))
-              }
-            >
-              <PlusIcon className="h-4 w-4" />
-            </Button>
-          </div>
 
-          <div className="flex justify-between ">
-            <span className="text-xl">Total</span>
-            <motion.span
-              className="text-xl"
-              key={counter}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-            >
-              {(
-                counter *
-                state.priceHistory[state.priceHistory.length - 1].price
-              ).toFixed(2)}
-              kr.
-            </motion.span>
+          <div className="py-4">
+            <div className="flex flex-col gap-2">
+              <div className=" flex justify-between ">
+                <span className="text-md font-bold">Antal</span>
+                <span className="text-md font-bold">Total</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() =>
+                      setCounter((prevCounter) => Math.max(1, prevCounter - 1))
+                    }
+                  >
+                    <MinusIcon className="h-4 w-4" />
+                  </Button>
+                  <div className="text-lg font-medium">{counter}</div>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() =>
+                      setCounter((prevCounter) => Math.min(8, prevCounter + 1))
+                    }
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+                <motion.span
+                  className="text-xl"
+                  key={counter}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                >
+                  {(
+                    counter *
+                    state.priceHistory[state.priceHistory.length - 1].price
+                  ).toFixed(2)}{" "}
+                  DKK
+                </motion.span>
+              </div>
+              <Payment
+                price={
+                  counter *
+                  state.priceHistory[state.priceHistory.length - 1].price
+                }
+              />
+            </div>
           </div>
-          <Payment
-            price={
-              counter * state.priceHistory[state.priceHistory.length - 1].price
-            }
-          />
         </motion.div>
       </MobileContainer>
     </>
