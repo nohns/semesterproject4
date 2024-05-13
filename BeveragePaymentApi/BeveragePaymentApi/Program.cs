@@ -18,6 +18,16 @@ using System.Drawing;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:5175")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithExposedHeaders("Content-Disposition"));
+});
+
 // Add services to the container.
 builder.Services.AddHttpClient();
 builder.Services.AddControllersWithViews();
@@ -117,6 +127,7 @@ if (app.Environment.IsDevelopment())
     }
 }
 app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
 app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),
     System.Text.Encoding.ASCII.GetBytes(Constants.JwtTokenKey));

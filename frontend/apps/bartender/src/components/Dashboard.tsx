@@ -1,15 +1,13 @@
 /** @format */
 
 //import Image from "next/image";
+import { useGetBeverages } from "@repo/api";
 import { MoreHorizontal } from "Lucide-react";
-
 import { Badge } from "@/components/ui/badge";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -31,83 +29,35 @@ import {
 import { Button } from "@repo/ui";
 
 function Dashboard() {
-  //const { data, isLoading, isError } = useGetBeverages();
+  const { data, isLoading, error } = useGetBeverages();
 
-  const mock = [
-    {
-      beverageId: "1",
-      name: "Øl",
-      status: "Active",
-      price: 30,
-      description: "A refreshing drink",
-      totalSales: 30,
-      imageSrc: "/images/bajselademad.jpg",
-    },
-    {
-      beverageId: "2",
-      name: "Snaps",
-      status: "Inactive",
-      price: 50,
-      description: "A really refreshing drink",
-      totalSales: 0,
-      imageSrc: "/images/snaps.jpg",
-    },
-    {
-      beverageId: "3",
-      name: "Vand",
-      status: "Active",
-      price: 20,
-      description: "An incredibly refreshing drink",
-      totalSales: 50,
-      imageSrc: "/images/vand.jpg",
-    },
-    {
-      beverageId: "4",
-      name: "Spejlæg",
-      status: "Active",
-      price: 75,
-      description: "Kande med spejlæg",
-      totalSales: 20,
-      imageSrc: "/images/spejlegg.webp",
-    },
-    {
-      beverageId: "5",
-      name: "Jägerbomb",
-      status: "Active",
-      price: 25,
-      description: "Woooooooooo",
-      totalSales: 100,
-      imageSrc: "/images/jagerbomb.jpg",
-    },
-    {
-      beverageId: "6",
-      name: "Fadøl",
-      status: "Active",
-      price: 25,
-      description: "Stor øl",
-      totalSales: 1,
-      imageSrc: "/images/fadbams.webp",
-    },
-    {
-      beverageId: "7",
-      name: "Minttu",
-      status: "Active",
-      price: 100,
-      description: "Shooots",
-      totalSales: 77,
-      imageSrc: "/images/minttu.jpg",
-    },
-  ];
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>Loading beverages...</CardHeader>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>Error fetching beverages.</CardHeader>
+      </Card>
+    );
+  }
+
+  const beverages = data?.data?.beverages || [];
 
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
         <div className="flex flex-col w-full gap-y-2">
-          <CardTitle className="">Produkter</CardTitle>
-          <CardDescription className="">
+          <CardTitle>Produkter</CardTitle>
+          <CardDescription>
             Administrér dine produkter and se deres salg.
           </CardDescription>
-          <Button className="">Tilføj produkter</Button>
+          <Button>Tilføj produkter</Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -129,7 +79,7 @@ function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mock.map((beverage) => (
+            {beverages.map((beverage) => (
               <TableRow key={beverage.beverageId}>
                 <TableCell className="hidden sm:table-cell">
                   <img
@@ -144,7 +94,7 @@ function Dashboard() {
                 <TableCell>
                   <Badge variant="outline">{beverage.status}</Badge>
                 </TableCell>
-                <TableCell>{beverage.price} dkk</TableCell>
+                <TableCell>{beverage.basePrice} dkk</TableCell>
                 <TableCell className="hidden md:table-cell">
                   {beverage.totalSales}
                 </TableCell>
@@ -157,7 +107,6 @@ function Dashboard() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Handlinger</DropdownMenuLabel>
                       <DropdownMenuItem>Redigér</DropdownMenuItem>
                       <DropdownMenuItem>Slet</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -170,8 +119,8 @@ function Dashboard() {
       </CardContent>
       <CardFooter>
         <div className="text-xs text-muted-foreground">
-          Viser <strong>{mock.length}</strong> af <strong>{mock.length}</strong>{" "}
-          produkter
+          Viser <strong>{beverages.length}</strong> af{" "}
+          <strong>{beverages.length}</strong> produkter
         </div>
       </CardFooter>
     </Card>
