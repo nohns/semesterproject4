@@ -113,7 +113,7 @@ if (app.Environment.IsDevelopment())
             Console.WriteLine(ex.Message);
         }
 
-        //ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
+        ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
 app.UseHttpsRedirection();
