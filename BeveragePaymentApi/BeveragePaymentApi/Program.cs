@@ -13,6 +13,8 @@ using BeveragePaymentApi.Auth;
 using System.Net;
 using Microsoft.AspNetCore.Antiforgery;
 using BeveragePaymentApi;
+using BeveragePaymentApi.Images;
+using System.Drawing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +55,7 @@ builder.Services.AddScoped<IBeverageService, BeverageService>();
 builder.Services.AddScoped<IBeverageRepository, BeverageRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IImageApiService, ImageApiService>();
 
 
 builder.Services.ConfigureApplicationCookie(options =>
