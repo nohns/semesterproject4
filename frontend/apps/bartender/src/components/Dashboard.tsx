@@ -29,7 +29,7 @@ import {
 import { Button } from "@repo/ui";
 
 function Dashboard() {
-  const { data, isLoading, error } = useGetBeverages();
+  const { data: beverages, isLoading, error } = useGetBeverages();
 
   if (isLoading) {
     return (
@@ -46,8 +46,6 @@ function Dashboard() {
       </Card>
     );
   }
-
-  const beverages = data?.data?.beverages || [];
 
   return (
     <Card>
@@ -79,7 +77,7 @@ function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {beverages.map((beverage) => (
+            {beverages && beverages.map((beverage) => (
               <TableRow key={beverage.beverageId}>
                 <TableCell className="hidden sm:table-cell">
                   <img
@@ -92,7 +90,9 @@ function Dashboard() {
                 </TableCell>
                 <TableCell className="font-medium">{beverage.name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{beverage.status}</Badge>
+                  <Badge variant="outline">
+                    {beverage.isActive ? "Active" : "Inactive"}
+                  </Badge>
                 </TableCell>
                 <TableCell>{beverage.basePrice} dkk</TableCell>
                 <TableCell className="hidden md:table-cell">
