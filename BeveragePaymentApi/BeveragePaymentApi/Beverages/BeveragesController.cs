@@ -149,4 +149,15 @@ public class BeveragesController : Controller
         return NoContent();
     }
 
+    [HttpGet("{id}/claim", Name = "Claim beverage price")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ClaimBeveragePrice(int id)
+    {
+        var beverage = await _beverageService.GetById(id);
+        if (beverage == null) return NotFound("Beverage not found");
+
+        return Ok();
+    }
+
 }

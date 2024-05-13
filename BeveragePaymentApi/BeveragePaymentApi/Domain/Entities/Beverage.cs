@@ -18,6 +18,6 @@ public class Beverage
     public double MaxPrice { get; set; }
 
     public double MinPrice { get; set; }
-    public PricingHistory? PricingHistory { get; set; }
+    public List<Price>? Prices { get; set; }
 
 }

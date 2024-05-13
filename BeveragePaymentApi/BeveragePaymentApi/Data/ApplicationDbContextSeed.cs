@@ -45,15 +45,15 @@ public static class ApplicationDbContextSeed
                 BasePrice = 10,
                 MaxPrice = 15,
                 MinPrice = 5,
-                PricingHistory = new PricingHistory
+                Prices = new List<Price>
                 {
-                    PricingHistoryEntries = new List<PricingHistoryEntry>
+                    new Price
                     {
-                        new PricingHistoryEntry
-                        {
-                            Price = 10, Timestamp = DateTime.Now
-                        }
+                        Amount = 10,
+                        Timestamp = DateTime.Now
+
                     }
+
                 }
             },
             new Beverage
@@ -64,15 +64,15 @@ public static class ApplicationDbContextSeed
                 BasePrice = 10,
                 MaxPrice = 15,
                 MinPrice = 5,
-                PricingHistory = new PricingHistory
+                Prices = new List<Price>
                 {
-                    PricingHistoryEntries = new List<PricingHistoryEntry>
+                    new Price
                     {
-                        new PricingHistoryEntry
-                        {
-                            Price = 10, Timestamp = DateTime.Now
-                        }
+                        Amount = 10,
+                        Timestamp = DateTime.Now
+
                     }
+
                 }
             },
         };

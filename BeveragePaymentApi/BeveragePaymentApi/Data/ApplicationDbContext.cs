@@ -13,8 +13,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Beverage> Beverages => Set<Beverage>();
-    public DbSet<PricingHistory> PricingHistories => Set<PricingHistory>();
-    public DbSet<PricingHistoryEntry> PricingHistoryEntries => Set<PricingHistoryEntry>();
+    public DbSet<Price> Prices => Set<Price>();
     public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,21 +22,15 @@ public class ApplicationDbContext : DbContext
             .Property(b => b.BeverageId)
             .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Beverage>()
-            .HasOne(b => b.PricingHistory)
-            .WithOne(ph => ph.Beverage)
-            .HasForeignKey<PricingHistory>(ph => ph.BeverageId)
-            .IsRequired();
-
-        modelBuilder.Entity<PricingHistory>()
-            .HasMany(p => p.PricingHistoryEntries)
-            .WithOne(p => p.PricingHistory)
-            .HasForeignKey(p => p.PricingHistoryId)
-            .IsRequired();
-
         modelBuilder.Entity<User>()
             .Property(u => u.UserId)
             .ValueGeneratedOnAdd();
+
+
+        modelBuilder.Entity<Price>()
+        .HasOne(p => p.Beverage)
+        .WithMany(b => b.Prices)
+        .HasForeignKey(p => p.BeverageId);
 
         base.OnModelCreating(modelBuilder);
 
