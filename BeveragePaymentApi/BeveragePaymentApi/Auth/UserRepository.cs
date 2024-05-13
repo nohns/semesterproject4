@@ -3,10 +3,12 @@
 using BeveragePaymentApi.Data;
 using BeveragePaymentApi.Dto;
 using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
+using BeveragePaymentApi.Domain.Entities;
 
 namespace BeveragePaymentApi.Auth;
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
     public UserRepository(ApplicationDbContext context)
     {
@@ -18,24 +20,15 @@ public class UserRepository
     {
         // Create user
     }
-    public int FindUser(LoginDto login)
+    public async Task<User?> GetuserByUserName(string username)
     {
-        return 1;
-        // Find user
-    }
+        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
-    public string SaltPassword(string password)
-    {
-        return BCrypt.Net.BCrypt.HashPassword(password, 12); //Work factor of 12
     }
+}
 
-    public void VerifyPassword(string password, string hashedPassword)
-    {
-        var result = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-    }
 
-    public void GenerateToken()
-    {
-        // Generate token
-    }
+public interface IUserRepository
+{
+    public Task<User?> GetuserByUserName(string username);
 }

@@ -10,15 +10,15 @@ namespace BeveragePaymentApi.Beverages;
 [Route("v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
-public  class BeveragesController : Controller
+public class BeveragesController : Controller
 {
     private readonly IBeverageService _beverageService;
-    
+
     public BeveragesController(IBeverageService beverageService)
     {
         _beverageService = beverageService;
     }
-    
+
     /// <summary>
     /// Gets all beverages
     /// </summary>
@@ -29,7 +29,7 @@ public  class BeveragesController : Controller
         var beverages = await _beverageService.GetAllBeverages();
         return Ok(beverages);
     }
-    
+
     /// <summary>
     /// Gets a specific Beverage
     /// </summary>
@@ -67,7 +67,7 @@ public  class BeveragesController : Controller
         var beverageCreated = await _beverageService.Create(beverage);
         return CreatedAtRoute("GetById", new { id = beverageCreated.BeverageId }, value: beverageCreated);
     }
-    
+
     /// <summary>
     /// Updates a Beverage
     /// </summary>
@@ -105,7 +105,7 @@ public  class BeveragesController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         await _beverageService.Delete(id);
-        return NoContent(); 
+        return NoContent();
     }
-    
+
 }
