@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
@@ -11,6 +12,25 @@ public static class ApplicationDbContextSeed
         {
             await SeedBeveragesAsync(context);
         }
+        if (!context.Users.Any())
+        {
+            await SeedBartenderUser(context);
+        }
+    }
+
+    public static async Task SeedBartenderUser(ApplicationDbContext context)
+    {
+        var user = new User
+        {
+            Username = "bartender",
+            Password = "bartender123",
+        };
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, 12);
+
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+
     }
 
     private static async Task SeedBeveragesAsync(ApplicationDbContext context)

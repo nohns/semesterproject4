@@ -8,12 +8,16 @@ using Microsoft.AspNetCore.Identity;
 
 using BeveragePaymentApi.Domain;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using BeveragePaymentApi.Auth;
+using System.Net;
+using Microsoft.AspNetCore.Antiforgery;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpClient();
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApiVersioning(options =>
@@ -46,6 +50,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 
 builder.Services.AddScoped<IBeverageService, BeverageService>();
 builder.Services.AddScoped<IBeverageRepository, BeverageRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -53,6 +60,25 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/v1/auth/login";
     options.AccessDeniedPath = "/v1/auth/accessdenied";
 });
+/*
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-XSRF-TOKEN";
+    options.Cookie = new CookieBuilder()
+    {
+        Name = "XSRF"
+    };
+});*/
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.Secure = CookieSecurePolicy.Always;
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 
 
@@ -70,17 +96,26 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        //ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
+        ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
-
 app.UseHttpsRedirection();
+app.UseCookiePolicy();
+app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),
+    System.Text.Encoding.ASCII.GetBytes(Constants.JwtTokenKey));
+
+
+//Skal måske fjernes
+//app.UseAntiforgeryCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>());
+//app.UseAntiforgery();
 
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 
 app.MapControllers();
 
 app.Run();
+
