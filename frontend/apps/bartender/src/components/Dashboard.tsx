@@ -29,75 +29,11 @@ import {
   CardTitle,
 } from "../../../../packages/ui/src/components/ui/card";
 import { Button } from "../../../../packages/ui/src/components/ui/button";
+import { useGetBeverages } from "@repo/api";
+import AddBeverage from "./AddBeverage";
 
 function Dashboard() {
-  //const { data, isLoading, isError } = useGetBeverages();
-
-  const mock = [
-    {
-      beverageId: "1",
-      name: "Øl",
-      status: "Active",
-      price: 30,
-      description: "A refreshing drink",
-      totalSales: 30,
-      imageSrc: "/images/bajselademad.jpg",
-    },
-    {
-      beverageId: "2",
-      name: "Snaps",
-      status: "Inactive",
-      price: 50,
-      description: "A really refreshing drink",
-      totalSales: 0,
-      imageSrc: "/images/snaps.jpg",
-    },
-    {
-      beverageId: "3",
-      name: "Vand",
-      status: "Active",
-      price: 20,
-      description: "An incredibly refreshing drink",
-      totalSales: 50,
-      imageSrc: "/images/vand.jpg",
-    },
-    {
-      beverageId: "4",
-      name: "Spejlæg",
-      status: "Active",
-      price: 75,
-      description: "Kande med spejlæg",
-      totalSales: 20,
-      imageSrc: "/images/spejlegg.webp",
-    },
-    {
-      beverageId: "5",
-      name: "Jägerbomb",
-      status: "Active",
-      price: 25,
-      description: "Woooooooooo",
-      totalSales: 100,
-      imageSrc: "/images/jagerbomb.jpg",
-    },
-    {
-      beverageId: "6",
-      name: "Fadøl",
-      status: "Active",
-      price: 25,
-      description: "Stor øl",
-      totalSales: 1,
-      imageSrc: "/images/fadbams.webp",
-    },
-    {
-      beverageId: "7",
-      name: "Minttu",
-      status: "Active",
-      price: 100,
-      description: "Shooots",
-      totalSales: 77,
-      imageSrc: "/images/minttu.jpg",
-    },
-  ];
+  const { data, isLoading, error } = useGetBeverages();
 
   return (
     <Card>
@@ -105,9 +41,9 @@ function Dashboard() {
         <div className="flex flex-col w-full gap-y-2">
           <CardTitle className="">Produkter</CardTitle>
           <CardDescription className="">
-            Administrér dine produkter and se deres salg.
+            Administrér dine produkter og se deres salg.
           </CardDescription>
-          <Button className="">Tilføj produkter</Button>
+          <AddBeverage/>
         </div>
       </CardHeader>
       <CardContent>
@@ -129,51 +65,56 @@ function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mock.map((beverage) => (
-              <TableRow key={beverage.beverageId}>
-                <TableCell className="hidden sm:table-cell">
-                  <img
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src={beverage.imageSrc}
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{beverage.name}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{beverage.status}</Badge>
-                </TableCell>
-                <TableCell>{beverage.price} dkk</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {beverage.totalSales}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Handlinger</DropdownMenuLabel>
-                      <DropdownMenuItem>Redigér</DropdownMenuItem>
-                      <DropdownMenuItem>Slet</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {data &&
+              data.data.beverages.map((beverage) => (
+                <TableRow key={beverage.beverageId}>
+                  <TableCell className="hidden sm:table-cell">
+                    <img
+                      alt="Product image"
+                      className="aspect-square rounded-md object-cover"
+                      height="64"
+                      src={beverage.imageSrc}
+                      width="64"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{beverage.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{beverage.status}</Badge>
+                  </TableCell>
+                  <TableCell>{beverage.price} dkk</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {beverage.totalSales}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Handlinger</DropdownMenuLabel>
+                        <DropdownMenuItem>Redigér</DropdownMenuItem>
+                        <DropdownMenuItem>Slet</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>
-      <CardFooter>
+      {/*       <CardFooter>
         <div className="text-xs text-muted-foreground">
           Viser <strong>{mock.length}</strong> af <strong>{mock.length}</strong>{" "}
           produkter
         </div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }
