@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { client } from "../axios/axios";
+import { Beverage } from "../types/beverage";
 
 //Put ID in the path
 export interface PutBeverageRequest {
