@@ -53,8 +53,9 @@ func BootstrapMocked() (*app, error) {
 
 	// Configure pricing engine, and track beverages
 	eng := engine.New(engine.Config{
-		FirstUpdateMode: engine.FirstUpdateModeFollow,
-		UpdateInterval:  10 * time.Second,
+		FirstUpdateMode:  engine.FirstUpdateModeFollow,
+		UpdateInterval:   10 * time.Second,
+		NoisePerThousand: 25,
 	})
 	bevs, err := a.bevRepo.FindBeverages(context.TODO())
 	if err != nil {
@@ -112,14 +113,14 @@ func (a *app) Run(ctx context.Context) error {
 // Temporary method to simulate random demand
 func (a *app) tempSimulateDemand(bev pe.Beverage) {
 	for {
-		minsec := 20 + rand.Intn(20)
-		maxsec := minsec + rand.Intn(60-minsec)
+		minsec := 15 + rand.Intn(20)
+		maxsec := minsec + rand.Intn(50-minsec)
 
 		// Sleep for random time to simulate martin buying all the drinks🤯
 		sleeptime := minsec + rand.Intn(maxsec-minsec+1)
 		time.Sleep(time.Duration(sleeptime) * time.Second)
 
-		qty := 1 + rand.Intn(2)
+		qty := 1 + rand.Intn(4)
 		a.logger.Debug("Buying item", slog.String("itemID", bev.ID), slog.Int("qty", qty))
 		if err := a.priceEngine.OrderItem(bev.ID, qty); err != nil {
 			a.logger.Error("Failed to simulate ordering", slog.String("itemID", bev.ID), slog.String("error", err.Error()))

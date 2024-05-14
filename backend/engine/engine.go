@@ -68,11 +68,18 @@ type Config struct {
 
 	// UpdateInterval is the interval between price updates.
 	UpdateInterval time.Duration
+
+	// NoisePerThousand is the multiplier (divided by 1000) which the price
+	// updates can sway away from the mathematically calculated price. It is also
+	// applied to the new price when ordering an item. E.g a NoisePerThousand of
+	// 25 (default) means swaying +/-2,5%.
+	NoisePerThousand int
 }
 
 var DefaultConfig = Config{
 	FirstUpdateRandomMaxDelay: 10 * time.Second,
 	UpdateInterval:            30 * time.Second,
+	NoisePerThousand:          25,
 }
 
 // New instantiates a pricing engine, which can track items over time.
