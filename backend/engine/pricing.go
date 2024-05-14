@@ -1,7 +1,9 @@
 package engine
 
 import (
+	"fmt"
 	"math"
+	"math/rand"
 	"time"
 )
 
@@ -26,8 +28,13 @@ func (i *item) reset() {
 }
 
 func (i *item) order(qty int) {
-	mult := i.params.BuyMultiplier * float64(qty)
-	i.initprice = i.price() * mult
+	mult := math.Pow(i.params.BuyMultiplier, float64(qty))
+	// Random noise for price change
+	noise := float64(rand.Intn(25)) - 12.5
+	noise = 1 + float64(noise)/1000
+
+	fmt.Printf("price before: %.2f, price now: %.2f, (noise = %.3f, mult = %.3f)\n", i.price(), i.price()*mult, noise, mult)
+	i.initprice = i.price() * mult * noise
 	i.reset()
 }
 
