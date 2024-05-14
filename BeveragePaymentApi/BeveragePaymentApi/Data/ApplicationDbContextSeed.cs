@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
@@ -11,33 +12,134 @@ public static class ApplicationDbContextSeed
         {
             await SeedBeveragesAsync(context);
         }
+        if (!context.Users.Any())
+        {
+            await SeedBartenderUser(context);
+        }
+    }
+
+    public static async Task SeedBartenderUser(ApplicationDbContext context)
+    {
+        var user = new User
+        {
+            Username = "bartender",
+            Password = "bartender123",
+        };
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, 12);
+
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+
     }
 
     private static async Task SeedBeveragesAsync(ApplicationDbContext context)
     {
         var beverages = new[]
         {
-            new Beverage
+        new Beverage
+        {
+            Name = "Blå vand",
+            Description = "En flaske blå vand",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 10,
+            MaxPrice = 15,
+            MinPrice = 5,
+            IsActive = true,
+            TotalSales = 20,
+            Prices = new List<Price>
             {
-                Name = "Blå vand",
-                Description = "En flaske blå vand",
-                ImageSrc = "https://via.placeholder.com/150",
-                BasePrice = 10,
-                MaxPrice = 15,
-                MinPrice = 5
-            },
-            new Beverage
+                new Price
+                {
+                    Amount = 10,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+        new Beverage
+        {
+            Name = "Rød vand",
+            Description = "En flaske rød vand",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 10,
+            MaxPrice = 15,
+            MinPrice = 5,
+            IsActive = true,
+            TotalSales = 15,
+            Prices = new List<Price>
             {
-                Name = "Rød vand",
-                Description = "En flaske rød vand",
-                ImageSrc = "https://via.placeholder.com/150",
-                BasePrice = 10,
-                MaxPrice = 15,
-                MinPrice = 5
-            },
-        };
+                new Price
+                {
+                    Amount = 10,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+        
+        new Beverage
+        {
+            Name = "Grøn vand",
+            Description = "Refreshing green water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 12,
+            MaxPrice = 18,
+            MinPrice = 6,
+            IsActive = true,
+            TotalSales = 25,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 12,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+        new Beverage
+        {
+            Name = "Gul vand",
+            Description = "Invigorating yellow water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 8,
+            MaxPrice = 12,
+            MinPrice = 4,
+            IsActive = false,
+            TotalSales = 5,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 8,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+        new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        }
+    };
 
-        await context.Beverages.AddRangeAsync(beverages);
-        await context.SaveChangesAsync();
+        if (!context.Beverages.Any())
+        {
+            await context.Beverages.AddRangeAsync(beverages);
+            await context.SaveChangesAsync();
+        }
     }
+
 }

@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
@@ -8,10 +9,12 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : base(options)
     {
-        
+
     }
 
     public DbSet<Beverage> Beverages => Set<Beverage>();
+    public DbSet<Price> Prices => Set<Price>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,7 +22,17 @@ public class ApplicationDbContext : DbContext
             .Property(b => b.BeverageId)
             .ValueGeneratedOnAdd();
 
+        modelBuilder.Entity<User>()
+            .Property(u => u.UserId)
+            .ValueGeneratedOnAdd();
+
+
+        modelBuilder.Entity<Price>()
+        .HasOne(p => p.Beverage)
+        .WithMany(b => b.Prices)
+        .HasForeignKey(p => p.BeverageId);
+
         base.OnModelCreating(modelBuilder);
-        
+
     }
 }

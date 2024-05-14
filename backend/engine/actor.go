@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -35,7 +36,7 @@ func newActor(id string, conf actorConfig) *actor {
 	return &actor{
 		id:     id,
 		itm:    newItem(conf.params),
-		orders: make(chan int),
+		orders: make(chan int, 1),
 		params: make(chan ItemParams),
 		term:   make(chan struct{}),
 		out:    conf.out,
@@ -65,13 +66,13 @@ func (a *actor) terminate() {
 // Start intiates the pricing algorithm
 func (a *actor) start() {
 	a.starter.Do(func() {
-        switch a.econf.FirstUpdateMode {
-        case FirstUpdateModeFollow:
-            a.waitForNextTick()
-        case FirstUpdateModeRandom:
-            a.waitForRandomDelay()
-        }
-        a.t = time.NewTicker(a.econf.UpdateInterval)
+		switch a.econf.FirstUpdateMode {
+		case FirstUpdateModeFollow:
+			a.waitForNextTick()
+		case FirstUpdateModeRandom:
+			a.waitForRandomDelay()
+		}
+		a.t = time.NewTicker(a.econf.UpdateInterval)
 
 		go a.listen()
 		a.orders <- 0 // 0 means initial order, see listen function
@@ -81,9 +82,10 @@ func (a *actor) start() {
 // waitForNextTick sleeps until the next possible tick is hit, taking into
 // account the last update for item. See FirstUpdateModeFollow value.
 func (a *actor) waitForNextTick() {
-    durfromlast := time.Now().Sub(a.itm.params.LastUpdate) % a.econf.UpdateInterval
-    durtonext := a.econf.UpdateInterval - durfromlast
-    time.Sleep(durtonext)
+	durfromlast := time.Now().Sub(a.itm.params.LastUpdate) % a.econf.UpdateInterval
+	durtonext := a.econf.UpdateInterval - durfromlast
+	fmt.Printf("item id %s (latest updated %v) will start producing at %v\n", a.id, a.itm.params.LastUpdate, time.Now().Add(durtonext))
+	time.Sleep(durtonext)
 }
 
 // waitForRandomDelay sleeps for a random delay between 0 and FirstUpdateRandomMaxDelay, to make price updates
@@ -100,14 +102,14 @@ func (a *actor) listen() {
 		select {
 		case qty := <-a.orders:
 			a.handleOrderPlaced(qty)
-            // Initial order needs to produce a price update
+			// Initial order needs to produce a price update
 			if qty == 0 {
 				a.emitUpdate()
 			}
 		case params := <-a.params:
 			a.handleParamsUpdated(params)
-        case <-a.t.C:
-            a.emitUpdate()
+		case <-a.t.C:
+			a.emitUpdate()
 		case <-a.term:
 			a.terminated = true
 		}

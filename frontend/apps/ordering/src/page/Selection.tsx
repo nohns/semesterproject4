@@ -8,8 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { Beverage, History, HistoryEntry } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useWebSocket } from "@/routes";
+import { usePriceHistory } from "@repo/api";
 
 /* interface SelectionProps {
   histories: History[];
@@ -18,8 +19,11 @@ import { useWebSocket } from "@/routes";
 
 function Selection(/* { histories, isConnected }: SelectionProps */) {
   const navigate = useNavigate();
+  const { history: histories, startListening, connected } = usePriceHistory();
 
-  const { isConnected, histories } = useWebSocket();
+  useEffect(() => {
+    startListening();
+  }, [startListening]);
 
   /*   const handleBeverageClick = (
     beverage: Beverage,
@@ -33,11 +37,11 @@ function Selection(/* { histories, isConnected }: SelectionProps */) {
       console.log("beverage", beverage);
       navigate("/selected", { state: { beverage, priceHistory } });
     },
-    [navigate]
+    [navigate],
   );
 
   console.log("histories", histories);
-  console.log("isConnected", isConnected);
+  console.log("isConnected", connected);
   return (
     <>
       <MobileContainer>

@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/nohns/semesterproject4/app"
-
 )
 
 func main() {
@@ -18,4 +17,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to run app: %v", err)
 	}
+
 }

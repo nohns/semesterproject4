@@ -12,13 +12,16 @@ export interface GetBeverageResponse {
 }
 
 const getBeverages = async () => {
-  return await client.get<GetBeverageResponse>("/beverages");
+  const response = await client.get<GetBeverageResponse>("/beverages");
+  console.log(response.data);
+  return response;
 };
 
 export const useGetBeverages = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["beverages"],
     queryFn: () => getBeverages(),
+    select: (data) => data.data, 
   });
 
   return { data, isLoading, error };
