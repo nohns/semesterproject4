@@ -1,0 +1,28 @@
+﻿services:
+  bevpayapi:
+    image: bevpayapi
+    build:
+      context: .
+      dockerfile: BeveragePaymentApi/Dockerfile
+    container_name: bevpayapi
+    ports:
+      - 5051:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  
+      
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: SuperSecretPassword123
+      MYSQL_DATABASE: FooBarDb
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: mysqladmin ping -h mysql -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 1s
+      timeout: 3s
+      retries: 30
