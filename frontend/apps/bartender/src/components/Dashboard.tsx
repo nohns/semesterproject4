@@ -1,6 +1,6 @@
 /** @format */
 
-//import Image from "next/image";
+import { useState } from "react";
 import { useGetBeverages } from "@repo/api";
 import { MoreHorizontal } from "Lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -27,9 +27,26 @@ import {
   CardTitle,
 } from "@repo/ui";
 import { Button } from "@repo/ui";
+import EditBeverageModal from "./EditBeverageModal";
+import AddBeverage from "./AddBeverage";
+import { Beverage } from "../../../../packages/api/src/types/beverage";
 
 function Dashboard() {
   const { data: beverages, isLoading, error } = useGetBeverages();
+  const [selectedBeverage, setSelectedBeverage] = useState<Beverage | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEditClick = (beverage: Beverage) => {
+    setSelectedBeverage(beverage);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBeverage(null);
+  };
 
   if (isLoading) {
     return (
@@ -53,9 +70,9 @@ function Dashboard() {
         <div className="flex flex-col w-full gap-y-2">
           <CardTitle>Produkter</CardTitle>
           <CardDescription>
-            Administrér dine produkter and se deres salg.
+            Administrér dine produkter og se deres salg.
           </CardDescription>
-          <Button>Tilføj produkter</Button>
+          <AddBeverage />
         </div>
       </CardHeader>
       <CardContent>
@@ -77,52 +94,68 @@ function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {beverages && beverages.map((beverage) => (
-              <TableRow key={beverage.beverageId}>
-                <TableCell className="hidden sm:table-cell">
-                  <img
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src={beverage.imageSrc}
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{beverage.name}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">
-                    {beverage.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </TableCell>
-                <TableCell>{beverage.basePrice} dkk</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {beverage.totalSales}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Redigér</DropdownMenuItem>
-                      <DropdownMenuItem>Slet</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {beverages &&
+              beverages.map((beverage) => (
+                <TableRow key={beverage.beverageId}>
+                  <TableCell className="hidden sm:table-cell">
+                    <img
+                      alt="Product image"
+                      className="aspect-square rounded-md object-cover"
+                      height="64"
+                      src={beverage.imageSrc}
+                      width="64"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{beverage.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {beverage.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{beverage.basePrice} dkk</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {beverage.totalSales}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => handleEditClick(beverage)}
+                        >
+                          Redigér
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Slet</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>
       <CardFooter>
         <div className="text-xs text-muted-foreground">
-          Viser <strong>{beverages.length}</strong> af{" "}
-          <strong>{beverages.length}</strong> produkter
+          Viser <strong>{beverages?.length}</strong> af{" "}
+          <strong>{beverages?.length}</strong> produkter
         </div>
       </CardFooter>
+      {selectedBeverage && (
+        <EditBeverageModal
+          beverage={selectedBeverage}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </Card>
   );
 }

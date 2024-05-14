@@ -1,9 +1,14 @@
 ﻿#services:
-#  bevpay.web:
-#    image: bevpay.web
+#  bevpayapi:
+#    image: bevpayapi
 #    build:
 #      context: .
-#      dockerfile: BevPay.Web/Dockerfile
+#      dockerfile: BeveragePaymentApi/Dockerfile
+#    container_name: bevpayapi
+#    ports:
+#      5051:80
+#    depends_on:
+#      - mysql
 
 services:
   mysql:

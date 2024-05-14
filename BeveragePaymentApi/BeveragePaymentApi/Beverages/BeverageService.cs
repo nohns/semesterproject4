@@ -20,9 +20,9 @@ public class BeverageService : IBeverageService
     public async Task<Beverage?> GetById(int id)
     {
         var beverage = await _beverageRepository.GetById(id);
-        
+
         if (beverage == null) throw new NotFoundException("Beverage was not found.");
-        
+
         return beverage;
     }
 
@@ -35,7 +35,7 @@ public class BeverageService : IBeverageService
     {
         //Check if beverage exist
         await _beverageRepository.GetById(beverage.BeverageId);
-        
+
         return await _beverageRepository.Update(beverage);
     }
 
@@ -43,8 +43,22 @@ public class BeverageService : IBeverageService
     {
         //Check if beverage exist
         await _beverageRepository.GetById(id);
-        
+
         await _beverageRepository.Delete(id);
+    }
+
+    public async Task<float> GetLatestPrice(int id)
+    {
+        var beverage = await _beverageRepository.GetById(id);
+
+        if (beverage == null) throw new NotFoundException("Beverage was not found.");
+
+        var latestPrice = beverage.Prices.OrderByDescending(p => p.Timestamp).FirstOrDefault();
+
+        if (latestPrice == null) throw new NotFoundException("Price was not found.");
+
+        return latestPrice.Amount;
+
     }
 }
 
@@ -55,4 +69,6 @@ public interface IBeverageService
     public Task<Beverage> Create(Beverage beverage);
     public Task<Beverage> Update(Beverage beverage);
     public Task Delete(int id);
+
+    public Task<float> GetLatestPrice(int id);
 }
