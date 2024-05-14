@@ -154,8 +154,9 @@ public class BeveragesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClaimBeveragePrice(int id)
     {
-        var beverage = await _beverageService.GetById(id);
+        var beverage = await _beverageService.GetLatestPrice(id);
         if (beverage == null) return NotFound("Beverage not found");
+
 
         return Ok();
     }
