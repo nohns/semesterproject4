@@ -52,7 +52,7 @@ export default function SlidingBeverageItemCardLigmaNamingIsHard({
         </div>
       </p>
 
-      <div className="flex flex-col col-start-1 col-end-4 gap-2 pl-2 pr-2 pt-2 row-start-2 row-end-4 relative">
+      <div className="flex flex-col col-start-1 col-end-4 gap-2 p-2 row-start-2 row-end-4 relative">
         <Chart prices={displayedBeveragePrices} minimal />
       </div>
     </Card>

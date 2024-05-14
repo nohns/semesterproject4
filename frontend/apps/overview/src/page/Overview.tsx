@@ -5,6 +5,7 @@ import { History, HistoryEntry } from "@repo/api";
 import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
 import { ArrowBottomRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { cn } from "../../../../packages/ui/src/lib/utils";
+import { useEffect, useRef } from "react";
 
 type OverviewProps = {
   histories: History[];
@@ -36,14 +37,6 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
           <h2 className="text-5xl font-semibold">
             {displayedBeverage.beverage.name}
           </h2>
-          {/*<span className="text-muted-foreground font-semibold uppercase text-xs">
-                prisudvikling seneste{" "}
-                {firstPrice && lastPrice
-                  ? formatDistanceStrict(firstPrice.date, lastPrice.date, {
-                      locale: da,
-                    })
-                  : "tid"}
-              </span>*/}
         </div>
 
         <div
@@ -68,7 +61,7 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
 
       <div className="flex flex-grow px-8" style={{ height: "60%" }}>
         <Chart
-          key={displayedBeveragePrices.at(-1)!.date.getTime()}
+          key={displayedBeverage.beverage.beverageId}
           prices={displayedBeveragePrices}
         />
       </div>

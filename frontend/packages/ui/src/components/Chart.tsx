@@ -59,8 +59,6 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
 
   const pricesToRender = prices;
 
-  console.log("prices to render", pricesToRender.length);
-
   const isRising =
     pricesToRender[0].price < pricesToRender[pricesToRender.length - 1].price;
 
@@ -71,8 +69,6 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
     .scaleTime()
     .domain([startMinute, endMinute])
     .range([margin.left, width - margin.right]);
-
-  console.log([margin.left, width - margin.right]);
 
   const minMaxPrices = d3.extent(pricesToRender.map((p) => p.price));
   if (minMaxPrices[0] === undefined || minMaxPrices[1] === undefined) {
@@ -120,7 +116,6 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
 
     const yOffset = isLocalBottom ? -32 : 12;
 
-    //console.log({ p, prev, next });
     return (
       <motion.g
         initial={{ opacity: 0 }}
