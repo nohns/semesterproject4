@@ -9,7 +9,7 @@ import { FooBar } from "@repo/ui";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginTab() {
-  const { mutate } = useLogin();
+  const login = useLogin();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export default function LoginTab() {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (username === "admin" && password === "adminpassword") {
-      mutate({ username, password });
+      login.mutate({ username, password });
       navigate("/admin");
     } else {
       setError("Incorrect Username or Password");

@@ -28,6 +28,7 @@ import {
 } from "@repo/ui";
 import { Button } from "@repo/ui";
 import EditBeverageModal from "./EditBeverageModal";
+import AddBeverage from "./AddBeverage";
 import { Beverage } from "../../../../packages/api/src/types/beverage";
 
 function Dashboard() {
@@ -71,7 +72,7 @@ function Dashboard() {
           <CardDescription>
             Administrér dine produkter og se deres salg.
           </CardDescription>
-          <Button>Tilføj produkter</Button>
+          <AddBeverage />
         </div>
       </CardHeader>
       <CardContent>
