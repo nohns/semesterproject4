@@ -4,81 +4,142 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
+
+	"golang.org/x/net/context"
 )
 
-type server struct {
-	Addr   string
-	Logger *slog.Logger
+type triggerHandler interface {
+	BevUpdated(ctx context.Context, bevID string) error
+	BevOrdered(ctx context.Context, bevID string, qty int) error
+	BevAdded(ctx context.Context, bevID string) error
+	BevRemoved(ctx context.Context, bevID string) error
 }
 
-func New(addr string, logger *slog.Logger) *server {
+type server struct {
+	addr   string
+	logger *slog.Logger
+	th     triggerHandler
+}
+
+func New(addr string, logger *slog.Logger, th triggerHandler) *server {
 	return &server{
-		Addr:   addr,
-		Logger: logger,
+		addr:   addr,
+		logger: logger,
+		th:     th,
 	}
 }
 
-func (this *server) ListenAndServe() error {
-
+func (s *server) ListenAndServe() error {
 	router := http.NewServeMux()
 
 	// Initialize server
-	s := &http.Server{
-		Addr:         this.Addr,
+	httpsrv := &http.Server{
+		Addr:         s.addr,
 		Handler:      router,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  15 * time.Second,
 	}
+	type idBody struct {
+		ID int `json:"beverageId"`
+	}
 
 	// Initialize routes
-	router.HandleFunc("/beverageUpdated", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("POST /beverageUpdated", func(w http.ResponseWriter, r *http.Request) {
 		// Handle update
-		this.Logger.Info("Received update request")
+		s.logger.Info("Received update request")
 
-		var request struct {
-			ID string `json:"beverageId"`
-		}
-
-		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			this.Logger.Error("Failed to decode request", slog.String("error", err.Error()))
+		var body idBody
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			s.logger.Error("Failed to decode request", slog.String("error", err.Error()))
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
-		// Update beverage
+		if body.ID == 0 {
+			s.logger.Error("Invalid beverage id given in bev updated trigger")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if err := s.th.BevUpdated(r.Context(), strconv.Itoa(body.ID)); err != nil {
+			s.logger.Error("Failed to handle bev updated", slog.String("error", err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	})
 
-	router.HandleFunc("/beveragePurchased", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("POST /beveragePurchased", func(w http.ResponseWriter, r *http.Request) {
 		// Handle purchase
-		this.Logger.Info("Received purchase request")
+		s.logger.Info("Received purchase request")
 
-		var request struct {
-			ID string `json:"beverageId"`
+		var body struct {
+			ID  int `json:"beverageId"`
+			Qty int `json:"qty"`
 		}
-
-		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			this.Logger.Error("Failed to decode request", slog.String("error", err.Error()))
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			s.logger.Error("Failed to decode request", slog.String("error", err.Error()))
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
+		if body.ID == 0 {
+			s.logger.Error("Invalid beverage id given in bev added trigger")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if err := s.th.BevOrdered(r.Context(), strconv.Itoa(body.ID), body.Qty); err != nil {
+			s.logger.Error("Failed to handle bev ordered", slog.String("error", err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	})
 
-	router.HandleFunc("/beverageAdded", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("POST /beverageAdded", func(w http.ResponseWriter, r *http.Request) {
 		// Handle add
-		this.Logger.Info("Received add request")
+		s.logger.Info("Received add request")
 
+		var body idBody
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			s.logger.Error("Failed to decode request", slog.String("error", err.Error()))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if body.ID == 0 {
+			s.logger.Error("Invalid beverage id given in bev added trigger")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if err := s.th.BevAdded(r.Context(), strconv.Itoa(body.ID)); err != nil {
+			s.logger.Error("Failed to handle bev added", slog.String("error", err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	})
 
-	router.HandleFunc("/beverageRemoved", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("POST /beverageRemoved", func(w http.ResponseWriter, r *http.Request) {
 		// Handle remove
-		this.Logger.Info("Received remove request")
+		s.logger.Info("Received remove request")
+
+		var body idBody
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			s.logger.Error("Failed to decode request", slog.String("error", err.Error()))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if body.ID == 0 {
+			s.logger.Error("Invalid beverage id given in bev removed trigger")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if err := s.th.BevRemoved(r.Context(), strconv.Itoa(body.ID)); err != nil {
+			s.logger.Error("Failed to handle bev removed", slog.String("error", err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	})
 
-	if err := s.ListenAndServe(); err != nil {
-		this.Logger.Error("Failed to start server,", slog.String("error", err.Error()))
+	if err := httpsrv.ListenAndServe(); err != nil {
+		s.logger.Error("Failed to start server,", slog.String("error", err.Error()))
 	}
 
 	return nil
