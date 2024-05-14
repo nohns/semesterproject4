@@ -9,8 +9,7 @@ import { ReactQueryClientProvider } from "@repo/api";
 import "@repo/ui/styles";
 import "./index.css"; // Import your own css
 
-import Test from "./page/test";
-import Overview from "./page/Overview";
+import App from "./App";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -22,8 +21,7 @@ root.render(
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <TooltipProvider delayDuration={100}>
         <ReactQueryClientProvider>
-          {/* <Test /> */}
-          <Overview />
+          <App />
         </ReactQueryClientProvider>
       </TooltipProvider>
     </ThemeProvider>
