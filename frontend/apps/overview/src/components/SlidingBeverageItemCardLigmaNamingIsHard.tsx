@@ -1,6 +1,8 @@
 import { Card, CardTitle, CardDescription, Chart } from "@repo/ui";
 import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
 import { History } from "@repo/api";
+import { cn } from "../../../../packages/ui/src/lib/utils";
+import { ArrowBottomRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 
 interface BeverageCardProps {
   history: History;
@@ -18,15 +20,41 @@ export default function SlidingBeverageItemCardLigmaNamingIsHard({
       };
     });
 
+  const firstPrice = displayedBeveragePrices.at(0);
+  const lastPrice = displayedBeveragePrices.at(-1);
+  const isRising = firstPrice!.price < lastPrice!.price;
+  const percentage =
+    ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
+
   return (
-    <Card className="grid grid-cols-3 items-center max-w-2xl h-20">
-      <CardTitle className="pl-4">{history.beverage.name}</CardTitle>
-      <div className="flex justify-center">
+    <Card className="grid grid-cols-3 grid-rows-3 max-w-2xl h-32 p-2 w-52">
+      <p className="col-start-1 col-span-3 row-start-1 row-span-1 flex justify-between ">
+        <span className="text-xl font-semibold">{history.beverage.name}</span>
+        <div className="flex flex-col items-end">
+          <span
+            className={cn("font-semibold", {
+              "text-green-500": isRising,
+              "text-red-500": !isRising,
+            })}
+          >
+            {lastPrice && lastPrice.price.toFixed(2) + " DKK"}
+          </span>
+          <span
+            className={cn("font-normal flex items-center", {
+              "text-green-500": isRising,
+              "text-red-500": !isRising,
+            })}
+          >
+            {isRising && <ArrowTopRightIcon className="w-5 h-5" />}
+            {!isRising && <ArrowBottomRightIcon className="w-5 h-5" />}
+            {percentage.toFixed(2).replace("-", "")} %
+          </span>
+        </div>
+      </p>
+
+      <div className="flex flex-col col-start-1 col-end-4 gap-2 pl-2 pr-2 pt-2 row-start-2 row-end-4 relative">
         <Chart prices={displayedBeveragePrices} minimal />
       </div>
-      <CardDescription className="pr-4 text-right">
-        Price: {displayedBeveragePrices.at(0)?.price} kr
-      </CardDescription>
     </Card>
   );
 }

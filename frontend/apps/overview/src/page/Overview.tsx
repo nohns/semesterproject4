@@ -28,10 +28,10 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex flex-none justify-center" style={{ height: "20%" }}>
+      <div className="flex flex-none justify-center" style={{ height: "15%" }}>
         <FooBar />
       </div>
-      <header className="flex flex-col gap-2">
+      <header className="flex flex-col gap-2 px-8">
         <div>
           <h2 className="text-5xl font-semibold">
             {displayedBeverage.beverage.name}
@@ -65,8 +65,12 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
           </p>
         </div>
       </header>
-      <div className="flex flex-grow" style={{ height: "60%" }}>
-        <Chart prices={displayedBeveragePrices} />
+
+      <div className="flex flex-grow px-8" style={{ height: "60%" }}>
+        <Chart
+          key={displayedBeveragePrices.at(-1)!.date.getTime()}
+          prices={displayedBeveragePrices}
+        />
       </div>
       <div className="flex flex-none" style={{ height: "20%" }}>
         <Marquee speed={50} pauseOnHover={true}>

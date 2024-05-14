@@ -10,24 +10,24 @@ function App(/* { histories, isConnected }: SelectionProps */) {
 
   useEffect(() => {
     startListening();
-    if (histories.length > 0) {
-      setDisplayedBeverage(histories[0]);
-    }
   }, [startListening]);
 
-  if (!connected) {
-    return <div>Connecting...</div>;
+  if (!connected) return <div>Connecting...</div>;
+
+  if (histories.length === 0) {
+    return <div>Loading...</div>;
+  }
+  if (displayedBeverage === null) {
+    setDisplayedBeverage(histories[0]);
+    return <div>Loading...</div>;
   }
 
-  while (histories.length == 0) {
-    return <div>Getting beverages</div>;
-  }
-  if (!displayedBeverage) {
-    return <div>No beverages</div>;
-  }
+  console.log("histories", histories);
+  console.log("isConnected", connected);
+  console.log("displayedBeverage", displayedBeverage);
 
   return (
-    <Overview histories={histories} displayedBeverage={displayedBeverage} />
+    <Overview histories={histories} displayedBeverage={displayedBeverage!} />
   );
 }
 
