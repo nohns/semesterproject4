@@ -58,16 +58,6 @@ public class BeveragesController : Controller
     /// </summary>
     /// <param name="beverage"></param>
     /// <returns>A newly created Beverage</returns>
-    /// <remarks>
-    /// Sample request:
-    /// 
-    ///     {   
-    ///         "name": "Blå vand",
-    ///         "upperBoundary": 15,
-    ///         "lowerBoundary": 25,
-    ///         "baseValue": 20
-    ///     }
-    /// </remarks>
     [HttpPost]
     [ProducesResponseType<Beverage>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
