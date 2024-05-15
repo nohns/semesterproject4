@@ -8,36 +8,39 @@ namespace BeveragePaymentApi.Beverages;
 
 public class NotificationService
     {
-        private static readonly string GoServiceUrl = "http://price-engine/"; // Use service name 'engine'
+        private static readonly string GoServiceUrl = "http://engine:80"; // Use service name 'engine'
         private readonly IHttpClientFactory _httpClientFactory;
-
         public NotificationService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public Task SendOrderFulfilledNotificationAsync(Beverage beverage)
+        public Task SendBeverageOrderedNotificationAsync(Beverage beverage, int amount)
+        {
+            var data = new 
+            { 
+                beverageId = beverage.BeverageId,
+                qty = amount
+            };
+            return SendNotificationAsync("/beveragePurchased", data);
+        }
+
+        public Task SendBeverageCreatedNotificationAsync(Beverage beverage)
         {
             var data = new { beverageId = beverage.BeverageId };
-            return SendNotificationAsync("beveragePurchased", data);
+            return SendNotificationAsync("/beverageCreated", data);
         }
 
-        public Task SendBeverageCreatedNotificationAsync()
+        public Task SendBeverageUpdatedNotificationAsync(Beverage beverage)
         {
-            var data = new { message = "A new beverage has been created" };
-            return SendNotificationAsync("beverageCreated", data);
+            var data = new { beverageId = beverage.BeverageId };
+            return SendNotificationAsync("/beverageUpdated", data);
         }
 
-        public Task SendBeverageUpdatedNotificationAsync()
+        public Task SendBeverageDeletedNotificationAsync(Beverage beverage)
         {
-            var data = new { message = "A beverage has been updated" };
-            return SendNotificationAsync("beverageUpdated", data);
-        }
-
-        public Task SendBeverageDeletedNotificationAsync()
-        {
-            var data = new { message = "A beverage has been deleted" };
-            return SendNotificationAsync("beverageDeleted", data);
+            var data = new { beverageId = beverage.BeverageId};
+            return SendNotificationAsync("/beverageDeleted", data);
         }
 
         private async Task SendNotificationAsync(string endpoint, object data)
@@ -47,8 +50,12 @@ public class NotificationService
             string json = JsonSerializer.Serialize(data);
             using HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            using HttpResponseMessage response = await client.PostAsync($"{GoServiceUrl}{endpoint}", content);
-
+            using HttpResponseMessage response = await client.PostAsync(new Uri($"{GoServiceUrl}{endpoint}"), content);
+            
+            if(!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to send notification to '{GoServiceUrl + endpoint}'. Message received from service: {response.Content.ReadAsStringAsync().Result}");
+            }
             response.EnsureSuccessStatusCode();
         }
     }

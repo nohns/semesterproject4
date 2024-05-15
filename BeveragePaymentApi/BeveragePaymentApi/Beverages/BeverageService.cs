@@ -43,7 +43,7 @@ public class BeverageService : IBeverageService
     newBeverage.MaxPrice = dto.MaxPrice;
 
     var beverageResult = await _beverageRepository.Create(newBeverage);
-    await _notificationService.SendBeverageCreatedNotificationAsync();
+    await _notificationService.SendBeverageCreatedNotificationAsync(beverageResult);
     return beverageResult;
   }
 
@@ -62,7 +62,7 @@ public class BeverageService : IBeverageService
     existingBeverage.IsActive = dto.IsActive;
 
     var updatedBeverage = await _beverageRepository.Update(existingBeverage);
-    await _notificationService.SendBeverageUpdatedNotificationAsync();
+    await _notificationService.SendBeverageUpdatedNotificationAsync(updatedBeverage);
     return updatedBeverage;
   }
 
@@ -74,7 +74,7 @@ public class BeverageService : IBeverageService
     if (beverage == null) throw new NotFoundException("Beverage was not found.");
     await _beverageRepository.Delete(id);
 
-    await _notificationService.SendBeverageDeletedNotificationAsync();
+    await _notificationService.SendBeverageDeletedNotificationAsync(beverage);
   }
 
   public async Task<float> GetLatestPrice(int id)
