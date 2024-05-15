@@ -6,6 +6,7 @@ namespace BeveragePaymentApi.Beverages;
 public class BeverageService : IBeverageService
 {
     private readonly IBeverageRepository _beverageRepository;
+    private readonly NotificationService _notificationService;
 
     public BeverageService(IBeverageRepository beverageRepository)
     {
@@ -28,6 +29,7 @@ public class BeverageService : IBeverageService
 
     public async Task<Beverage> Create(Beverage beverage)
     {
+        await _notificationService.SendBeverageCreatedNotificationAsync();
         return await _beverageRepository.Create(beverage);
     }
 
@@ -39,6 +41,7 @@ public class BeverageService : IBeverageService
             throw new NotFoundException("Beverage was not found.");
         }
 
+        await _notificationService.SendBeverageUpdatedNotificationAsync();
         return await _beverageRepository.Update(beverage);
     }
 
@@ -49,6 +52,8 @@ public class BeverageService : IBeverageService
         await _beverageRepository.GetById(id);
 
         await _beverageRepository.Delete(id);
+
+        await _notificationService.SendBeverageDeletedNotificationAsync();
     }
 
     public async Task<float> GetLatestPrice(int id)
