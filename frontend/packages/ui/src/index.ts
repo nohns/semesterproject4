@@ -1,7 +1,6 @@
 /** @format */
 
 //Herinde skal I bare exportere alle jeres komponenter sådan her
-
 export * from "./components/FooBar";
 export * from "./components/Chart";
 export * from "./data/beveragesMock";
@@ -15,3 +14,4 @@ export * from "./components/BigScreenWrapper";
 export * from "./components/BeverageCard";
 export * from "./components/ui/card";
 export * from "./components/ui/button";
+export * from "./components/ui/alert";
