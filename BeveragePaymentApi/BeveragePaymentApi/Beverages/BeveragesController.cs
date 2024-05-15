@@ -155,6 +155,11 @@ public BeveragesController(IBeverageService beverageService, IImageApiService im
             Console.WriteLine($"ValidationException: {e.Message}");
             return BadRequest(e.Message);
         }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"HttpRequestException: {e.Message}");
+            return StatusCode(StatusCodes.Status502BadGateway, "Failed to notify the price-engine service.");
+        }
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");

@@ -1,12 +1,8 @@
-/** @format */
-
 import { useMutation } from "@tanstack/react-query";
 import { client } from "../axios/axios";
 import { Beverage } from "../types/beverage";
 
-// Put ID in the path
 export interface PutBeverageRequest {
-  // Beverage in the body
   beverage: Beverage;
 }
 
@@ -29,10 +25,15 @@ const putBeverage = async (data: PutBeverageRequest) => {
 
   console.log("Data being sent:", beverageDto);
 
-  return await client.put<PutBeverageResponse>(
-    `beverages/${beverage.beverageId}`,
-    beverageDto
-  );
+  try {
+    return await client.put<PutBeverageResponse>(
+      `beverages/${beverage.beverageId}`,
+      beverageDto
+    );
+  } catch (error) {
+    console.error("Error updating beverage:", error);
+    throw error;
+  }
 };
 
 export const usePutBeverage = () => {

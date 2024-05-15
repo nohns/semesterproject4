@@ -1,6 +1,7 @@
 using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Exceptions;
 using Dto;
+using Newtonsoft.Json;
 
 namespace BeveragePaymentApi.Beverages;
 
@@ -70,6 +71,9 @@ public class BeverageService : IBeverageService
           throw new ValidationException("Max price cannot be lower than base price.");
       }
 
+      // Print out the DTO
+      Console.WriteLine($"Received DTO: {JsonConvert.SerializeObject(dto)}");
+
       existingBeverage.Name = dto.Name;
       existingBeverage.Description = dto.Description;
       existingBeverage.ImageSrc = dto.ImageSrc;
@@ -79,11 +83,22 @@ public class BeverageService : IBeverageService
       existingBeverage.IsActive = dto.IsActive;
 
       var updatedBeverage = await _beverageRepository.Update(existingBeverage);
-      await _notificationService.SendBeverageUpdatedNotificationAsync();
+
+      try
+      {
+          await _notificationService.SendBeverageUpdatedNotificationAsync();
+      }
+      catch (HttpRequestException e)
+      {
+          Console.WriteLine($"Failed to notify the price-engine service: {e.Message}");
+          throw; // Re-throw to let controller handle it
+      }
 
       Console.WriteLine("Beverage updated successfully with ID: " + id);
       return updatedBeverage;
   }
+
+
 
 
     public async Task Delete(int id)
