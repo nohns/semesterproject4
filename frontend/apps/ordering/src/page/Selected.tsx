@@ -27,7 +27,7 @@ interface LocationState {
   priceHistory: HistoryEntry[] | undefined;
 }
 
-const COUNTDOWN_DURATION = 30;
+const COUNTDOWN_DURATION = 45;
 
 // Wait function returning promise
 function wait(ms: number) {
@@ -62,8 +62,10 @@ function Selected() {
     setLoadingOrder(3);
     await wait(2000);
     setLoadingOrder(4);
-    await wait(300);
+    await wait(0);
+    setLoadingOrder(5);
     setCurrentOrder((old) => old + 1);
+    await wait(300);
     setLoadingOrder(0);
   }, [setCurrentOrder]);
 
@@ -174,11 +176,12 @@ function Selected() {
 
               <div className="relative">
                 <AnimatePresence>
-                  {loadingOrder < 4 && (
+                  {loadingOrder < 5 && (
                     <motion.main
+                      key={currentOrder}
                       className="absolute w-full"
                       transition={{
-                        duration: 0.6,
+                        duration: 0.3,
                       }}
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
