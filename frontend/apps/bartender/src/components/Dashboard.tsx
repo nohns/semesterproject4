@@ -1,7 +1,7 @@
 /** @format */
 
 import { useState } from "react";
-import { useGetBeverages } from "@repo/api";
+import { useGetBeverages, useDeleteBeverage } from "@repo/api";
 import { MoreHorizontal } from "Lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -33,6 +33,7 @@ import { Beverage } from "../../../../packages/api/src/types/beverage";
 
 function Dashboard() {
   const { data: beverages, isLoading, error } = useGetBeverages();
+  const deleteMutation = useDeleteBeverage();
   const [selectedBeverage, setSelectedBeverage] = useState<Beverage | null>(
     null
   );
@@ -46,6 +47,10 @@ function Dashboard() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedBeverage(null);
+  };
+
+  const handleDeleteClick = (beverageId: string) => {
+    deleteMutation.mutate({ id: beverageId });
   };
 
   if (isLoading) {
@@ -134,7 +139,11 @@ function Dashboard() {
                         >
                           Redigér
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Slet</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteClick(beverage.beverageId)}
+                        >
+                          Slet
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
