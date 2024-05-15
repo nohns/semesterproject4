@@ -22,13 +22,13 @@ public class NotificationService
                 beverageId = beverage.BeverageId,
                 qty = amount
             };
-            return SendNotificationAsync("/beveragePurchased", data);
+            return SendNotificationAsync("/beverageOrdered", data);
         }
 
         public Task SendBeverageCreatedNotificationAsync(Beverage beverage)
         {
             var data = new { beverageId = beverage.BeverageId };
-            return SendNotificationAsync("/beverageCreated", data);
+            return SendNotificationAsync("/beverageAdded", data);
         }
 
         public Task SendBeverageUpdatedNotificationAsync(Beverage beverage)
@@ -40,7 +40,7 @@ public class NotificationService
         public Task SendBeverageDeletedNotificationAsync(Beverage beverage)
         {
             var data = new { beverageId = beverage.BeverageId};
-            return SendNotificationAsync("/beverageDeleted", data);
+            return SendNotificationAsync("/beverageRemoved", data);
         }
 
         private async Task SendNotificationAsync(string endpoint, object data)

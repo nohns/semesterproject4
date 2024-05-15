@@ -22,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5175")
+        builder => builder.WithOrigins("http://localhost:5175", "http://engine:80")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
@@ -131,7 +131,7 @@ if (app.Environment.IsDevelopment())
         ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
 app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),
