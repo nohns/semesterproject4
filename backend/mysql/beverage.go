@@ -23,6 +23,7 @@ func (br *bevRepo) FindBeverages(ctx context.Context) ([]pe.Beverage, error) {
 	if err != nil {
 		return nil, fmt.Errorf("query beverages: %v", err)
 	}
+	defer rows.Close()
 	bevs := make([]pe.Beverage, 0)
 	for rows.Next() {
 		// Read beverage from query result, and make sure id is converted

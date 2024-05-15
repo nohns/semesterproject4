@@ -83,6 +83,7 @@ func (hp *historyProvider) Histories(ctx context.Context) ([]pe.History, error) 
 	if err != nil {
 		return nil, fmt.Errorf("query beverages: %v", err)
 	}
+	defer rows.Close()
 	hists := make([]pe.History, 0)
 	for rows.Next() {
 		// Read beverage from query result, and make sure id is converted
@@ -115,6 +116,7 @@ func (hp *historyProvider) prices(ctx context.Context, numBevID int) ([]pe.Histo
 	if err != nil {
 		return nil, fmt.Errorf("query bev prices: %v", err)
 	}
+	defer rows.Close()
 	prices := make([]pe.HistoryEntry, 0)
 	for rows.Next() {
 		var entry pe.HistoryEntry
