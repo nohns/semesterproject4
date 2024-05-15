@@ -66,6 +66,7 @@ builder.Services.AddScoped<IBeverageRepository, BeverageRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImageApiService, ImageApiService>();
+builder.Services.AddScoped<NotificationService>();
 
 
 builder.Services.ConfigureApplicationCookie(options =>
