@@ -49,25 +49,44 @@ public class BeverageService : IBeverageService
 
   public async Task<Beverage> Update(int id, BeverageDto dto)
   {
-    var existingBeverage = await _beverageRepository.GetById(id) ?? throw new NotFoundException("Beverage was not found.");
-    if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
-    if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
+      Console.WriteLine($"Updating beverage with ID: {id}");
 
-    existingBeverage.Name = dto.Name;
-    existingBeverage.Description = dto.Description;
-    existingBeverage.ImageSrc = dto.ImageSrc;
-    existingBeverage.BasePrice = dto.BasePrice;
-    existingBeverage.MinPrice = dto.MinPrice;
-    existingBeverage.MaxPrice = dto.MaxPrice;
-    existingBeverage.IsActive = dto.IsActive;
+      var existingBeverage = await _beverageRepository.GetById(id);
+      if (existingBeverage == null)
+      {
+          Console.WriteLine($"Beverage not found with ID: {id}");
+          throw new NotFoundException("Beverage was not found.");
+      }
 
-    var updatedBeverage = await _beverageRepository.Update(existingBeverage);
-    await _notificationService.SendBeverageUpdatedNotificationAsync();
-    return updatedBeverage;
+      if (dto.MinPrice > dto.BasePrice)
+      {
+          Console.WriteLine("Validation failed: Min price cannot be higher than base price.");
+          throw new ValidationException("Min price cannot be higher than base price.");
+      }
+
+      if (dto.MaxPrice < dto.BasePrice)
+      {
+          Console.WriteLine("Validation failed: Max price cannot be lower than base price.");
+          throw new ValidationException("Max price cannot be lower than base price.");
+      }
+
+      existingBeverage.Name = dto.Name;
+      existingBeverage.Description = dto.Description;
+      existingBeverage.ImageSrc = dto.ImageSrc;
+      existingBeverage.BasePrice = dto.BasePrice;
+      existingBeverage.MinPrice = dto.MinPrice;
+      existingBeverage.MaxPrice = dto.MaxPrice;
+      existingBeverage.IsActive = dto.IsActive;
+
+      var updatedBeverage = await _beverageRepository.Update(existingBeverage);
+      await _notificationService.SendBeverageUpdatedNotificationAsync();
+
+      Console.WriteLine("Beverage updated successfully with ID: " + id);
+      return updatedBeverage;
   }
 
 
-  public async Task Delete(int id)
+    public async Task Delete(int id)
   {
     //Check if beverage exis
     var beverage = await _beverageRepository.GetById(id);

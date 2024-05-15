@@ -8,6 +8,7 @@ using System.Drawing;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;
+using Newtonsoft.Json;
 
 namespace BeveragePaymentApi.Beverages;
 
@@ -16,23 +17,21 @@ namespace BeveragePaymentApi.Beverages;
 [ApiVersion("1.0")]
 public class BeveragesController : Controller
 {
-  private readonly IBeverageService _beverageService;
+private readonly IBeverageService _beverageService;
+private readonly IImageApiService _imageApiService;
 
-  private readonly IImageApiService _imageApiService;
-
-
-  public BeveragesController(IBeverageService beverageService, IImageApiService imageApiService)
-  {
+public BeveragesController(IBeverageService beverageService, IImageApiService imageApiService)
+{
     _beverageService = beverageService;
     _imageApiService = imageApiService;
-  }
+}
 
 
-  /// <summary>
-  /// Gets all beverages
-  /// </summary>
-  /// <returns>A list of Beverages</returns>
-  [HttpGet]
+    /// <summary>
+    /// Gets all beverages
+    /// </summary>
+    /// <returns>A list of Beverages</returns>
+    [HttpGet]
   public async Task<ActionResult<IEnumerable<Beverage>>> Get()
   {
     var beverages = await _beverageService.GetAllBeverages();
@@ -128,40 +127,49 @@ public class BeveragesController : Controller
     }
   }
 
-  /// <summary>
-  /// Updates a Beverage
-  /// </summary>
-  /// <param name="id"></param>
-  /// <param name="beverage"></param>
-  /// <returns>The updated Beverage</returns>
-  [HttpPut("{id}")]
-  [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status404NotFound)]
-  [ProducesResponseType(StatusCodes.Status400BadRequest)]
-  public async Task<ActionResult<Beverage>> Put([FromRoute] int id, [FromBody] BeverageDto beverage)
-  {
-    try
+    /// <summary>
+    /// Updates a Beverage
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="beverage"></param>
+    /// <returns>The updated Beverage</returns>
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Beverage>> Put([FromRoute] int id, [FromBody] BeverageDto beverage)
     {
-      var updatedBeverage = await _beverageService.Update(id, beverage);
-      return Ok(updatedBeverage);
+        try
+        {
+            Console.WriteLine($"Received PUT request with ID: {id}");
+            Console.WriteLine($"BeverageDto: {JsonConvert.SerializeObject(beverage)}");
+
+            var updatedBeverage = await _beverageService.Update(id, beverage);
+            return Ok(updatedBeverage);
+        }
+        catch (NotFoundException e)
+        {
+            Console.WriteLine($"NotFoundException: {e.Message}");
+            return NotFound(e.Message);
+        }
+        catch (ValidationException e)
+        {
+            Console.WriteLine($"ValidationException: {e.Message}");
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+            return BadRequest(e.Message);
+        }
     }
-    catch (NotFoundException e)
-    {
-      return NotFound(e.Message);
-    }
-    catch (Exception e)
-    {
-      return BadRequest(e.Message);
-    }
-  }
 
 
-  /// <summary>
-  /// Deletes a Beverage
-  /// </summary>
-  /// <param name="id"></param>
-  /// <returns>Nothing.</returns>
-  [HttpDelete("{id}")]
+
+    /// <summary>
+    /// Deletes a Beverage
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Nothing.</returns>
+    [HttpDelete("{id}")]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<IActionResult> Delete(int id)
