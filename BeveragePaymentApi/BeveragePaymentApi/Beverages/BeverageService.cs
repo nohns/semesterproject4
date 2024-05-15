@@ -9,9 +9,10 @@ public class BeverageService : IBeverageService
   private readonly IBeverageRepository _beverageRepository;
   private readonly NotificationService _notificationService;
 
-  public BeverageService(IBeverageRepository beverageRepository)
+  public BeverageService(IBeverageRepository beverageRepository, NotificationService notificationService)
   {
     _beverageRepository = beverageRepository;
+    _notificationService = notificationService;
   }
 
   public async Task<IEnumerable<Beverage>> GetAllBeverages()
@@ -48,11 +49,7 @@ public class BeverageService : IBeverageService
 
   public async Task<Beverage> Update(int id, BeverageDto dto)
   {
-    var existingBeverage = await _beverageRepository.GetById(id);
-    if (existingBeverage == null)
-    {
-      throw new NotFoundException("Beverage was not found.");
-    }
+    var existingBeverage = await _beverageRepository.GetById(id) ?? throw new NotFoundException("Beverage was not found.");
     if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
     if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
 
@@ -62,9 +59,11 @@ public class BeverageService : IBeverageService
     existingBeverage.BasePrice = dto.BasePrice;
     existingBeverage.MinPrice = dto.MinPrice;
     existingBeverage.MaxPrice = dto.MaxPrice;
+    existingBeverage.IsActive = dto.IsActive;
 
+    var updatedBeverage = await _beverageRepository.Update(existingBeverage);
     await _notificationService.SendBeverageUpdatedNotificationAsync();
-    return await _beverageRepository.Update(existingBeverage);
+    return updatedBeverage;
   }
 
 

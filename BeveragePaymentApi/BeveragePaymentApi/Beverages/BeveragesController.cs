@@ -138,7 +138,7 @@ public class BeveragesController : Controller
   [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
-  public async Task<ActionResult<Beverage>> Put(int id, BeverageDto beverage)
+  public async Task<ActionResult<Beverage>> Put([FromRoute] int id, [FromBody] BeverageDto beverage)
   {
     try
     {
