@@ -1,21 +1,20 @@
 /** @format */
 
 import { useMutation } from "@tanstack/react-query";
-
 import { client } from "../axios/axios";
 
 export interface PostLoginRequest {
-  username: string; //admin
-  password: string; //MySecretPassword123
+  username: string;
+  password: string;
 }
 
 export interface PostLoginResponse {}
 
 const postLogin = async (data: PostLoginRequest) => {
-  return await client.post<PostLoginResponse>("/login", data);
+  return await client.post<PostLoginResponse>("/auth/login", data);
 };
 
-//Custom Hook
+// Custom Hook
 export const useLogin = () => {
   return useMutation({
     mutationKey: ["login"],

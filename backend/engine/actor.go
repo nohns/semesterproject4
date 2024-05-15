@@ -128,9 +128,13 @@ func (a *actor) handleOrderPlaced(qty int) {
 
 // emitUpdate outputs an update of the current item price tracked by the actor.
 func (a *actor) emitUpdate() {
+	noise := float64(rand.Intn(25)) - 12.5
+	noise /= 1000
+	noise += 1
+
 	a.out <- PriceUpdate{
 		Id:    a.id,
-		Price: a.itm.price(),
+		Price: a.itm.price() * noise,
 		At:    time.Now(),
 	}
 }

@@ -1,40 +1,60 @@
 import { Card, CardTitle, CardDescription, Chart } from "@repo/ui";
-
-interface Beverage {
-  name: string;
-  imageSrc: string;
-  price: number;
-}
+import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
+import { History } from "@repo/api";
+import { cn } from "../../../../packages/ui/src/lib/utils";
+import { ArrowBottomRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 
 interface BeverageCardProps {
-  item: Beverage;
+  history: History;
 }
 
 export default function SlidingBeverageItemCardLigmaNamingIsHard({
-  item,
+  history,
 }: BeverageCardProps): JSX.Element {
+  const displayedBeveragePrices: BeveragePrice[] = history.prices
+    .slice(Math.max(history.prices.length - 20, 0))
+    .map((price) => {
+      return {
+        date: new Date(price.at),
+        price: parseFloat(price.price.toFixed(2)),
+      };
+    });
+
+  const firstPrice = displayedBeveragePrices.at(0);
+  const lastPrice = displayedBeveragePrices.at(-1);
+  const isRising = firstPrice!.price < lastPrice!.price;
+  const percentage =
+    ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
+
   return (
-    <Card className="grid grid-cols-3 items-center max-w-2xl h-20">
-      <CardTitle className="pl-4">{item.name}</CardTitle>
-      <div className="flex justify-center">
-        <Chart
-          prices={[
-            { date: new Date("2023-01-01T01:00:00"), price: 100 },
-            { date: new Date("2023-01-01T03:00:00"), price: 105 },
-            { date: new Date("2023-01-01T05:00:00"), price: 150 },
-            { date: new Date("2023-01-01T07:00:00"), price: 200 },
-            { date: new Date("2023-01-01T09:00:00"), price: 100 },
-            { date: new Date("2023-01-01T11:00:00"), price: 100 },
-            { date: new Date("2023-01-01T13:00:00"), price: 200 },
-            { date: new Date("2023-01-01T17:00:00"), price: 150 },
-            { date: new Date("2023-01-01T18:00:00"), price: 101 },
-          ]}
-          minimal
-        />
+    <Card className="grid grid-cols-3 grid-rows-3 max-w-2xl h-32 p-2 w-52">
+      <p className="col-start-1 col-span-3 row-start-1 row-span-1 flex justify-between ">
+        <span className="text-xl font-semibold">{history.beverage.name}</span>
+        <div className="flex flex-col items-end">
+          <span
+            className={cn("font-semibold", {
+              "text-green-500": isRising,
+              "text-red-500": !isRising,
+            })}
+          >
+            {lastPrice && lastPrice.price.toFixed(2) + " DKK"}
+          </span>
+          <span
+            className={cn("font-normal flex items-center", {
+              "text-green-500": isRising,
+              "text-red-500": !isRising,
+            })}
+          >
+            {isRising && <ArrowTopRightIcon className="w-5 h-5" />}
+            {!isRising && <ArrowBottomRightIcon className="w-5 h-5" />}
+            {percentage.toFixed(2).replace("-", "")} %
+          </span>
+        </div>
+      </p>
+
+      <div className="flex flex-col col-start-1 col-end-4 gap-2 p-2 row-start-2 row-end-4 relative">
+        <Chart prices={displayedBeveragePrices} minimal />
       </div>
-      <CardDescription className="pr-4 text-right">
-        Price: {item.price} kr
-      </CardDescription>
     </Card>
   );
 }

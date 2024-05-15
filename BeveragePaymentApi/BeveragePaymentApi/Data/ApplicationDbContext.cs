@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Beverage> Beverages => Set<Beverage>();
     public DbSet<Price> Prices => Set<Price>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<Order> Orders => Set<Order>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +33,11 @@ public class ApplicationDbContext : DbContext
         .WithMany(b => b.Prices)
         .HasForeignKey(p => p.BeverageId);
 
+        modelBuilder.Entity<Price>()
+            .HasOne(p => p.Order)
+            .WithOne(o =>o.Price )
+            .HasForeignKey<Order>(e=>e.OrderId);
+            
         base.OnModelCreating(modelBuilder);
 
     }

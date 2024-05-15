@@ -17,13 +17,18 @@ export default function LoginTab() {
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (username === "admin" && password === "adminpassword") {
-      login.mutate({ username, password });
-      navigate("/admin");
-    } else {
-      setError("Incorrect Username or Password");
-      console.error("Incorrect Username or Password");
-    }
+    login.mutate(
+      { username, password },
+      {
+        onSuccess: () => {
+          navigate("/admin");
+        },
+        onError: (error) => {
+          setError("Incorrect Username or Password");
+          console.error(error);
+        },
+      }
+    );
   };
 
   const handleInputChange =

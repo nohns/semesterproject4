@@ -1,44 +1,77 @@
 import Marquee from "react-fast-marquee";
-import { Chart, FooBar } from "@repo/ui";
+import { Chart, FooBar, beverages } from "@repo/ui";
 import SlidingBeverageItemCardLigmaNamingIsHard from "../components/SlidingBeverageItemCardLigmaNamingIsHard";
+import { History, HistoryEntry } from "@repo/api";
+import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
+import { ArrowBottomRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
+import { cn } from "../../../../packages/ui/src/lib/utils";
+import { useEffect, useRef } from "react";
 
-const mockItems = [
-  { name: "Blå Thor", imageSrc: "/images/graf.png", price: 20 },
-  { name: "Blå Vand", imageSrc: "/images/graf.png", price: 25 },
-  { name: "Kinderæg", imageSrc: "/images/graf.png", price: 30 },
-  { name: "Rom & Cola", imageSrc: "/images/graf.png", price: 35 },
-  { name: "Gin & Tonic", imageSrc: "/images/graf.png", price: 40 },
-  { name: "Øl", imageSrc: "/images/graf.png", price: 45 },
-  { name: "Vodka", imageSrc: "/images/graf.png", price: 50 },
-  { name: "Fadøl", imageSrc: "/images/graf.png", price: 55 },
-  { name: "Cider", imageSrc: "/images/graf.png", price: 60 },
-  { name: "Sodavand", imageSrc: "/images/graf.png", price: 65 },
-];
+type OverviewProps = {
+  histories: History[];
+  displayedBeverage: History;
+};
 
-function Overview() {
-  const mockPrices = [
-    { date: new Date("2023-01-01T01:00:00"), price: 100 },
-    { date: new Date("2023-01-01T02:00:00"), price: 105 },
-    { date: new Date("2023-01-01T03:00:00"), price: 110 },
-    { date: new Date("2023-01-01T04:00:00"), price: 120 },
-    { date: new Date("2023-01-01T05:00:00"), price: 130 },
-    { date: new Date("2023-01-01T06:00:00"), price: 50 },
-    { date: new Date("2023-01-01T13:00:00"), price: 75 },
-    { date: new Date("2023-01-01T17:00:00"), price: 101 },
-  ];
+function Overview({ displayedBeverage, histories }: OverviewProps) {
+  const displayedBeveragePrices: BeveragePrice[] = displayedBeverage.prices
+    .slice(Math.max(displayedBeverage.prices.length - 20, 0))
+    .map((price) => {
+      return {
+        date: new Date(price.at),
+        price: parseFloat(price.price.toFixed(2)),
+      };
+    });
+  const firstPrice = displayedBeveragePrices.at(0);
+  const lastPrice = displayedBeveragePrices.at(-1);
+  const isRising = firstPrice!.price < lastPrice!.price;
+  const percentage =
+    ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex flex-none justify-center" style={{ height: "20%" }}>
+      <div className="flex flex-none justify-center" style={{ height: "15%" }}>
         <FooBar />
       </div>
-      <div className="flex flex-grow" style={{ height: "60%" }}>
-        <Chart prices={mockPrices} />
+      <header className="flex flex-col gap-2 px-8">
+        <div>
+          <h2 className="text-5xl font-semibold">
+            {displayedBeverage.beverage.name}
+          </h2>
+        </div>
+
+        <div
+          className={cn("flex flex-col", {
+            "text-green-500": isRising,
+            "text-red-500": !isRising,
+          })}
+        >
+          <p className="text-2xl font-semibold">
+            {lastPrice && lastPrice.price.toFixed(2) + " DKK"}
+          </p>
+          <p className="text-lg flex gap-2 items-center">
+            {isRising && <ArrowTopRightIcon className="w-6 h-6" />}
+            {!isRising && <ArrowBottomRightIcon className="w-6 h-6" />}
+            <span>
+              {isRising ? "+" : ""}
+              {percentage.toFixed(2)} %
+            </span>
+          </p>
+        </div>
+      </header>
+
+      <div className="flex flex-grow px-8" style={{ height: "60%" }}>
+        <Chart
+          key={displayedBeverage.beverage.beverageId}
+          prices={displayedBeveragePrices}
+        />
       </div>
       <div className="flex flex-none" style={{ height: "20%" }}>
         <Marquee speed={50} pauseOnHover={true}>
-          {mockItems.map((item, index) => (
-            <SlidingBeverageItemCardLigmaNamingIsHard key={index} item={item} />
+          {histories?.map((item, index) => (
+            <SlidingBeverageItemCardLigmaNamingIsHard
+              key={index}
+              history={item}
+            />
           ))}
         </Marquee>
       </div>

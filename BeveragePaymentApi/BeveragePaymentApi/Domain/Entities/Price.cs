@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 
 public class Price
 {
@@ -8,4 +9,8 @@ public class Price
     public DateTime Timestamp { get; set; }
 
     public Beverage Beverage { get; set; }
+    
+    public Order? Order { get; set; }
+    
+   
 }

@@ -15,14 +15,14 @@ function CountDown() {
   }: CountdownRenderProps) => {
     if (completed) {
       // Render a completed state
-      return <span>Time's up!</span>;
+      return <span>Tiden er gået</span>;
     } else {
       // Only show non-zero time units, prioritizing the largest unit.
       // Handle hours
       if (hours) {
         return (
           <span>
-            {hours} hour{hours !== 1 ? "s" : ""}
+            {hours} time{hours !== 1 ? "r" : ""}
           </span>
         );
       }
@@ -31,15 +31,15 @@ function CountDown() {
         if (minutes === 1) {
           return <span>{minutes} minut</span>; // Singular form for "minute"
         } else {
-          return <span>{minutes} minutes</span>;
+          return <span>{minutes} minutter</span>;
         }
       }
       // Handle seconds
       else {
         if (seconds === 1) {
-          return <span>{seconds} second</span>; // Singular form for "second"
+          return <span>{seconds} sekund</span>; // Singular form for "second"
         } else {
-          return <span>{seconds} seconds</span>;
+          return <span>{seconds} sekunder</span>;
         }
       }
     }
