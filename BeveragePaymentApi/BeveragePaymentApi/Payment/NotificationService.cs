@@ -14,21 +14,23 @@ public class NotificationService
     {
         _httpClientFactory = httpClientFactory;
     }
-    public async void SendPurchaseNotificationAsync(Beverage beverage, double price)
+    public async void SendPurchaseNotificationAsync(Beverage beverage, int amount)
     {
         using HttpClient client = _httpClientFactory.CreateClient();
 
         var purchaseData = new
         {
-            Beverage = beverage,
-            Price = price
+            BeverageId = beverage,
+            Amount = amount
         };
 
         string json = JsonSerializer.Serialize(purchaseData);
         using HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
+        
+        
+        //Chore: Snak med asger
         using HttpResponseMessage response = await client.PostAsync(
-            "placeholder/url",
+            "/bevaragePurchased",
             content
         );
     }
