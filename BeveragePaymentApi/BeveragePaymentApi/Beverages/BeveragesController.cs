@@ -123,7 +123,7 @@ public BeveragesController(IBeverageService beverageService, IImageApiService im
     }
     catch (Exception e)
     {
-      return BadRequest(e.Message);
+      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
     }
   }
 
