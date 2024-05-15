@@ -34,6 +34,7 @@ type app struct {
 }
 
 func BootstrapMocked() (*app, error) {
+	c := readConf()
 	a := &app{
 		priceStorer:  &mock.Data,
 		histProvider: &mock.Data,
@@ -46,7 +47,7 @@ func BootstrapMocked() (*app, error) {
 
 	// Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
 	sockman, err := websocket.NewManager(&websocket.ManagerOptions{
-		Addr:         ":9090",
+		Addr:         c.httpaddr,
 		Logger:       a.logger,
 		InitConnFunc: a.onInitialConn,
 	})
@@ -74,7 +75,7 @@ func BootstrapMocked() (*app, error) {
 	a.priceEngine = eng
 
 	// Triggers for receiving notifications from ASP.NET backend
-	a.trigsrv = trigger.New(":9099", a.logger, a) // Use the app itself as the trigger handler
+	a.trigsrv = trigger.New(c.trigaddr, a.logger, a) // Use the app itself as the trigger handler
 
 	return a, nil
 }
