@@ -5,12 +5,12 @@ WORKDIR /app
 
 COPY . .
 RUN go mod download
-RUN go build -o /app cmd/main.go
+RUN go build -o /bin/app cmd/main.go
 
 # Deploy Stage
 FROM alpine:latest
 
 WORKDIR /
-COPY --from=build /app /
+COPY --from=build /bin/app /
 
 ENTRYPOINT ["/app"]
