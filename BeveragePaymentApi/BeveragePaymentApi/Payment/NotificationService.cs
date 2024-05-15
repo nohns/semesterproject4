@@ -8,7 +8,7 @@ namespace BeveragePaymentApi.Beverages;
 
 public class NotificationService
     {
-        private static readonly string GoServiceUrl = "http://engine:80"; // Use service name 'engine'
+        private static readonly string GoServiceUrl = "http://engine:8080"; // Use service name 'engine'
         private readonly IHttpClientFactory _httpClientFactory;
         public NotificationService(IHttpClientFactory httpClientFactory)
         {
