@@ -69,16 +69,16 @@ func (s *server) ListenAndServe() error {
 		}
 	})
 
-	router.HandleFunc("POST /beveragePurchased", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("POST /beverageOrdered", func(w http.ResponseWriter, r *http.Request) {
 		// Handle purchase
-		s.logger.Info("Received purchase request")
+		s.logger.Info("Received order request")
 
 		var body struct {
 			ID  int `json:"beverageId"`
 			Qty int `json:"qty"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			s.logger.Error("Failed to decode request", slog.String("error", err.Error()))
+			s.logger.Error("Failed to json decode request", slog.String("error", err.Error()))
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
