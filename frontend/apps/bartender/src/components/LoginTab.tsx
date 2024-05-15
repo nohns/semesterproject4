@@ -65,7 +65,7 @@ export default function LoginTab() {
               </CardContent>
               <CardFooter>
                 <div className="space-x-6">
-                  <Button type="submit">Sign In</Button>
+                  <Button type="submit">Enter</Button>
                 </div>
               </CardFooter>
             </form>

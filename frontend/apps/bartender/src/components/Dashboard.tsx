@@ -27,13 +27,12 @@ import {
   CardTitle,
 } from "@repo/ui";
 import { Button } from "@repo/ui";
-import { useGetBeverages } from "@repo/api";
 import AddBeverage from "./AddBeverage";
 
 function Dashboard() {
   const { data: beverages, isLoading, error } = useGetBeverages();
 
-  if (isLoading) {
+   if (isLoading) {
     return (
       <Card>
         <CardHeader>Loading beverages...</CardHeader>
@@ -47,7 +46,7 @@ function Dashboard() {
         <CardHeader>Error fetching beverages.</CardHeader>
       </Card>
     );
-  }
+  } 
 
   return (
     <Card>
@@ -57,7 +56,7 @@ function Dashboard() {
           <CardDescription className="">
             Administrér dine produkter og se deres salg.
           </CardDescription>
-          <AddBeverage/>
+          <AddBeverage />
         </div>
       </CardHeader>
       <CardContent>
@@ -79,43 +78,48 @@ function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {beverages && beverages.map((beverage) => (
-              <TableRow key={beverage.beverageId}>
-                <TableCell className="hidden sm:table-cell">
-                  <img
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src={beverage.imageSrc}
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{beverage.name}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">
-                    {beverage.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </TableCell>
-                <TableCell>{beverage.basePrice} dkk</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {beverage.totalSales}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Redigér</DropdownMenuItem>
-                      <DropdownMenuItem>Slet</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {beverages &&
+              beverages.beverages.map((beverage) => (
+                <TableRow key={beverage.beverageId}>
+                  <TableCell className="hidden sm:table-cell">
+                    <img
+                      alt="Product image"
+                      className="aspect-square rounded-md object-cover"
+                      height="64"
+                      src={beverage.imageSrc}
+                      width="64"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{beverage.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {beverage.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{beverage.basePrice} dkk</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {beverage.totalSales}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>Redigér</DropdownMenuItem>
+                        <DropdownMenuItem>Slet</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>
