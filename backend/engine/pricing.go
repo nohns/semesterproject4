@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -32,9 +31,17 @@ func (i *item) order(qty int) {
 	// Random noise for price change
 	noise := float64(rand.Intn(25)) - 12.5
 	noise = 1 + float64(noise)/1000
+	mult *= noise
 
-	fmt.Printf("price before: %.2f, price now: %.2f, (noise = %.3f, mult = %.3f)\n", i.price(), i.price()*mult, noise, mult)
-	i.initprice = i.price() * mult * noise
+	currprice := i.price()
+
+	// Cap price increase to 70% of remaining multiplier to max
+	maxmult := (i.params.MaxPrice / currprice)
+	maxmult = 1 + (maxmult-1)*0.7
+	mult = min(mult, maxmult)
+
+	// fmt.Printf("price before: %.2f, price now: %.2f, (noise = %.3f, mult = %.3f)\n", i.price(), i.price()*mult, noise, mult)
+	i.initprice = currprice * mult
 	i.reset()
 }
 
