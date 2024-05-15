@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePutBeverage } from "@repo/api";
 import {
   Dialog,
@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@repo/ui";
-import { Beverage } from "../../../../packages/api/src/types/beverage"; // yes this is cursed, but another file exports the same type so I can't just @repo/api
+import { Beverage } from "../../../../packages/api/src/types/beverage";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface EditBeverageModalProps {
   beverage: Beverage;
@@ -34,22 +35,43 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
   const [isActive, setIsActive] = useState(beverage.isActive);
 
   const mutation = usePutBeverage();
+  const queryClient = useQueryClient();
 
   const handleSave = () => {
-    mutation.mutate({
-      beverage: {
-        ...beverage,
-        name,
-        description,
-        imageSrc,
-        basePrice,
-        maxPrice,
-        minPrice,
-        isActive,
+    mutation.mutate(
+      {
+        beverage: {
+          ...beverage,
+          name,
+          description,
+          imageSrc,
+          basePrice,
+          maxPrice,
+          minPrice,
+          isActive,
+        },
       },
-    });
-    onClose();
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["beverages"] });
+          onClose();
+        },
+        onError: (error) => {
+          console.error("Error updating beverage:", error);
+        },
+      }
+    );
   };
+
+  useEffect(() => {
+    setName(beverage.name);
+    setDescription(beverage.description);
+    setImageSrc(beverage.imageSrc);
+    setBasePrice(beverage.basePrice);
+    setMaxPrice(beverage.maxPrice);
+    setMinPrice(beverage.minPrice);
+    setIsActive(beverage.isActive);
+  }, [beverage]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -61,7 +83,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
           </DialogDescription>
         </DialogHeader>
         <div>
-          <label>Name</label>
+          <label>Navn</label>
           <Input
             value={name}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -70,7 +92,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
           />
         </div>
         <div>
-          <label>Description</label>
+          <label>Beskrivelse</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -78,7 +100,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
           />
         </div>
         <div>
-          <label>Image URL</label>
+          <label>Billede URL</label>
           <Input
             value={imageSrc}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

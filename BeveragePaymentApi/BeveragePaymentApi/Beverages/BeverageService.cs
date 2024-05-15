@@ -33,11 +33,15 @@ public class BeverageService : IBeverageService
 
     public async Task<Beverage> Update(Beverage beverage)
     {
-        //Check if beverage exist
-        await _beverageRepository.GetById(beverage.BeverageId);
+        var existingBeverage = await _beverageRepository.GetById(beverage.BeverageId);
+        if (existingBeverage == null)
+        {
+            throw new NotFoundException("Beverage was not found.");
+        }
 
         return await _beverageRepository.Update(beverage);
     }
+
 
     public async Task Delete(int id)
     {

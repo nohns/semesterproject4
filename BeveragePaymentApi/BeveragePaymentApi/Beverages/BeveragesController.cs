@@ -124,16 +124,19 @@ public class BeveragesController : Controller
         try
         {
             beverage.BeverageId = id;
-
             var updatedBeverage = await _beverageService.Update(beverage);
-
             return Ok(updatedBeverage);
         }
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
         }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
+
 
     /// <summary>
     /// Deletes a Beverage
