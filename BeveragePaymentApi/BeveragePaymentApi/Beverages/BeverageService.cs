@@ -29,8 +29,12 @@ public class BeverageService : IBeverageService
 
     public async Task<Beverage> Create(Beverage beverage)
     {
+        if (beverage.MinPrice > beverage.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
+        if (beverage.MaxPrice < beverage.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
+
+        var beverageResult = await _beverageRepository.Create(beverage);
         await _notificationService.SendBeverageCreatedNotificationAsync();
-        return await _beverageRepository.Create(beverage);
+        return beverageResult;
     }
 
     public async Task<Beverage> Update(Beverage beverage)
@@ -40,6 +44,8 @@ public class BeverageService : IBeverageService
         {
             throw new NotFoundException("Beverage was not found.");
         }
+        if (beverage.MinPrice > beverage.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
+        if (beverage.MaxPrice < beverage.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
 
         await _notificationService.SendBeverageUpdatedNotificationAsync();
         return await _beverageRepository.Update(beverage);
@@ -48,9 +54,9 @@ public class BeverageService : IBeverageService
 
     public async Task Delete(int id)
     {
-        //Check if beverage exist
-        await _beverageRepository.GetById(id);
-
+        //Check if beverage exis
+        var beverage = await _beverageRepository.GetById(id);
+        if (beverage == null) throw new NotFoundException("Beverage was not found.");
         await _beverageRepository.Delete(id);
 
         await _notificationService.SendBeverageDeletedNotificationAsync();
@@ -69,6 +75,7 @@ public class BeverageService : IBeverageService
         return latestPrice.Amount;
 
     }
+
 }
 
 public interface IBeverageService

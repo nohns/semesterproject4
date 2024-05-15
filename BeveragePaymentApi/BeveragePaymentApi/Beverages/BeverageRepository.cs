@@ -60,7 +60,7 @@ public class BeverageRepository : IBeverageRepository
         var beverageToDelete = await _context.Beverages.FindAsync(id);
         if (beverageToDelete != null) _context.Beverages.Remove(beverageToDelete);
         await _context.SaveChangesAsync();
-        
+
     }
 }
 

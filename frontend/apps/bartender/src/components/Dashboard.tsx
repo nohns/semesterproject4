@@ -31,6 +31,9 @@ import EditBeverageModal from "./EditBeverageModal";
 import AddBeverage from "./AddBeverage";
 import { Beverage } from "../../../../packages/api/src/types/beverage";
 
+type SortCriteria = "name" | "status" | "price" | "sales";
+type SortOrder = "asc" | "desc";
+
 function Dashboard() {
   const { data: beverages, isLoading, error } = useGetBeverages();
   const deleteMutation = useDeleteBeverage();
@@ -38,6 +41,8 @@ function Dashboard() {
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   const handleEditClick = (beverage: Beverage) => {
     setSelectedBeverage(beverage);
@@ -52,6 +57,39 @@ function Dashboard() {
   const handleDeleteClick = (beverageId: string) => {
     deleteMutation.mutate({ id: beverageId });
   };
+
+  const handleSort = (criteria: SortCriteria) => {
+    if (sortCriteria === criteria) {
+      setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    } else {
+      setSortCriteria(criteria);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedBeverages = beverages?.slice().sort((a, b) => {
+    if (sortCriteria === "name") {
+      return sortOrder === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    }
+    if (sortCriteria === "status") {
+      return sortOrder === "asc"
+        ? Number(a.isActive) - Number(b.isActive)
+        : Number(b.isActive) - Number(a.isActive);
+    }
+    if (sortCriteria === "price") {
+      return sortOrder === "asc"
+        ? a.basePrice - b.basePrice
+        : b.basePrice - a.basePrice;
+    }
+    if (sortCriteria === "sales") {
+      return sortOrder === "asc"
+        ? a.totalSales - b.totalSales
+        : b.totalSales - a.totalSales;
+    }
+    return 0;
+  });
 
   if (isLoading) {
     return (
@@ -87,11 +125,24 @@ function Dashboard() {
               <TableHead className="hidden w-[100px] sm:table-cell">
                 <span className="sr-only">Billede</span>
               </TableHead>
-              <TableHead>Navn</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Pris</TableHead>
-              <TableHead className="hidden md:table-cell">
-                Solgte enheder
+              <TableHead onClick={() => handleSort("name")}>
+                Navn{" "}
+                {sortCriteria === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("status")}>
+                Status{" "}
+                {sortCriteria === "status" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead onClick={() => handleSort("price")}>
+                Pris{" "}
+                {sortCriteria === "price" && (sortOrder === "asc" ? "↑" : "↓")}
+              </TableHead>
+              <TableHead
+                className="hidden md:table-cell"
+                onClick={() => handleSort("sales")}
+              >
+                Solgte enheder{" "}
+                {sortCriteria === "sales" && (sortOrder === "asc" ? "↑" : "↓")}
               </TableHead>
               <TableHead>
                 <span className="sr-only">Handlinger</span>
@@ -99,8 +150,8 @@ function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {beverages &&
-              beverages.map((beverage) => (
+            {sortedBeverages &&
+              sortedBeverages.map((beverage) => (
                 <TableRow key={beverage.beverageId}>
                   <TableCell className="hidden sm:table-cell">
                     <img
