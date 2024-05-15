@@ -16,25 +16,18 @@ import {
   MinusIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
-import Countdown from "@/components/Countdown";
 import Payment from "./Payment";
-import {
-  addSeconds,
-  formatDistanceStrict,
-  formatDistanceToNowStrict,
-} from "date-fns";
+import { addSeconds, formatDistanceStrict } from "date-fns";
 import { da } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { dsvFormat } from "d3";
 import { Alert, AlertDescription, AlertTitle } from "@repo/ui";
-import { count } from "console";
 
 interface LocationState {
   beverage: Beverage | undefined;
   priceHistory: HistoryEntry[] | undefined;
 }
 
-const COUNTDOWN_DURATION = 45;
+const COUNTDOWN_DURATION = 30;
 
 // Wait function returning promise
 function wait(ms: number) {
@@ -58,14 +51,20 @@ function Selected() {
   const [countdown, setCountdown] = useState(COUNTDOWN_DURATION);
   const expiryHandle = useRef<NodeJS.Timeout | null>(null);
   const [currentOrder, setCurrentOrder] = useState(0);
-  const [loadingOrder, setLoadingOrder] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(0);
 
   // Creates a new order. This is done when the current order has expired after the countdown.
   const createOrder = useCallback(async () => {
-    setLoadingOrder(true);
-    await wait(1000);
+    setLoadingOrder(1);
+    await wait(2000);
+    setLoadingOrder(2);
+    await wait(300);
+    setLoadingOrder(3);
+    await wait(2000);
+    setLoadingOrder(4);
+    await wait(300);
     setCurrentOrder((old) => old + 1);
-    setLoadingOrder(false);
+    setLoadingOrder(0);
   }, [setCurrentOrder]);
 
   // Initially start the countdown interval
@@ -175,128 +174,153 @@ function Selected() {
 
               <div className="relative">
                 <AnimatePresence>
-                  <motion.main
-                    key={currentOrder}
-                    className="absolute w-full"
-                    transition={{
-                      duration: 0.6,
-                    }}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                  >
-                    <AnimatePresence>
-                      {loadingOrder && (
-                        <motion.div
-                          className="absolute inset-0 bg-opacity-90 bg-white flex flex-col justify-center items-center gap-4 z-50"
-                          initial={{
-                            opacity: 0,
-                          }}
-                          animate={{
-                            opacity: 1,
-                          }}
-                          exit={{
-                            opacity: 0,
-                          }}
-                        >
-                          <p>Indlæser nyt tilbud...</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <header className="flex flex-col gap-2">
-                      <div>
-                        <h2 className="text-5xl font-semibold">
-                          {state.beverage.name}
-                        </h2>
-                      </div>
-
-                      <div
-                        className={cn("flex flex-col", {
-                          "text-green-500": isRising,
-                          "text-red-500": !isRising,
-                        })}
-                      >
-                        <p className="text-2xl font-semibold">
-                          {lastPrice && lastPrice.price.toFixed(2) + " DKK"}
-                        </p>
-                        <p className="text-lg flex gap-2 items-center">
-                          {isRising && (
-                            <ArrowTopRightIcon className="w-6 h-6" />
-                          )}
-                          {!isRising && (
-                            <ArrowBottomRightIcon className="w-6 h-6" />
-                          )}
-                          <span>
-                            {isRising ? "+" : ""}
-                            {percentage.toFixed(2)} %
-                          </span>
-                        </p>
-                      </div>
-                    </header>
-
-                    <div className="grow h-60">
-                      <Chart prices={beveragePrices} />
-                    </div>
-
-                    {/* <BeverageQuantityCard beverage={state?.beverage} /> */}
-
-                    <div className="py-4">
-                      <div className="flex flex-col gap-2">
-                        <div className=" flex justify-between ">
-                          <span className="text-md font-bold">Antal</span>
-                          <span className="text-md font-bold">Total</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-4">
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              onClick={() =>
-                                setCounter((prevCounter) =>
-                                  Math.max(1, prevCounter - 1),
-                                )
-                              }
-                            >
-                              <MinusIcon className="h-4 w-4" />
-                            </Button>
-                            <div className="text-lg font-medium">{counter}</div>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              onClick={() =>
-                                setCounter((prevCounter) =>
-                                  Math.min(8, prevCounter + 1),
-                                )
-                              }
-                            >
-                              <PlusIcon className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <motion.span
-                            className="text-xl"
-                            key={counter}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
+                  {loadingOrder < 4 && (
+                    <motion.main
+                      className="absolute w-full"
+                      transition={{
+                        duration: 0.6,
+                      }}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                    >
+                      <AnimatePresence>
+                        {loadingOrder && loadingOrder < 4 && (
+                          <motion.div
+                            className="absolute inset-0 bg-opacity-90 bg-white flex flex-col justify-center items-center gap-4 z-50 text-xl"
+                            initial={{
+                              opacity: 0,
+                            }}
+                            animate={{
+                              opacity: 1,
+                            }}
+                            exit={{
+                              opacity: 0,
+                            }}
                           >
-                            {(
+                            <AnimatePresence>
+                              {loadingOrder === 1 && (
+                                <motion.span
+                                  className="relative top-0"
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: 10 }}
+                                >
+                                  Tilbud udløbet 🥲
+                                </motion.span>
+                              )}
+                              {loadingOrder === 3 && (
+                                <motion.span
+                                  className="relative top-0"
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: 10 }}
+                                >
+                                  Henter nyt tilbud... ⌛️
+                                </motion.span>
+                              )}
+                            </AnimatePresence>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      <header className="flex flex-col gap-2">
+                        <div>
+                          <h2 className="text-5xl font-semibold mt-2">
+                            {state.beverage.name}
+                          </h2>
+                        </div>
+
+                        <div
+                          className={cn("flex flex-col", {
+                            "text-green-500": isRising,
+                            "text-red-500": !isRising,
+                          })}
+                        >
+                          <p className="text-2xl font-semibold">
+                            {lastPrice && lastPrice.price.toFixed(2) + " DKK"}
+                          </p>
+                          <p className="text-lg flex gap-2 items-center">
+                            {isRising && (
+                              <ArrowTopRightIcon className="w-6 h-6" />
+                            )}
+                            {!isRising && (
+                              <ArrowBottomRightIcon className="w-6 h-6" />
+                            )}
+                            <span>
+                              {isRising ? "+" : ""}
+                              {percentage.toFixed(2)} %
+                            </span>
+                          </p>
+                        </div>
+                      </header>
+
+                      <div className="grow h-60">
+                        <Chart prices={beveragePrices} />
+                      </div>
+
+                      {/* <BeverageQuantityCard beverage={state?.beverage} /> */}
+
+                      <div className="py-4">
+                        <div className="flex flex-col gap-2">
+                          <div className=" flex justify-between ">
+                            <span className="text-md font-bold">Antal</span>
+                            <span className="text-md font-bold">Total</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-4">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() =>
+                                  setCounter((prevCounter) =>
+                                    Math.max(1, prevCounter - 1),
+                                  )
+                                }
+                              >
+                                <MinusIcon className="h-4 w-4" />
+                              </Button>
+                              <div className="text-lg font-medium">
+                                {counter}
+                              </div>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() =>
+                                  setCounter((prevCounter) =>
+                                    Math.min(8, prevCounter + 1),
+                                  )
+                                }
+                              >
+                                <PlusIcon className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <motion.span
+                              className="text-xl"
+                              key={counter}
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 10 }}
+                            >
+                              {(
+                                counter *
+                                state.priceHistory[
+                                  state.priceHistory.length - 1
+                                ].price
+                              ).toFixed(2)}{" "}
+                              DKK
+                            </motion.span>
+                          </div>
+                          <Payment
+                            price={
                               counter *
                               state.priceHistory[state.priceHistory.length - 1]
                                 .price
-                            ).toFixed(2)}{" "}
-                            DKK
-                          </motion.span>
+                            }
+                          />
                         </div>
-                        <Payment
-                          price={
-                            counter *
-                            state.priceHistory[state.priceHistory.length - 1]
-                              .price
-                          }
-                        />
                       </div>
-                    </div>
-                  </motion.main>
+                    </motion.main>
+                  )}
                 </AnimatePresence>
               </div>
             </motion.div>
