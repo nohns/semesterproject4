@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using Asp.Versioning;
 using BeveragePaymentApi.Beverages;
 using BeveragePaymentApi.Data;
+using BeveragePaymentApi.Prices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
@@ -67,6 +68,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImageApiService, ImageApiService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<IPriceService, PriceService>();
+builder.Services.AddScoped<IPriceRepository, PriceRepository>();
+
+
 
 
 builder.Services.ConfigureApplicationCookie(options =>

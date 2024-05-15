@@ -1,8 +1,7 @@
 ﻿using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Exceptions;
-using BeveragePaymentApi.Repositories;
 
-namespace BeveragePaymentApi.Services
+namespace BeveragePaymentApi.Prices
 {
     public class PriceService : IPriceService
     {
