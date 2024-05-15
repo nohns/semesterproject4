@@ -49,8 +49,16 @@ public class BeveragesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Beverage>> GetById(int id)
     {
-        var beverage = await _beverageService.GetById(id);
-        return Ok(beverage);
+        try
+        {
+            var beverage = await _beverageService.GetById(id);
+            return Ok(beverage);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+
+        }
     }
 
     /// <summary>
@@ -63,9 +71,19 @@ public class BeveragesController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Beverage>> Post(Beverage beverage)
     {
-
-        var beverageCreated = await _beverageService.Create(beverage);
-        return CreatedAtRoute("GetById", new { id = beverageCreated.BeverageId }, value: beverageCreated);
+        try
+        {
+            var beverageCreated = await _beverageService.Create(beverage);
+            return CreatedAtRoute("GetById", new { id = beverageCreated.BeverageId }, value: beverageCreated);
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpPost]
@@ -95,8 +113,20 @@ public class BeveragesController : Controller
             ImageSrc = imgUrl
         };
 
-        var beverageCreated = await _beverageService.Create(NewBeverage);
-        return CreatedAtRoute("GetById", new { id = beverageCreated.BeverageId }, value: beverageCreated);
+        try
+        {
+
+            var beverageCreated = await _beverageService.Create(NewBeverage);
+            return CreatedAtRoute("GetById", new { id = beverageCreated.BeverageId }, value: beverageCreated);
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -138,8 +168,19 @@ public class BeveragesController : Controller
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(int id)
     {
-        await _beverageService.Delete(id);
-        return NoContent();
+        try
+        {
+            await _beverageService.Delete(id);
+            return NoContent();
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpGet("{id}/claim", Name = "Claim beverage price")]
@@ -147,11 +188,19 @@ public class BeveragesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClaimBeveragePrice(int id)
     {
-        var beverage = await _beverageService.GetLatestPrice(id);
-        if (beverage == null) return NotFound("Beverage not found");
-
-
-        return Ok();
+        try
+        {
+            var beverage = await _beverageService.GetLatestPrice(id);
+            return Ok();
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
 }
