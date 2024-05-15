@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { client } from "../axios/axios";
+import { Beverage } from "../types/beverage";
 
 export interface PostBeverageRequest {
   beverage: Beverage;

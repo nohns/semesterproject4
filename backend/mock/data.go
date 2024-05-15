@@ -1,7 +1,6 @@
 package mock
 
 import (
-	"fmt"
 	"time"
 
 	pe "github.com/nohns/semesterproject4"
@@ -25,11 +24,11 @@ func makeMock() mockData {
 		histories: []pe.History{
 			{
 				Beverage: pe.Beverage{
-					ID:         "1",
-					Name:       "Blå vand",
-					Desc:       "Den er rimelig fucking blå og så er der vand i",
-					ImageSrc:   "/images/vand.jpg",
-					LastUpdate: time.Now().Add(-7 * time.Second),
+					ID:              "1",
+					Name:            "Blå vand",
+					Desc:            "Den er rimelig fucking blå og så er der vand i",
+					ImageSrc:        "/images/vand.jpg",
+					LastPriceUpdate: time.Now().Add(-7 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      50,
 						MinPrice:      15,
@@ -69,11 +68,11 @@ func makeMock() mockData {
 			},
 			{
 				Beverage: pe.Beverage{
-					ID:         "2",
-					Name:       "Ceres Top",
-					Desc:       "Fin aarhus øl ja tak",
-					ImageSrc:   "/images/bajselademad.jpg",
-					LastUpdate: time.Now().Add(-9 * time.Second),
+					ID:              "2",
+					Name:            "Ceres Top",
+					Desc:            "Fin aarhus øl ja tak",
+					ImageSrc:        "/images/bajselademad.jpg",
+					LastPriceUpdate: time.Now().Add(-9 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      25,
 						MinPrice:      10,
@@ -113,11 +112,11 @@ func makeMock() mockData {
 			},
 			{
 				Beverage: pe.Beverage{
-					ID:         "3",
-					Name:       "Sort vand",
-					Desc:       "Falsk blå vand 🤬",
-					ImageSrc:   "/images/vand.jpg",
-					LastUpdate: time.Now().Add(-5 * time.Second),
+					ID:              "3",
+					Name:            "Sort vand",
+					Desc:            "Falsk blå vand 🤬",
+					ImageSrc:        "/images/vand.jpg",
+					LastPriceUpdate: time.Now().Add(-5 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      50,
 						MinPrice:      15,
@@ -157,11 +156,11 @@ func makeMock() mockData {
 			},
 			{
 				Beverage: pe.Beverage{
-					ID:         "4",
-					Name:       "Nnguaq",
-					Desc:       "En af de bedre drinks i byen",
-					ImageSrc:   "/images/vand.jpg",
-					LastUpdate: time.Now().Add(-2 * time.Second),
+					ID:              "4",
+					Name:            "Nnguaq",
+					Desc:            "En af de bedre drinks i byen",
+					ImageSrc:        "/images/vand.jpg",
+					LastPriceUpdate: time.Now().Add(-2 * time.Second),
 					Params: pe.PricingParams{
 						MaxPrice:      50,
 						MinPrice:      25,
@@ -204,13 +203,14 @@ func makeMock() mockData {
 
 	for i, h := range m.histories {
 		deductsecs := time.Duration(len(h.Prices)-1) * 10 * time.Second
-		at := h.Beverage.LastUpdate.Add(-deductsecs)
+		at := h.Beverage.LastPriceUpdate.Add(-deductsecs)
 		for j := range m.histories[i].Prices {
 			m.histories[i].Prices[j].At = at
 			at = at.Add(10 * time.Second)
 		}
 
-		fmt.Printf("Latest update item %s: %v\n", h.Beverage.Name, h.Beverage.LastUpdate)
+		// Base price is the same as initial price
+		m.histories[i].Beverage.Params.BasePrice = h.Prices[len(h.Prices)-1].Price
 	}
 
 	return m

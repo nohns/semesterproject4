@@ -146,6 +146,25 @@ func (e *Engine) TrackItem(id string, params ItemParams) error {
 		econf:  e.conf,
 	})
 
+	// Self-starting actor if engine is already running
+	if e.state == engineStateRunning {
+		go e.actors[id].start()
+	}
+
+	return nil
+}
+
+func (e *Engine) UntrackItem(id string) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	a, ok := e.actors[id]
+	if !ok {
+		return ErrItemNotFound
+	}
+
+	a.terminate()
+	delete(e.actors, id)
 	return nil
 }
 

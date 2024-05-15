@@ -14,6 +14,7 @@ import (
 	pe "github.com/nohns/semesterproject4"
 	"github.com/nohns/semesterproject4/engine"
 	"github.com/nohns/semesterproject4/mock"
+	"github.com/nohns/semesterproject4/trigger"
 	"github.com/nohns/semesterproject4/websocket"
 
 	_ "net/http/pprof"
@@ -24,9 +25,12 @@ type app struct {
 	histProvider pe.HistoryProvider
 	bevRepo      pe.BeverageRepo
 	currPricer   pe.CurrPricer
-	logger       *slog.Logger
-	sockMan      *websocket.Manager
-	priceEngine  *engine.Engine
+	trigsrv      interface {
+		ListenAndServe() error
+	}
+	logger      *slog.Logger
+	sockMan     *websocket.Manager
+	priceEngine *engine.Engine
 }
 
 func BootstrapMocked() (*app, error) {
@@ -62,26 +66,66 @@ func BootstrapMocked() (*app, error) {
 		return nil, fmt.Errorf("failed to get beverages: %v", err)
 	}
 	for _, bev := range bevs {
-		price, err := a.currPricer.CurrentPrice(context.TODO(), bev.ID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get current price: %v", err)
-		}
-
-		err = eng.TrackItem(bev.ID, engine.ItemParams{
-			MaxPrice:      bev.Params.MaxPrice,
-			MinPrice:      bev.Params.MinPrice,
-			InitialPrice:  price,
-			BuyMultiplier: bev.Params.BuyMultiplier,
-			HalfTime:      int(bev.Params.HalfTime / time.Second),
-			LastUpdate:    bev.LastUpdate,
-		})
+		err = eng.TrackItem(bev.ID, toItemParams(bev))
 		if err != nil {
 			return nil, fmt.Errorf("failed to track item: %v", err)
 		}
 	}
 	a.priceEngine = eng
 
+	// Triggers for receiving notifications from ASP.NET backend
+	a.trigsrv = trigger.New(":9099", a.logger, a) // Use the app itself as the trigger handler
+
 	return a, nil
+}
+
+// BevUpdated is a handler triggered when a bartender updates a beverage.
+// Handler makes sure the updated beverages is reflected in the pricing of
+// beverages. Satisfies the triggerHandler interface defined in trigger
+// package.
+func (a *app) BevUpdated(ctx context.Context, bevID string) error {
+	bev, err := a.bevRepo.BeverageByID(ctx, bevID)
+	if err != nil {
+		return fmt.Errorf("bevrepo beverageByID: %v", err)
+	}
+	if err := a.priceEngine.TweakItem(bev.ID, toItemParams(bev)); err != nil {
+		return fmt.Errorf("engine tweakItem: %v", err)
+	}
+	return nil
+}
+
+// BevOrdered is a handler triggered when an order has been furfilled. Handler
+// notifies the pricing engine of the increased demand. Satisfies the
+// triggerHandler interface defined in trigger package.
+func (a *app) BevOrdered(ctx context.Context, bevID string, qty int) error {
+	if err := a.priceEngine.OrderItem(bevID, qty); err != nil {
+		return fmt.Errorf("engine orderItem: %v", err)
+	}
+	return nil
+}
+
+// BevAdded is a handler triggered when a new beverage is added to system.
+// Handler makes sure that the new beverage's price is tracked in the engine.
+// Satisfies the triggerHandler interface defined in trigger package.
+func (a *app) BevAdded(ctx context.Context, bevID string) error {
+	bev, err := a.bevRepo.BeverageByID(ctx, bevID)
+	if err != nil {
+		return fmt.Errorf("bevrepo beverageByID: %v", err)
+	}
+	if err := a.priceEngine.TrackItem(bevID, toItemParams(bev)); err != nil {
+		return fmt.Errorf("engine untrackItem: %v", err)
+	}
+	return nil
+}
+
+// BevRemoved is a handler triggered when a beverage is removed by a bartender.
+// Handler untracks the beverage in the engine. Satisfies the triggerHandler
+// interface defined in trigger package.
+func (a *app) BevRemoved(ctx context.Context, bevID string) error {
+	if err := a.priceEngine.UntrackItem(bevID); err != nil {
+		return fmt.Errorf("engine untrackItem: %v", err)
+	}
+	return nil
 }
 
 func (a *app) Run(ctx context.Context) error {
@@ -101,6 +145,9 @@ func (a *app) Run(ctx context.Context) error {
 	for _, bev := range bevs {
 		go a.tempSimulateDemand(bev)
 	}
+
+	// Listen for notification triggers
+	go a.trigsrv.ListenAndServe()
 
 	// Blocking to keep the main process alive
 	signals := make(chan os.Signal, 1)
@@ -188,4 +235,15 @@ func (a *app) onInitialConn(c *websocket.Conn) {
 		return
 	}
 	c.Send(b)
+}
+
+func toItemParams(bev pe.Beverage) engine.ItemParams {
+	return engine.ItemParams{
+		MaxPrice:      bev.Params.MaxPrice,
+		MinPrice:      bev.Params.MinPrice,
+		InitialPrice:  bev.Params.BasePrice,
+		BuyMultiplier: bev.Params.BuyMultiplier,
+		HalfTime:      int(bev.Params.HalfTime / time.Second),
+		LastUpdate:    bev.LastPriceUpdate,
+	}
 }

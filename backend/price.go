@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+// HistoryLen is the amount of prices that a history should at least contain.
+const HistoryLen = 20
+
 type Update struct {
 	BevID string    `json:"beverageId"`
 	Price float64   `json:"price"`
@@ -40,6 +43,7 @@ type HistoryProvider interface {
 
 type BeverageRepo interface {
 	FindBeverages(ctx context.Context) ([]Beverage, error)
+	BeverageByID(ctx context.Context, bevID string) (Beverage, error)
 }
 
 type CurrPricer interface {
