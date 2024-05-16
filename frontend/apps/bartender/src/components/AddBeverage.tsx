@@ -29,6 +29,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
 
+const MAX_FILE_SIZE = 500000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
 export default function AddBeverage() {
   const createBeverage = usePostBeverage();
 
@@ -39,17 +47,25 @@ export default function AddBeverage() {
     description: z.string().min(3, {
       message: "Beskrivelsen skal være mindst 3 bogstaver lang.",
     }),
-    ImageSrc: z.string().url({
-      message: "Billedet skal være en URL.",
-    }),
-    basePrice: z.number().min(1, {
+    imageSrc: z
+      .any()
+      .refine((files) => files?.length == 1, "Image is required.")
+      .refine(
+        (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+        `Max file size is 5MB.`
+      )
+      .refine(
+        (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+        ".jpg, .jpeg, .png and .webp files are accepted."
+      ),
+    basePrice: z.coerce.number().min(1, {
       message: "Basissprisen skal være mindst 1 kr.",
     }),
 
-    minPrice: z.number().min(1, {
+    minPrice: z.coerce.number().min(1, {
       message: "Minsprisen skal være mindst 1 kr.",
     }),
-    maxPrice: z.number().min(1, {
+    maxPrice: z.coerce.number().min(1, {
       message: "Maksprisen skal være mindst 1 kr.",
     }),
     active: z.boolean(),
@@ -60,7 +76,7 @@ export default function AddBeverage() {
     defaultValues: {
       name: "",
       description: "",
-      ImageSrc: "",
+      imageSrc: "",
       basePrice: 0,
       minPrice: 0,
       maxPrice: 0,
@@ -73,37 +89,6 @@ export default function AddBeverage() {
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
-
-  /*  const addBeverageClick = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!beverageName || !description || !basePrice || !maxPrice || !minPrice) {
-      setError("Please fill out all fields");
-      return;
-    }
-    createBeverage.mutate({
-      beverage: {
-        name: beverageName,
-        description: description,
-        basePrice: basePrice,
-        maxPrice: maxPrice,
-        minPrice: minPrice,
-      },
-    });
-  }; */
-
-  /*  const handleInputChange =
-    <T,>(setter: React.Dispatch<React.SetStateAction<T>>) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setError("");
-      const value = e.target.value;
-      setter(
-        typeof value === "string" && value !== "" && !isNaN(Number(value))
-          ? (Number(value) as unknown as T)
-          : value === ""
-            ? (undefined as unknown as T)
-            : (value as unknown as T)
-      );
-    }; */
 
   return (
     <>
@@ -151,14 +136,20 @@ export default function AddBeverage() {
                 )}
               />
               {/*ImageSrc*/}
+
               <FormField
                 control={form.control}
-                name="ImageSrc"
+                name="imageSrc"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Billede URL</FormLabel>
                     <FormControl>
-                      <Input lang="dk" type="file" {...field} />
+                      <Input
+                        accept=".jpeg, jpg, .png, .webp"
+                        lang="dk"
+                        type="file"
+                        {...field}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -231,8 +222,12 @@ export default function AddBeverage() {
           </Form>
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
 
-      {/*  <Dialog.Root>
+{
+  /*  <Dialog.Root>
         <Dialog.Trigger asChild>
           <Button className=" text-violet11 shadow-blackA4 hover:bg-mauve3 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none not:focus:shadow-blackA4">
             Add Beverage
@@ -350,7 +345,36 @@ export default function AddBeverage() {
             </Dialog.Close>
           </Dialog.Content>
         </Dialog.Portal>
-      </Dialog.Root> */}
-    </>
-  );
+      </Dialog.Root> */
 }
+
+/*  const addBeverageClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!beverageName || !description || !basePrice || !maxPrice || !minPrice) {
+      setError("Please fill out all fields");
+      return;
+    }
+    createBeverage.mutate({
+      beverage: {
+        name: beverageName,
+        description: description,
+        basePrice: basePrice,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+      },
+    });
+  }; */
+
+/*  const handleInputChange =
+    <T,>(setter: React.Dispatch<React.SetStateAction<T>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setError("");
+      const value = e.target.value;
+      setter(
+        typeof value === "string" && value !== "" && !isNaN(Number(value))
+          ? (Number(value) as unknown as T)
+          : value === ""
+            ? (undefined as unknown as T)
+            : (value as unknown as T)
+      );
+    }; */
