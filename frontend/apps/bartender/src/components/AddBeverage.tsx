@@ -26,12 +26,21 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  CheckCircledIcon,
+  ExclamationTriangleIcon,
+  TriangleDownIcon,
+} from "@radix-ui/react-icons";
 
 export default function AddBeverage() {
   const createBeverage = usePostBeverage();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<
+    null | "success" | "error"
+  >(null); // State for submission status
 
   const formSchema = z.object({
     name: z.string().min(3, {
@@ -96,14 +105,25 @@ export default function AddBeverage() {
       onSuccess: () => {
         console.log("Beverage created successfully");
         // Handle additional logic here
+        setSubmissionStatus("success");
         queryClient.invalidateQueries({ queryKey: ["beverages"] });
-        setOpen(false);
+        setTimeout(() => {
+          setOpen(false);
+          setSubmissionStatus(null);
+        }, 1500);
       },
       onError: (error) => {
         console.error("Error creating beverage:", error);
+        setSubmissionStatus("error");
       },
     });
   }
+
+  useEffect(() => {
+    if (!open) {
+      setSubmissionStatus(null);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -200,7 +220,7 @@ export default function AddBeverage() {
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
                     />
                   </FormControl>
                   <FormMessage />
@@ -218,7 +238,7 @@ export default function AddBeverage() {
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
                     />
                   </FormControl>
                   <FormMessage />
@@ -249,6 +269,28 @@ export default function AddBeverage() {
             </Button>
           </form>
         </Form>
+        {submissionStatus && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`mt-4 p-4 rounded-md text-white ${
+              submissionStatus === "success" ? "bg-green-500" : "bg-red-500"
+            }`}
+          >
+            {submissionStatus === "success" ? (
+              <div className="flex items-center gap-x-4">
+                <CheckCircledIcon className="h-12 w-12" />
+                Produktet er tilføjet!
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-4">
+                <ExclamationTriangleIcon className="h-12 w-12" />
+                Der opstod en fejl. Prøv igen.
+              </div>
+            )}
+          </motion.div>
+        )}
       </DialogContent>
     </Dialog>
   );
