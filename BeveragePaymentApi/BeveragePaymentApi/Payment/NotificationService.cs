@@ -25,7 +25,7 @@ public class NotificationService
             return SendNotificationAsync("/beverageOrdered", data);
         }
 
-        public Task SendBeverageCreatedNotificationAsync(Beverage beverage)
+        public Task SendBeverageAddedNotificationAsync(Beverage beverage)
         {
             var data = new { beverageId = beverage.BeverageId };
             return SendNotificationAsync("/beverageAdded", data);
@@ -37,7 +37,7 @@ public class NotificationService
             return SendNotificationAsync("/beverageUpdated", data);
         }
 
-        public Task SendBeverageDeletedNotificationAsync(Beverage beverage)
+        public Task SendBeverageRemovedNotificationAsync(Beverage beverage)
         {
             var data = new { beverageId = beverage.BeverageId};
             return SendNotificationAsync("/beverageRemoved", data);

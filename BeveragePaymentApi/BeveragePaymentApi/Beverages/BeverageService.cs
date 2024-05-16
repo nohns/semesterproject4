@@ -32,72 +32,44 @@ public class BeverageService : IBeverageService
 
   public async Task<Beverage> Create(BeverageDto dto)
   {
-    if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
-    if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
+    ValidatePrice(dto);
 
-    var newBeverage = new Beverage();
-    newBeverage.Name = dto.Name;
-    newBeverage.Description = dto.Description;
-    newBeverage.ImageSrc = dto.ImageSrc;
-    newBeverage.BasePrice = dto.BasePrice;
-    newBeverage.MinPrice = dto.MinPrice;
-    newBeverage.MaxPrice = dto.MaxPrice;
+    var newBeverage = dto.ToBeverage();
 
     var beverageResult = await _beverageRepository.Create(newBeverage);
-    await _notificationService.SendBeverageCreatedNotificationAsync(beverageResult);
+    await _notificationService.SendBeverageAddedNotificationAsync(beverageResult);
     return beverageResult;
   }
 
   public async Task<Beverage> Update(int id, BeverageDto dto)
   {
-      Console.WriteLine($"Updating beverage with ID: {id}");
-
       var existingBeverage = await _beverageRepository.GetById(id);
       if (existingBeverage == null)
       {
-          Console.WriteLine($"Beverage not found with ID: {id}");
           throw new NotFoundException("Beverage was not found.");
       }
 
-      if (dto.MinPrice > dto.BasePrice)
-      {
-          Console.WriteLine("Validation failed: Min price cannot be higher than base price.");
-          throw new ValidationException("Min price cannot be higher than base price.");
-      }
+      ValidatePrice(dto);
 
-      if (dto.MaxPrice < dto.BasePrice)
-      {
-          Console.WriteLine("Validation failed: Max price cannot be lower than base price.");
-          throw new ValidationException("Max price cannot be lower than base price.");
-      }
+      existingBeverage = dto.ToBeverage(existingBeverage);
 
-      // Print out the DTO
-      Console.WriteLine($"Received DTO: {JsonConvert.SerializeObject(dto)}");
+      var updatedBeverage = await _beverageRepository.Update(existingBeverage);
+      await _notificationService.SendBeverageUpdatedNotificationAsync(updatedBeverage);
 
-      existingBeverage.Name = dto.Name;
-      existingBeverage.Description = dto.Description;
-      existingBeverage.ImageSrc = dto.ImageSrc;
-      existingBeverage.BasePrice = dto.BasePrice;
-      existingBeverage.MinPrice = dto.MinPrice;
-      existingBeverage.MaxPrice = dto.MaxPrice;
-      existingBeverage.IsActive = dto.IsActive;
-
-    var updatedBeverage = await _beverageRepository.Update(existingBeverage);
-    await _notificationService.SendBeverageUpdatedNotificationAsync(updatedBeverage);
-    return updatedBeverage;
+      return updatedBeverage;
   }
 
 
 
 
-    public async Task Delete(int id)
+  public async Task Delete(int id)
   {
     //Check if beverage exis
     var beverage = await _beverageRepository.GetById(id);
     if (beverage == null) throw new NotFoundException("Beverage was not found.");
     await _beverageRepository.Delete(id);
 
-    await _notificationService.SendBeverageDeletedNotificationAsync(beverage);
+    await _notificationService.SendBeverageRemovedNotificationAsync(beverage);
   }
 
   public async Task<float> GetLatestPrice(int id)
@@ -112,6 +84,13 @@ public class BeverageService : IBeverageService
 
     return latestPrice.Amount;
 
+  }
+
+  private void ValidatePrice(BeverageDto dto)
+  {
+    if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
+    if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
+    if (dto.MinPrice > dto.MaxPrice) throw new ValidationException("Min price cannot be higher than max price.");
   }
 
 }
