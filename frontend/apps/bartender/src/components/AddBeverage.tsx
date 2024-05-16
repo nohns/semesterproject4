@@ -224,17 +224,6 @@ export default function AddBeverage() {
               control={form.control}
               name="active"
               render={({ field }) => (
-                /*  <FormItem>
-                  <FormLabel>Aktiv</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="checkbox"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem> */
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl>
                     <Checkbox
@@ -242,7 +231,9 @@ export default function AddBeverage() {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm font-normal">Aktiv</FormLabel>
+                  <FormLabel className="text-sm font-normal">
+                    Aktiver produkt
+                  </FormLabel>
                 </FormItem>
               )}
             />
