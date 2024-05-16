@@ -19,6 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -56,7 +57,7 @@ export default function AddBeverage() {
         message: "Maksprisen skal være mindst 1 kr.",
       })
     ),
-    active: z.boolean(),
+    active: z.boolean().default(true),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,6 +85,8 @@ export default function AddBeverage() {
       },
       file: values.ImageSrc,
     };
+
+    console.log("Creating beverage:", beverageData);
 
     createBeverage.mutate(beverageData, {
       onSuccess: () => {
@@ -148,6 +151,7 @@ export default function AddBeverage() {
                   <FormLabel>Billede</FormLabel>
                   <FormControl>
                     <Input
+                      lang="da"
                       type="file"
                       accept="image/*"
                       onChange={(e) =>
@@ -172,7 +176,7 @@ export default function AddBeverage() {
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
                     />
                   </FormControl>
                   <FormMessage />
@@ -220,7 +224,7 @@ export default function AddBeverage() {
               control={form.control}
               name="active"
               render={({ field }) => (
-                <FormItem>
+                /*  <FormItem>
                   <FormLabel>Aktiv</FormLabel>
                   <FormControl>
                     <Input
@@ -230,6 +234,15 @@ export default function AddBeverage() {
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem> */
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">Aktiv</FormLabel>
                 </FormItem>
               )}
             />
