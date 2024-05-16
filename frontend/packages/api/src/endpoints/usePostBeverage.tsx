@@ -1,13 +1,10 @@
-/** @format */
-
 import { useMutation } from "@tanstack/react-query";
-
 import { client } from "../axios/axios";
 import { Beverage } from "../types/beverage";
 
 export interface PostBeverageRequest {
   file: File;
-  beverage: Beverage;
+  beverage: Omit<Beverage, "beverageId" | "imageSrc" | "totalSales" | "prices">;
 }
 
 export interface PostBeverageResponse {
@@ -16,16 +13,23 @@ export interface PostBeverageResponse {
 
 const postBeverage = async (data: PostBeverageRequest) => {
   const formData = new FormData();
-  formData.append("file", data.file);
-  formData.append("beverage", JSON.stringify(data.beverage));
+  formData.append("File", data.file);
+  formData.append("Name", data.beverage.name);
+  formData.append("Description", data.beverage.description);
+  formData.append("BasePrice", data.beverage.basePrice.toString());
+  formData.append("MinPrice", data.beverage.minPrice.toString());
+  formData.append("MaxPrice", data.beverage.maxPrice.toString());
+  formData.append("Active", data.beverage.isActive.toString());
 
-  return await client.post<PostBeverageResponse>("/beverages", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-
-  //return await client.post<PostBeverageResponse>("/beverages", data.beverage);
+  return await client.post<PostBeverageResponse>(
+    "/beverages/withImage",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 
 export const usePostBeverage = () => {
