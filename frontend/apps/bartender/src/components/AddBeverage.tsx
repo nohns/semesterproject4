@@ -1,19 +1,80 @@
-import { Button } from "../../../../packages/ui/src/components/ui/button";
-import * as Dialog from "@radix-ui/react-dialog";
+/** @format */
+
+//import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { usePostBeverage } from "../../../../packages/api/src/endpoints/usePostBeverage";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@repo/ui";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Input } from "./ui/input";
 
 export default function AddBeverage() {
   const createBeverage = usePostBeverage();
-  const [beverageName, setBeverageName] = useState("");
-  const [description, setDescription] = useState("");
-  const [basePrice, setBasePrice] = useState<number | undefined>(undefined);
-  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
-  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
-  const [error, setError] = useState("");
 
-  const addBeverageClick = (e: React.FormEvent<HTMLFormElement>) => {
+  const formSchema = z.object({
+    name: z.string().min(3, {
+      message: "Navnet skal være mindst 3 bogstaver langt.",
+    }),
+    description: z.string().min(3, {
+      message: "Beskrivelsen skal være mindst 3 bogstaver lang.",
+    }),
+    ImageSrc: z.string().url({
+      message: "Billedet skal være en URL.",
+    }),
+    basePrice: z.number().min(1, {
+      message: "Basissprisen skal være mindst 1 kr.",
+    }),
+
+    minPrice: z.number().min(1, {
+      message: "Minsprisen skal være mindst 1 kr.",
+    }),
+    maxPrice: z.number().min(1, {
+      message: "Maksprisen skal være mindst 1 kr.",
+    }),
+    active: z.boolean(),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      ImageSrc: "",
+      basePrice: 0,
+      minPrice: 0,
+      maxPrice: 0,
+      active: true,
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+  }
+
+  /*  const addBeverageClick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!beverageName || !description || !basePrice || !maxPrice || !minPrice) {
       setError("Please fill out all fields");
@@ -28,9 +89,9 @@ export default function AddBeverage() {
         minPrice: minPrice,
       },
     });
-  };
+  }; */
 
-  const handleInputChange =
+  /*  const handleInputChange =
     <T,>(setter: React.Dispatch<React.SetStateAction<T>>) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setError("");
@@ -42,11 +103,136 @@ export default function AddBeverage() {
             ? (undefined as unknown as T)
             : (value as unknown as T)
       );
-    };
+    }; */
 
   return (
     <>
-      <Dialog.Root>
+      <Dialog>
+        <DialogTrigger>
+          <Button className="w-full">Tilføj nyt produkt</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tilføj nyt produkt</DialogTitle>
+            <DialogDescription>
+              Udfyld informationerne her omkring det nye produkt
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/*Name*/}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Navn</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*Description*/}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Beskrivelse</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*ImageSrc*/}
+              <FormField
+                control={form.control}
+                name="ImageSrc"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Billede URL</FormLabel>
+                    <FormControl>
+                      <Input lang="dk" type="file" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*BasePrice*/}
+              <FormField
+                control={form.control}
+                name="basePrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Basisspris</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*MinPrice*/}
+              <FormField
+                control={form.control}
+                name="minPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minspris</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*MaxPrice*/}
+              <FormField
+                control={form.control}
+                name="maxPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Makspris</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*Active*/}
+              <FormField
+                control={form.control}
+                name="active"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Aktiv</FormLabel>
+                    <FormControl>
+                      <Input type="checkbox" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit">Tilføj produktet</Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/*  <Dialog.Root>
         <Dialog.Trigger asChild>
           <Button className=" text-violet11 shadow-blackA4 hover:bg-mauve3 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none not:focus:shadow-blackA4">
             Add Beverage
@@ -164,7 +350,7 @@ export default function AddBeverage() {
             </Dialog.Close>
           </Dialog.Content>
         </Dialog.Portal>
-      </Dialog.Root>
+      </Dialog.Root> */}
     </>
   );
 }

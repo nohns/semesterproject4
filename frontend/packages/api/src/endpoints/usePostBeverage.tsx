@@ -6,6 +6,7 @@ import { client } from "../axios/axios";
 import { Beverage } from "../types/beverage";
 
 export interface PostBeverageRequest {
+  file: File;
   beverage: Beverage;
 }
 
@@ -14,7 +15,17 @@ export interface PostBeverageResponse {
 }
 
 const postBeverage = async (data: PostBeverageRequest) => {
-  return await client.post<PostBeverageResponse>("/beverages", data.beverage);
+  const formData = new FormData();
+  formData.append("file", data.file);
+  formData.append("beverage", JSON.stringify(data.beverage));
+
+  return await client.post<PostBeverageResponse>("/beverages", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  //return await client.post<PostBeverageResponse>("/beverages", data.beverage);
 };
 
 export const usePostBeverage = () => {
