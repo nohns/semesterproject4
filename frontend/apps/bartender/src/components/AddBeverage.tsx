@@ -25,9 +25,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 export default function AddBeverage() {
   const createBeverage = usePostBeverage();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
 
   const formSchema = z.object({
     name: z.string().min(3, {
@@ -92,6 +96,8 @@ export default function AddBeverage() {
       onSuccess: () => {
         console.log("Beverage created successfully");
         // Handle additional logic here
+        queryClient.invalidateQueries({ queryKey: ["beverages"] });
+        setOpen(false);
       },
       onError: (error) => {
         console.error("Error creating beverage:", error);
@@ -100,8 +106,8 @@ export default function AddBeverage() {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button className="w-full">Tilføj nyt produkt</Button>
       </DialogTrigger>
       <DialogContent>
@@ -171,7 +177,7 @@ export default function AddBeverage() {
               name="basePrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Basisspris</FormLabel>
+                  <FormLabel>Basis pris</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -189,7 +195,7 @@ export default function AddBeverage() {
               name="minPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Minspris</FormLabel>
+                  <FormLabel>Minimum pris</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -207,7 +213,7 @@ export default function AddBeverage() {
               name="maxPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Makspris</FormLabel>
+                  <FormLabel>Maksimum pris</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -238,7 +244,9 @@ export default function AddBeverage() {
               )}
             />
 
-            <Button type="submit">Tilføj produktet</Button>
+            <Button className="w-full" type="submit">
+              Tilføj produktet
+            </Button>
           </form>
         </Form>
       </DialogContent>
