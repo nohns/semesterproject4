@@ -27,11 +27,11 @@ public BeveragesController(IBeverageService beverageService, IImageApiService im
 }
 
 
-    /// <summary>
-    /// Gets all beverages
-    /// </summary>
-    /// <returns>A list of Beverages</returns>
-    [HttpGet]
+  /// <summary>
+  /// Gets all beverages
+  /// </summary>
+  /// <returns>A list of Beverages</returns>
+  [HttpGet]
   public async Task<ActionResult<IEnumerable<Beverage>>> Get()
   {
     var beverages = await _beverageService.GetAllBeverages();
@@ -164,12 +164,12 @@ public BeveragesController(IBeverageService beverageService, IImageApiService im
 
 
 
-    /// <summary>
-    /// Deletes a Beverage
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>Nothing.</returns>
-    [HttpDelete("{id}")]
+  /// <summary>
+  /// Deletes a Beverage
+  /// </summary>
+  /// <param name="id"></param>
+  /// <returns>Nothing.</returns>
+  [HttpDelete("{id}")]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   [ProducesResponseType(StatusCodes.Status500InternalServerError)]
