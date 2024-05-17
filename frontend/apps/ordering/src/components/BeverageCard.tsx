@@ -27,7 +27,13 @@ function BeverageCard({
           //src={beverage.imageSrc}
           src={beverage.imageSrc}
           width={200}
+          onError={(e) => {
+            e.currentTarget.src =
+              "https://c.tenor.com/ZAMoMuQgf9UAAAAC/tenor.gifv";
+            e.currentTarget.style.borderRadius = "50%";
+          }} // Replace with your fallback URL
         />
+
         <div className="flex flex-col w-2/3  ">
           <h1 className="font-mono text-4xl">{beverage.name}</h1>
           <h3 className="font-thin mb-2">{beverage.description}</h3>
