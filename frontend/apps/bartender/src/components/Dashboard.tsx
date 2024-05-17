@@ -91,7 +91,7 @@ function Dashboard() {
     return 0;
   });
 
-   if (isLoading) {
+ /*  if (isLoading) {
     return (
       <Card>
         <CardHeader>Loading beverages...</CardHeader>
@@ -105,7 +105,7 @@ function Dashboard() {
         <CardHeader>Error fetching beverages.</CardHeader>
       </Card>
     );
-  } 
+  } */
 
   return (
     <Card>
