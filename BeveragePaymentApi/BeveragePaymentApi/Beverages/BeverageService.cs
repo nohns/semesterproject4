@@ -91,6 +91,7 @@ public class BeverageService : IBeverageService
     if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
     if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
     if (dto.MinPrice > dto.MaxPrice) throw new ValidationException("Min price cannot be higher than max price.");
+    if (dto.MinPrice < 0 || dto.BasePrice < 0 || dto.MaxPrice < 0) throw new ValidationException("Prices cannot be negative.");
   }
 
 }
