@@ -3,14 +3,14 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { client } from "../axios/axios";
-import { Beverage } from "../types/beverage";
+import { BeverageDTO } from "../types/beverage";
 
 export interface PostBeverageRequest {
-  beverage: Beverage;
+  beverage: BeverageDTO;
 }
 
 export interface PostBeverageResponse {
-  beverage: Beverage;
+  beverage: BeverageDTO;
 }
 
 const postBeverage = async (data: PostBeverageRequest) => {

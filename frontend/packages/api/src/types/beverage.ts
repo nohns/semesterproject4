@@ -18,4 +18,13 @@ interface Beverage {
   prices: Price[];
 }
 
-export type { Beverage, Price };
+interface BeverageDTO {
+  name: string;
+  description: string;
+  //imageSrc: string;
+  basePrice: number;
+  minPrice: number;
+  maxPrice: number;
+}
+
+export type { Beverage, Price, BeverageDTO };
