@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { useGetBeverages, useDeleteBeverage } from "@repo/api";
 import { MoreHorizontal } from "Lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@repo/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui";
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import {
   Card,
   CardContent,
@@ -30,6 +30,7 @@ import { Button } from "@repo/ui";
 import EditBeverageModal from "./EditBeverageModal";
 import AddBeverage from "./AddBeverage";
 import { Beverage } from "../../../../packages/api/src/types/beverage";
+import { motion } from "framer-motion";
 
 type SortCriteria = "name" | "status" | "price" | "sales";
 type SortOrder = "asc" | "desc";
@@ -91,7 +92,7 @@ function Dashboard() {
     return 0;
   });
 
-   if (isLoading) {
+  if (isLoading) {
     return (
       <Card>
         <CardHeader>Loading beverages...</CardHeader>
@@ -105,7 +106,7 @@ function Dashboard() {
         <CardHeader>Error fetching beverages.</CardHeader>
       </Card>
     );
-  } 
+  }
 
   return (
     <Card>
@@ -151,8 +152,14 @@ function Dashboard() {
           </TableHeader>
           <TableBody>
             {sortedBeverages &&
-              sortedBeverages.map((beverage) => (
-                <TableRow key={beverage.beverageId}>
+              sortedBeverages.map((beverage, index) => (
+                <motion.tr
+                  key={beverage.beverageId}
+                  initial={{ opacity: 0, y: 50 }} // start with 0 opacity and slightly lower position
+                  animate={{ opacity: 1, y: 0 }} // animate to full opacity and original position
+                  exit={{ opacity: 0, y: 50 }} // animate out on exit
+                  transition={{ delay: index * 0.1 }} // delay each item's animation by its index to create a staggered effect
+                >
                   <TableCell className="hidden sm:table-cell">
                     <img
                       alt="Product image"
@@ -198,7 +205,7 @@ function Dashboard() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
-                </TableRow>
+                </motion.tr>
               ))}
           </TableBody>
         </Table>

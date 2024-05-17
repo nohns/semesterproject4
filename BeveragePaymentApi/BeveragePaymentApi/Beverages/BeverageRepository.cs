@@ -33,25 +33,9 @@ public class BeverageRepository : IBeverageRepository
 
     public async Task<Beverage> Update(Beverage beverage)
     {
-        var existingBeverage = await _context.Beverages.FindAsync(beverage.BeverageId);
-        if (existingBeverage == null)
-        {
-            throw new NotFoundException($"Beverage with ID {beverage.BeverageId} not found.");
-        }
-
-        // Update the properties
-        existingBeverage.Name = beverage.Name;
-        existingBeverage.Description = beverage.Description;
-        existingBeverage.ImageSrc = beverage.ImageSrc;
-        existingBeverage.BasePrice = beverage.BasePrice;
-        existingBeverage.MaxPrice = beverage.MaxPrice;
-        existingBeverage.MinPrice = beverage.MinPrice;
-        existingBeverage.IsActive = beverage.IsActive;
-
-        _context.Beverages.Update(existingBeverage);
+        _context.Beverages.Update(beverage);
         await _context.SaveChangesAsync();
-
-        return existingBeverage;
+        return beverage;
     }
 
 
@@ -60,7 +44,6 @@ public class BeverageRepository : IBeverageRepository
         var beverageToDelete = await _context.Beverages.FindAsync(id);
         if (beverageToDelete != null) _context.Beverages.Remove(beverageToDelete);
         await _context.SaveChangesAsync();
-
     }
 }
 

@@ -9,8 +9,9 @@ import {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@repo/ui";
+import { Input } from "@repo/ui";
+
 import { Button } from "@repo/ui";
 import { Beverage } from "../../../../packages/api/src/types/beverage";
 import { useQueryClient } from "@tanstack/react-query";

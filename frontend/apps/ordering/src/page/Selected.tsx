@@ -4,11 +4,11 @@ import { useLocation, useNavigate, Location } from "react-router-dom";
 import MobileContainer from "@/components/MobileContainer";
 import { ArrowLeftIcon } from "Lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Chart } from "@repo/ui";
+import { Button, Chart } from "@repo/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Beverage, HistoryEntry } from "@repo/api/index";
 import { BeveragePrice } from "@repo/ui/model/Beverage";
-import { Button } from "@/components/ui/button";
+
 import {
   ArrowBottomRightIcon,
   ArrowTopRightIcon,
@@ -276,7 +276,7 @@ function Selected() {
                                 variant="outline"
                                 onClick={() =>
                                   setCounter((prevCounter) =>
-                                    Math.max(1, prevCounter - 1),
+                                    Math.max(1, prevCounter - 1)
                                   )
                                 }
                               >
@@ -290,7 +290,7 @@ function Selected() {
                                 variant="outline"
                                 onClick={() =>
                                   setCounter((prevCounter) =>
-                                    Math.min(8, prevCounter + 1),
+                                    Math.min(8, prevCounter + 1)
                                   )
                                 }
                               >

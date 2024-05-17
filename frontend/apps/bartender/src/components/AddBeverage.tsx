@@ -1,7 +1,6 @@
 /** @format */
 
-// import { Cross2Icon } from "@radix-ui/react-icons";
-import { usePostBeverage } from "../../../../packages/api/src/endpoints/usePostBeverage";
+import { usePostBeverage } from "@repo/api";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { Button } from "@repo/ui";
 import {
   Form,
@@ -18,15 +17,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@repo/ui";
+import { Checkbox } from "@repo/ui";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "./ui/input";
+import { Input } from "@repo/ui";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  CheckCircledIcon,
+  ExclamationTriangleIcon,
+} from "@radix-ui/react-icons";
 
 export default function AddBeverage() {
   const createBeverage = usePostBeverage();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<
+    null | "success" | "error"
+  >(null); // State for submission status
 
   const formSchema = z.object({
     name: z.string().min(3, {
@@ -56,7 +68,7 @@ export default function AddBeverage() {
         message: "Maksprisen skal være mindst 1 kr.",
       })
     ),
-    active: z.boolean(),
+    active: z.boolean().default(true),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,20 +97,35 @@ export default function AddBeverage() {
       file: values.ImageSrc,
     };
 
+    console.log("Creating beverage:", beverageData);
+
     createBeverage.mutate(beverageData, {
       onSuccess: () => {
         console.log("Beverage created successfully");
         // Handle additional logic here
+        setSubmissionStatus("success");
+        queryClient.invalidateQueries({ queryKey: ["beverages"] });
+        setTimeout(() => {
+          setOpen(false);
+          setSubmissionStatus(null);
+        }, 1500);
       },
       onError: (error) => {
         console.error("Error creating beverage:", error);
+        setSubmissionStatus("error");
       },
     });
   }
 
+  useEffect(() => {
+    if (!open) {
+      setSubmissionStatus(null);
+    }
+  }, [open]);
+
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button className="w-full">Tilføj nyt produkt</Button>
       </DialogTrigger>
       <DialogContent>
@@ -148,7 +175,9 @@ export default function AddBeverage() {
                   <FormLabel>Billede</FormLabel>
                   <FormControl>
                     <Input
+                      lang="da"
                       type="file"
+                      accept="image/*"
                       onChange={(e) =>
                         field.onChange(
                           e.target.files ? e.target.files[0] : null
@@ -166,12 +195,12 @@ export default function AddBeverage() {
               name="basePrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Basisspris</FormLabel>
+                  <FormLabel>Basis pris</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
                     />
                   </FormControl>
                   <FormMessage />
@@ -184,12 +213,12 @@ export default function AddBeverage() {
               name="minPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Minspris</FormLabel>
+                  <FormLabel>Minimum pris</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
                     />
                   </FormControl>
                   <FormMessage />
@@ -202,12 +231,12 @@ export default function AddBeverage() {
               name="maxPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Makspris</FormLabel>
+                  <FormLabel>Maksimum pris</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
                     />
                   </FormControl>
                   <FormMessage />
@@ -219,23 +248,47 @@ export default function AddBeverage() {
               control={form.control}
               name="active"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Aktiv</FormLabel>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl>
-                    <Input
-                      type="checkbox"
+                    <Checkbox
                       checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormLabel className="text-sm font-normal">
+                    Aktiver produkt
+                  </FormLabel>
                 </FormItem>
               )}
             />
 
-            <Button type="submit">Tilføj produktet</Button>
+            <Button className="w-full" type="submit">
+              Tilføj produktet
+            </Button>
           </form>
         </Form>
+        {submissionStatus && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`mt-4 p-4 rounded-md text-white ${
+              submissionStatus === "success" ? "bg-green-500" : "bg-red-500"
+            }`}
+          >
+            {submissionStatus === "success" ? (
+              <div className="flex items-center gap-x-4">
+                <CheckCircledIcon className="h-12 w-12" />
+                Produktet er tilføjet!
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-4">
+                <ExclamationTriangleIcon className="h-12 w-12" />
+                Der opstod en fejl. Prøv igen.
+              </div>
+            )}
+          </motion.div>
+        )}
       </DialogContent>
     </Dialog>
   );
