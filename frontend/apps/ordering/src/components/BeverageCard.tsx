@@ -25,7 +25,7 @@ function BeverageCard({
           className="aspect-square object-cover w-1/3"
           height={200}
           //src={beverage.imageSrc}
-          src="https://ik.imagekit.io/imageAPI/4f34aef4-aa69-4937-9939-bc40c7469974_n5Oixp-4s.png?updatedAt=1715626937589"
+          src={beverage.imageSrc}
           width={200}
         />
         <div className="flex flex-col w-2/3  ">
