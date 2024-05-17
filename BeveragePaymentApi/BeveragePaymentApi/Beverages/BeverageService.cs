@@ -33,6 +33,8 @@ public class BeverageService : IBeverageService
   public async Task<Beverage> Create(BeverageDto dto)
   {
     ValidatePrice(dto);
+    if(dto.BuyMultiplier < 1) throw new ValidationException("Buy multiplier must be at least 1.");
+    if(dto.HalfTime <= 0) throw new ValidationException("Half time must be above 0.");
 
     var newBeverage = dto.ToBeverage();
 
@@ -50,6 +52,8 @@ public class BeverageService : IBeverageService
     }
 
     ValidatePrice(dto);
+    if(dto.BuyMultiplier < 1) throw new ValidationException("Buy multiplier must be at least 1.");
+    if(dto.HalfTime <= 0) throw new ValidationException("Half time must be above 0.");
 
     existingBeverage = dto.ToBeverage(existingBeverage);
 
