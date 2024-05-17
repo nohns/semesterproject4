@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"time"
 
 	pe "github.com/nohns/semesterproject4"
 )
@@ -13,9 +14,15 @@ type bevRepo struct {
 	db *sql.DB
 }
 
+func NewBeverageRepo(db *sql.DB) *bevRepo {
+	return &bevRepo{
+		db: db,
+	}
+}
+
 const (
-	_getBeverageByIDSQL = "SELECT `Name`, `Description`, `ImageSrc`, `MaxPrice`, `MinPrice` FROM `Beverages` WHERE `BeverageId` = ?"
-	_getAllBeveragesSQL = "SELECT `BeverageId`, `Name`, `Description`, `ImageSrc`, `MaxPrice`, `MinPrice` FROM `Beverages` WHERE `BeverageId`"
+	_getBeverageByIDSQL = "SELECT `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId` = ?"
+	_getAllBeveragesSQL = "SELECT `BeverageId`, `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId`"
 )
 
 func (br *bevRepo) FindBeverages(ctx context.Context) ([]pe.Beverage, error) {
@@ -30,11 +37,13 @@ func (br *bevRepo) FindBeverages(ctx context.Context) ([]pe.Beverage, error) {
 		var (
 			b  pe.Beverage
 			id int
+			ht int64
 		)
-		if err := rows.Scan(&id, &b.Name, &b.Desc, &b.ImageSrc, &b.Params.MaxPrice, &b.Params.MinPrice); err != nil {
+		if err := rows.Scan(&id, &b.Name, &b.Desc, &b.ImageSrc, &b.Params.BasePrice, &b.Params.MaxPrice, &b.Params.MinPrice, &b.Params.BuyMultiplier, &ht); err != nil {
 			return nil, fmt.Errorf("scan beverage row: %v", err)
 		}
 		b.ID = strconv.Itoa(id)
+		b.Params.HalfTime = time.Duration(ht) * time.Second
 		bevs = append(bevs, b)
 	}
 	return bevs, nil
@@ -47,9 +56,11 @@ func (br *bevRepo) BeverageByID(ctx context.Context, bevID string) (pe.Beverage,
 		return b, fmt.Errorf("bevID atoi: %v", err)
 	}
 	row := br.db.QueryRowContext(ctx, _getBeverageByIDSQL, id)
-	if err := row.Scan(&b.Name, &b.Desc, &b.ImageSrc, &b.Params.MaxPrice, &b.Params.MinPrice); err != nil {
+	var ht int64
+	if err := row.Scan(&b.Name, &b.Desc, &b.ImageSrc, &b.Params.BasePrice, &b.Params.MaxPrice, &b.Params.MinPrice, &b.Params.BuyMultiplier, &ht); err != nil {
 		return b, fmt.Errorf("query row scan bev: %v", err)
 	}
 	b.ID = bevID // No need to scan id from DB.
+	b.Params.HalfTime = time.Duration(ht) * time.Second
 	return b, nil
 }

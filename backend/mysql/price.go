@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"slices"
 	"strconv"
+	"time"
 
 	pe "github.com/nohns/semesterproject4"
 )
@@ -46,7 +47,7 @@ func NewHistoryProvider(db *sql.DB) *historyProvider {
 }
 
 const (
-	_getBeverageSQL       = "SELECT `Name`, `Description`, `ImageSrc`, `MaxPrice`, `MinPrice` FROM `Beverages` WHERE `BeverageId` = ?"
+	_getBeverageSQL       = "SELECT `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId` = ?"
 	_getBeveragePricesSQL = "SELECT `Amount`, `Timestamp` FROM `Prices` WHERE `BeverageId` = ? ORDER BY `Timestamp` DESC LIMIT ?"
 )
 
@@ -59,10 +60,12 @@ func (hp *historyProvider) History(ctx context.Context, bevID string) (pe.Histor
 		return h, fmt.Errorf("bevID atoi: %v", err)
 	}
 	row := hp.db.QueryRowContext(ctx, _getBeverageSQL, id)
-	if err := row.Scan(&h.Beverage.Name, &h.Beverage.Desc, &h.Beverage.ImageSrc, &h.Beverage.Params.MaxPrice, &h.Beverage.Params.MinPrice); err != nil {
+	var halftime int64
+	if err := row.Scan(&h.Beverage.Name, &h.Beverage.Desc, &h.Beverage.ImageSrc, &h.Beverage.Params.BasePrice, &h.Beverage.Params.MaxPrice, &h.Beverage.Params.MinPrice, &h.Beverage.Params.BuyMultiplier, &halftime); err != nil {
 		return h, fmt.Errorf("query row scan bev: %v", err)
 	}
-	h.Beverage.ID = bevID // No need to scan id from DB.
+	h.Beverage.ID = bevID                                              // No need to scan id from DB.
+	h.Beverage.Params.HalfTime = time.Duration(halftime) * time.Second // half time given in seconds
 
 	// Get prices related to beverage.
 	prices, err := hp.prices(ctx, id)
@@ -70,6 +73,7 @@ func (hp *historyProvider) History(ctx context.Context, bevID string) (pe.Histor
 		return h, err
 	}
 	h.Prices = prices
+	setLatestPriceUpdate(&h)
 
 	return h, nil
 }
@@ -102,6 +106,7 @@ func (hp *historyProvider) Histories(ctx context.Context) ([]pe.History, error) 
 			return nil, fmt.Errorf("bev prices: %v", err)
 		}
 		h.Prices = prices
+		setLatestPriceUpdate(&h)
 
 		hists = append(hists, h)
 	}
@@ -127,4 +132,11 @@ func (hp *historyProvider) prices(ctx context.Context, numBevID int) ([]pe.Histo
 	}
 	slices.Reverse(prices) // In a history, oldest price comes first
 	return prices, nil
+}
+
+func setLatestPriceUpdate(h *pe.History) {
+	if len(h.Prices) == 0 {
+		return
+	}
+	h.Beverage.LastPriceUpdate = h.Prices[len(h.Prices)-1].At
 }
