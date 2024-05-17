@@ -5,19 +5,14 @@ import { Apple, Google } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
-import { Beverage, History, HistoryEntry } from "@repo/api";
+import { Beverage, HistoryEntry } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
 import { motion } from "framer-motion";
 import { useCallback, useEffect } from "react";
-import { useWebSocket } from "@/routes";
+
 import { usePriceHistory } from "@repo/api";
 
-/* interface SelectionProps {
-  histories: History[];
-  isConnected: boolean;
-} */
-
-function Selection(/* { histories, isConnected }: SelectionProps */) {
+function Selection() {
   const navigate = useNavigate();
   const { history: histories, startListening, connected } = usePriceHistory();
 
@@ -25,19 +20,12 @@ function Selection(/* { histories, isConnected }: SelectionProps */) {
     startListening();
   }, [startListening]);
 
-  /*   const handleBeverageClick = (
-    beverage: Beverage,
-    priceHistory: HistoryEntry[]
-  ) => {
-    console.log("beverage", beverage);
-    navigate("/selected", { state: { beverage, priceHistory } });
-  }; */
   const handleBeverageClick = useCallback(
     (beverage: Beverage, priceHistory: HistoryEntry[]) => {
       console.log("beverage", beverage);
       navigate("/selected", { state: { beverage, priceHistory } });
     },
-    [navigate],
+    [navigate]
   );
 
   console.log("histories", histories);
@@ -84,7 +72,7 @@ function Selection(/* { histories, isConnected }: SelectionProps */) {
           transition={{ duration: 0.5 }} // control the speed of the animation
         >
           <span className="font-mono font-light mt-4 text-xs my-auto">
-            Supported methods for payment
+            Understøttede betalings muligheder
           </span>
 
           <div className="flex flex-row justify-center  w-full gap-x-8 ">
