@@ -27,7 +27,7 @@ interface LocationState {
   priceHistory: HistoryEntry[] | undefined;
 }
 
-const COUNTDOWN_DURATION = 45;
+const COUNTDOWN_DURATION = 10;
 
 // Wait function returning promise
 function wait(ms: number) {
@@ -63,8 +63,8 @@ function Selected() {
     await wait(2000);
     setLoadingOrder(4);
     await wait(0);
-    setLoadingOrder(5);
     setCurrentOrder((old) => old + 1);
+    setLoadingOrder(5);
     await wait(300);
     setLoadingOrder(0);
   }, [setCurrentOrder]);
