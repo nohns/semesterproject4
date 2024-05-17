@@ -48,7 +48,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 20,
             BuyMultiplier = 1.5,
-            HalfTime = TimeSpan.FromMinutes(30).ToString(),
+            HalfTime = 1000,
             Prices = new List<Price>
             {
                 new Price
@@ -69,7 +69,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 15,
             BuyMultiplier = 1.5,
-            HalfTime = TimeSpan.FromMinutes(30).ToString(),
+            HalfTime = 2000,
             Prices = new List<Price>
             {
                 new Price
@@ -91,7 +91,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 25,
             BuyMultiplier = 1.5,
-            HalfTime = TimeSpan.FromMinutes(30).ToString(),
+            HalfTime = 3000,
             Prices = new List<Price>
             {
                 new Price
@@ -112,7 +112,7 @@ public static class ApplicationDbContextSeed
             IsActive = false,
             TotalSales = 5,
             BuyMultiplier = 1.5,
-            HalfTime = TimeSpan.FromMinutes(30).ToString(),
+            HalfTime = 4000,
             Prices = new List<Price>
             {
                 new Price
@@ -133,7 +133,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 30,
             BuyMultiplier = 1.5,
-            HalfTime = TimeSpan.FromMinutes(30).ToString(),
+            HalfTime = 5000,
             Prices = new List<Price>
             {
                 new Price
