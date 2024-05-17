@@ -1,4 +1,6 @@
-import { Card, CardTitle, CardDescription, Chart } from "@repo/ui";
+/** @format */
+
+import { Card, Chart } from "@repo/ui";
 import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
 import { History } from "@repo/api";
 import { cn } from "../../../../packages/ui/src/lib/utils";

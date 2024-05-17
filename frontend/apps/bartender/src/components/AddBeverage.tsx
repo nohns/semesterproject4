@@ -1,7 +1,6 @@
 /** @format */
 
-// import { Cross2Icon } from "@radix-ui/react-icons";
-import { usePostBeverage } from "../../../../packages/api/src/endpoints/usePostBeverage";
+import { usePostBeverage } from "@repo/api";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 import { Button } from "@repo/ui";
 import {
   Form,
@@ -18,20 +17,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@repo/ui";
+import { Checkbox } from "@repo/ui";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "./ui/input";
+import { Input } from "@repo/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircledIcon,
   ExclamationTriangleIcon,
-  TriangleDownIcon,
 } from "@radix-ui/react-icons";
 
 export default function AddBeverage() {

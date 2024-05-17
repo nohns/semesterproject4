@@ -1,6 +1,8 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+/** @format */
+
+import { Input } from "@repo/ui";
+import { Label } from "@repo/ui";
+import { Tabs, TabsContent } from "@repo/ui";
 import { useLogin } from "@repo/api";
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@repo/ui";

@@ -1,8 +1,7 @@
 /** @format */
 
-import { Card } from "@/components/ui/card";
-import { Button } from "./ui/button";
 import { Beverage, HistoryEntry } from "@repo/api";
+import { Button, Card } from "@repo/ui";
 
 interface BeverageCardProps {
   beverage: Beverage;

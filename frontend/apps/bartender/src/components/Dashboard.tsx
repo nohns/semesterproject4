@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { useGetBeverages, useDeleteBeverage } from "@repo/api";
 import { MoreHorizontal } from "Lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@repo/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui";
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui";
 import {
   Card,
   CardContent,
