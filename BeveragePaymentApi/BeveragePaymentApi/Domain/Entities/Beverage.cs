@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BeveragePaymentApi.Domain;
+namespace BeveragePaymentApi.Domain.Entities;
 
 public class Beverage
 {

@@ -1,52 +1,54 @@
 ﻿using Asp.Versioning;
-using BeveragePaymentApi.Data;
 using BeveragePaymentApi.Domain.Entities;
+using BeveragePaymentApi.Domain.Exceptions;
 using BeveragePaymentApi.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Stripe;
+using BeveragePaymentApi.Orders;
 
-namespace BeveragePaymentApi.Payment;
-
-[Route("v{version:apiVersion}/[controller]")]
-[ApiController]
-[ApiVersion("1.0")]
-
-public class OrderController : ControllerBase
+namespace BeveragePaymentApi.Payment
 {
-    private readonly ApplicationDbContext _context;
-
-    public OrderController(ApplicationDbContext dbcontext)
+    [Route("v{version:apiVersion}/[controller]")]
+    [ApiController]
+    [ApiVersion("1.0")]
+    public class OrderController : ControllerBase
     {
-        _context = dbcontext;
-    }
+        private readonly IOrderService _orderService;
 
-//Funny haha forsøg
-    [HttpPost]
-    public async Task<ActionResult<CreateOrderDto>> MakeOrder(CreateOrderDto createOrderDto)
-    {
-        try
+        public OrderController(IOrderService orderService)
         {
-
-
-            var newOrder = new Order
-            {
-                
-                PriceId = createOrderDto.PriceId,
-                StripeIntentId = null,
-                TimeStamp = null,
-                ExpiryTime = null
-
-
-            };
-            _context.Add(newOrder);
-            await _context.SaveChangesAsync();
-            return Ok(newOrder);
+            _orderService = orderService;
         }
-        catch (Exception ex)
+
+        [HttpPost]
+        public async Task<ActionResult<CreateOrderDto>> MakeOrder(CreateOrderDto createOrderDto)
         {
-            return StatusCode(500, $"Fuck man det hele er OrderControllers skyld :C :{ex.Message}");
+            try
+            {
+                var newOrder = await _orderService.CreateOrder(createOrderDto);
+                return CreatedAtRoute("GetById", new { id = newOrder.OrderId }, newOrder);
+            }
+            catch (ValidationException e)
+            {
+                return BadRequest(new { Message = e.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal server error in OrderController.", Details = ex.Message });
+            }
+        }
+
+        [HttpGet("id")]
+        public async Task<ActionResult<Order>> GetById(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetById(id);
+                return Ok(order);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new { Message = e.Message });
+            }
         }
     }
 }
-    

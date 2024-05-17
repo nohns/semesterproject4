@@ -5,7 +5,7 @@ using BeveragePaymentApi.Beverages;
 using BeveragePaymentApi.Data;
 using BeveragePaymentApi.Prices;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+using BeveragePaymentApi.Orders;
 
 using BeveragePaymentApi.Domain;
 using Microsoft.Extensions.Options;
@@ -70,7 +70,8 @@ builder.Services.AddScoped<IImageApiService, ImageApiService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IPriceService, PriceService>();
 builder.Services.AddScoped<IPriceRepository, PriceRepository>();
-
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Drawing;
+using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;

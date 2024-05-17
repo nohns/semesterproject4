@@ -27,16 +27,15 @@ public class ApplicationDbContext : DbContext
             .Property(u => u.UserId)
             .ValueGeneratedOnAdd();
 
-
-        modelBuilder.Entity<Price>()
-        .HasOne(p => p.Beverage)
-        .WithMany(b => b.Prices)
-        .HasForeignKey(p => p.BeverageId);
-
         modelBuilder.Entity<Price>()
             .HasOne(p => p.Order)
-            .WithOne(o =>o.Price )
-            .HasForeignKey<Order>(e=>e.OrderId);
+            .WithOne(o => o.Price)
+            .HasForeignKey<Order>(o => o.PriceId);
+
+        modelBuilder.Entity<Price>()
+            .HasOne(p => p.Beverage)
+            .WithMany(b => b.Prices)
+            .HasForeignKey(p => p.BeverageId);
             
         base.OnModelCreating(modelBuilder);
 
