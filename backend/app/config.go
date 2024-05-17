@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 )
 
@@ -9,6 +10,8 @@ type config struct {
 	httpaddr  string
 	trigaddr  string
 	dbconnstr string
+	loglvl    slog.Level
+	mocked    bool
 }
 
 func (c *config) mustValidate() {
@@ -24,7 +27,7 @@ func (c *config) mustValidate() {
 }
 
 func readConf() config {
-	var c config
+	c := config{}
 	if p := os.Getenv("HTTP_PORT"); p != "" {
 		c.httpaddr = fmt.Sprintf(":%s", p)
 	}
@@ -40,11 +43,18 @@ func readConf() config {
 	if dbuser != "" && dbpass != "" && dbserver != "" && dbname != "" {
 		c.dbconnstr = mysqlConnStr(dbuser, dbpass, dbserver, dbname)
 	}
+	switch os.Getenv("LOG_LEVEL") {
+	case "DEBUG":
+		c.loglvl = slog.LevelDebug
+	}
+	if m := os.Getenv("RUN_MOCKED"); m == "1" {
+		c.mocked = true
+	}
 
 	c.mustValidate()
 	return c
 }
 
 func mysqlConnStr(user, pass, server, dbname string) string {
-	return fmt.Sprintf("mysql://%s:%s@%s/%s?parseDate=true", user, pass, server, dbname)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", user, pass, server, dbname)
 }
