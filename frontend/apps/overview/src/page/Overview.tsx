@@ -28,7 +28,7 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
     ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col font-mono">
       <div className="flex flex-none justify-center" style={{ height: "15%" }}>
         <FooBar />
       </div>
