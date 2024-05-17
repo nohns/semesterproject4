@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Drawing;
+using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;
@@ -17,14 +18,14 @@ namespace BeveragePaymentApi.Beverages;
 [ApiVersion("1.0")]
 public class BeveragesController : Controller
 {
-private readonly IBeverageService _beverageService;
-private readonly IImageApiService _imageApiService;
+  private readonly IBeverageService _beverageService;
+  private readonly IImageApiService _imageApiService;
 
-public BeveragesController(IBeverageService beverageService, IImageApiService imageApiService)
-{
+  public BeveragesController(IBeverageService beverageService, IImageApiService imageApiService)
+  {
     _beverageService = beverageService;
     _imageApiService = imageApiService;
-}
+  }
 
 
   /// <summary>
@@ -111,6 +112,8 @@ public BeveragesController(IBeverageService beverageService, IImageApiService im
       BasePrice = beverage.BasePrice,
       MaxPrice = beverage.MaxPrice,
       MinPrice = beverage.MinPrice,
+      BuyMultiplier = beverage.BuyMultiplier,
+      HalfTime = beverage.HalfTime,
       ImageSrc = imgUrl
     };
 
@@ -129,37 +132,37 @@ public BeveragesController(IBeverageService beverageService, IImageApiService im
     }
   }
 
-    /// <summary>
-    /// Updates a Beverage
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="beverage"></param>
-    /// <returns>The updated Beverage</returns>
+  /// <summary>
+  /// Updates a Beverage
+  /// </summary>
+  /// <param name="id"></param>
+  /// <param name="beverage"></param>
+  /// <returns>The updated Beverage</returns>
 
-    [HttpPut("{id}")]
-    [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Beverage>> Put([FromRoute] int id, [FromBody] BeverageDto beverage)
+  [HttpPut("{id}")]
+  [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+  public async Task<ActionResult<Beverage>> Put([FromRoute] int id, [FromBody] BeverageDto beverage)
+  {
+    try
     {
-      try
-      {
-          var updatedBeverage = await _beverageService.Update(id, beverage);
-          return Ok(updatedBeverage);
-      }
-      catch (NotFoundException e)
-      {
-          return NotFound(e.Message);
-      }
-      catch (ValidationException e)
-      {
-          return BadRequest(e.Message);
-      }
-      catch (Exception e)
-      {
-        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-      }
+      var updatedBeverage = await _beverageService.Update(id, beverage);
+      return Ok(updatedBeverage);
+    }
+    catch (NotFoundException e)
+    {
+      return NotFound(e.Message);
+    }
+    catch (ValidationException e)
+    {
+      return BadRequest(e.Message);
+    }
+    catch (Exception e)
+    {
+      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    }
   }
 
 

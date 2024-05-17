@@ -68,6 +68,19 @@ export default function AddBeverage() {
         message: "Maksprisen skal være mindst 1 kr.",
       })
     ),
+
+    buyMultiplier: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, {
+        message: "Købsmultiplikatoren skal være mindst 1.",
+      })
+    ),
+    halfTime: z.preprocess(
+      (val) => Number(val),
+      z.number().min(0, {
+        message: "Halveringstiden skal være mindst 0.1",
+      })
+    ),
     active: z.boolean().default(true),
   });
 
@@ -80,6 +93,8 @@ export default function AddBeverage() {
       basePrice: 0,
       minPrice: 0,
       maxPrice: 0,
+      buyMultiplier: 1,
+      halfTime: 0.1,
       active: true,
     },
   });
@@ -92,6 +107,8 @@ export default function AddBeverage() {
         basePrice: values.basePrice,
         minPrice: values.minPrice,
         maxPrice: values.maxPrice,
+        buyMultiplier: values.buyMultiplier,
+        halfTime: values.halfTime,
         isActive: values.active,
       },
       file: values.ImageSrc,
@@ -243,6 +260,43 @@ export default function AddBeverage() {
                 </FormItem>
               )}
             />
+            {/* buyMultiplier */}
+            <FormField
+              control={form.control}
+              name="buyMultiplier"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Købs multiplier</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Halflife */}
+            <FormField
+              control={form.control}
+              name="halfTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Halveringstid</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Active */}
             <FormField
               control={form.control}

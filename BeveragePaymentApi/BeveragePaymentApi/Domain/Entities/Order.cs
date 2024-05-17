@@ -1,22 +1,27 @@
-﻿namespace BeveragePaymentApi.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BeveragePaymentApi.Domain.Entities;
 
 
 public class Order 
 {
+    [Key]
     public int OrderId { get; set; }
+    public int BeverageId { get; set; }
     
     public Price? Price { get; set; }
     
     public int? PriceId { get; set; } 
     public int ?StripeIntentId { get; set; }
     //nullable indtil vi ved hvordan stripe virker
-    public DateTime? TimeStamp { get; set; }
-    public DateTime? ExpiryTime { get; set; }
+    public int Quantity { get; set; }
+    public DateTime? Time { get; set; }
 
-    enum States 
+    enum Status 
     {
         Pending,
         Processing,
         Fulfilled
     }
+
 }

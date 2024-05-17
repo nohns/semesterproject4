@@ -1,3 +1,5 @@
+/** @format */
+
 import { useMutation } from "@tanstack/react-query";
 import { client } from "../axios/axios";
 import { Beverage } from "../types/beverage";
@@ -19,6 +21,8 @@ const postBeverage = async (data: PostBeverageRequest) => {
   formData.append("BasePrice", data.beverage.basePrice.toString());
   formData.append("MinPrice", data.beverage.minPrice.toString());
   formData.append("MaxPrice", data.beverage.maxPrice.toString());
+  formData.append("BuyMultiplier", data.beverage.buyMultiplier.toString());
+  formData.append("HalfTime", data.beverage.halfTime.toString());
   formData.append("Active", data.beverage.isActive.toString());
 
   return await client.post<PostBeverageResponse>(

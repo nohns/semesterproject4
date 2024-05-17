@@ -1,4 +1,5 @@
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Domain.Exceptions;
 using Dto;
 using Newtonsoft.Json;
@@ -33,6 +34,8 @@ public class BeverageService : IBeverageService
   public async Task<Beverage> Create(BeverageDto dto)
   {
     ValidatePrice(dto);
+    ValidateHalfTime(dto);
+    ValidateBuyMultiplier(dto);
 
     var newBeverage = dto.ToBeverage();
 
@@ -50,6 +53,8 @@ public class BeverageService : IBeverageService
     }
 
     ValidatePrice(dto);
+    ValidateHalfTime(dto);
+    ValidateBuyMultiplier(dto);
 
     existingBeverage = dto.ToBeverage(existingBeverage);
 
@@ -92,6 +97,16 @@ public class BeverageService : IBeverageService
     if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
     if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
     if (dto.MinPrice > dto.MaxPrice) throw new ValidationException("Min price cannot be higher than max price.");
+  }
+
+  private void ValidateHalfTime(BeverageDto dto)
+  {
+    if (dto.HalfTime <= 0) throw new ValidationException("Half time must be above 0.");
+  }
+
+  private void ValidateBuyMultiplier(BeverageDto dto)
+  {
+    if (dto.BuyMultiplier <= 1) throw new ValidationException("Buy multiplier must be bigger than 1.");
   }
 
 }

@@ -1,8 +1,8 @@
 /** @format */
 
 import MobileContainer from "@/components/MobileContainer";
-import { Button } from "@/components/ui/button";
-import { ArrowLeftIcon, CalendarIcon } from "@radix-ui/react-icons";
+
+import { ArrowLeftIcon, IdCardIcon } from "@radix-ui/react-icons";
 import { motion } from "framer-motion";
 import { CircleCheck, CalendarDays, Clock9 } from "Lucide-react";
 import { useEffect, useState } from "react";
@@ -64,9 +64,14 @@ function Receipt() {
               <span className="my-auto ml-2 text-sm ">Dato: 25/10/2021</span>
             </div>
 
-            <div className="flex flex-row mb-8">
+            <div className="flex flex-row mb-4">
               <Clock9 className="w-6 h-6 text-primary" />
               <span className="my-auto ml-2  text-sm">tidspunkt: 18:41</span>
+            </div>
+
+            <div className="flex flex-row mb-8">
+              <IdCardIcon className="w-6 h-6 text-primary" />
+              <span className="my-auto ml-2  text-sm">Id: we-12345</span>
             </div>
 
             <div className="flex flex-row place-items-end">
@@ -86,6 +91,24 @@ function Receipt() {
                 <h1 className="text-4xl">4 styk</h1>
               </div>
             </div>
+
+            <motion.div
+              initial={{ scale: 0, rotate: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                delay: 2,
+                duration: 2,
+              }}
+              className="flex justify-center items-center mb-4 mt-auto"
+            >
+              <img
+                src="https://c.tenor.com/ZAMoMuQgf9UAAAAC/tenor.gifv"
+                className="rounded-full h-20 w-20 mx-auto"
+              />
+            </motion.div>
           </div>
         </motion.div>
       </MobileContainer>
