@@ -43,20 +43,20 @@ public class BeverageService : IBeverageService
 
   public async Task<Beverage> Update(int id, BeverageDto dto)
   {
-      var existingBeverage = await _beverageRepository.GetById(id);
-      if (existingBeverage == null)
-      {
-          throw new NotFoundException("Beverage was not found.");
-      }
+    var existingBeverage = await _beverageRepository.GetById(id);
+    if (existingBeverage == null)
+    {
+      throw new NotFoundException("Beverage was not found.");
+    }
 
-      ValidatePrice(dto);
+    ValidatePrice(dto);
 
-      existingBeverage = dto.ToBeverage(existingBeverage);
+    existingBeverage = dto.ToBeverage(existingBeverage);
 
-      var updatedBeverage = await _beverageRepository.Update(existingBeverage);
-      await _notificationService.SendBeverageUpdatedNotificationAsync(updatedBeverage);
+    var updatedBeverage = await _beverageRepository.Update(existingBeverage);
+    await _notificationService.SendBeverageUpdatedNotificationAsync(updatedBeverage);
 
-      return updatedBeverage;
+    return updatedBeverage;
   }
 
 
@@ -88,10 +88,10 @@ public class BeverageService : IBeverageService
 
   private void ValidatePrice(BeverageDto dto)
   {
+    if (dto.MinPrice < 0 || dto.BasePrice < 0 || dto.MaxPrice < 0) throw new ValidationException("Prices cannot be negative.");
     if (dto.MinPrice > dto.BasePrice) throw new ValidationException("Min price cannot be higher than base price.");
     if (dto.MaxPrice < dto.BasePrice) throw new ValidationException("Max price cannot be lower than base price.");
     if (dto.MinPrice > dto.MaxPrice) throw new ValidationException("Min price cannot be higher than max price.");
-    if (dto.MinPrice < 0 || dto.BasePrice < 0 || dto.MaxPrice < 0) throw new ValidationException("Prices cannot be negative.");
   }
 
 }
