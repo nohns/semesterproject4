@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using Asp.Versioning;
 using BeveragePaymentApi.Beverages;
 using BeveragePaymentApi.Data;
+using BeveragePaymentApi.Prices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5175")
+        builder => builder.WithOrigins("http://localhost:5175", "http://engine:80")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
@@ -67,6 +68,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImageApiService, ImageApiService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<IPriceService, PriceService>();
+builder.Services.AddScoped<IPriceRepository, PriceRepository>();
+
+
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -126,7 +131,7 @@ if (app.Environment.IsDevelopment())
         ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
     }
 }
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
 app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),

@@ -15,6 +15,7 @@ export const Routes = () => {
           <Route path="/" element={<Selection />} />
           <Route path="/selected" element={<Selected />} />;
           <Route path="/Receipt" element={<Receipt />} />;
+          <Route path="*" element={<Selection />} />
         </RouterRoutes>
       </AnimatePresence>
     </BrowserRouter>

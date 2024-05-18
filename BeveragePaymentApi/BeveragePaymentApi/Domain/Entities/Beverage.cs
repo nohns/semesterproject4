@@ -18,6 +18,8 @@ public class Beverage
     public double MaxPrice { get; set; }
 
     public double MinPrice { get; set; }
+    public double BuyMultiplier { get; set; }
+    public string? HalfTime { get; set; }
     public bool IsActive { get; set; }
     public int TotalSales { get; set; }
     public List<Price>? Prices { get; set; }

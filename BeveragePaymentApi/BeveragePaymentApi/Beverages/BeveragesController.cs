@@ -8,6 +8,7 @@ using System.Drawing;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;
+using Newtonsoft.Json;
 
 namespace BeveragePaymentApi.Beverages;
 
@@ -16,16 +17,14 @@ namespace BeveragePaymentApi.Beverages;
 [ApiVersion("1.0")]
 public class BeveragesController : Controller
 {
-  private readonly IBeverageService _beverageService;
+private readonly IBeverageService _beverageService;
+private readonly IImageApiService _imageApiService;
 
-  private readonly IImageApiService _imageApiService;
-
-
-  public BeveragesController(IBeverageService beverageService, IImageApiService imageApiService)
-  {
+public BeveragesController(IBeverageService beverageService, IImageApiService imageApiService)
+{
     _beverageService = beverageService;
     _imageApiService = imageApiService;
-  }
+}
 
 
   /// <summary>
@@ -69,6 +68,7 @@ public class BeveragesController : Controller
   [HttpPost]
   [ProducesResponseType<Beverage>(StatusCodes.Status201Created)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   public async Task<ActionResult<Beverage>> Post(BeverageDto dto)
   {
     try
@@ -82,7 +82,7 @@ public class BeveragesController : Controller
     }
     catch (Exception e)
     {
-      return BadRequest(e.Message);
+      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
     }
   }
 
@@ -90,6 +90,7 @@ public class BeveragesController : Controller
   [Route("withImage")]
   [ProducesResponseType<Beverage>(StatusCodes.Status201Created)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   public async Task<ActionResult<Beverage>> PostWithImage([FromForm] BeverageWithImageDto beverage)
   {
     var imgUrl = "";
@@ -124,36 +125,43 @@ public class BeveragesController : Controller
     }
     catch (Exception e)
     {
-      return BadRequest(e.Message);
+      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
     }
   }
 
-  /// <summary>
-  /// Updates a Beverage
-  /// </summary>
-  /// <param name="id"></param>
-  /// <param name="beverage"></param>
-  /// <returns>The updated Beverage</returns>
-  [HttpPut("{id}")]
-  [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status404NotFound)]
-  [ProducesResponseType(StatusCodes.Status400BadRequest)]
-  public async Task<ActionResult<Beverage>> Put(int id, BeverageDto beverage)
-  {
-    try
+    /// <summary>
+    /// Updates a Beverage
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="beverage"></param>
+    /// <returns>The updated Beverage</returns>
+
+    [HttpPut("{id}")]
+    [ProducesResponseType<Beverage>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<Beverage>> Put([FromRoute] int id, [FromBody] BeverageDto beverage)
     {
-      var updatedBeverage = await _beverageService.Update(id, beverage);
-      return Ok(updatedBeverage);
-    }
-    catch (NotFoundException e)
-    {
-      return NotFound(e.Message);
-    }
-    catch (Exception e)
-    {
-      return BadRequest(e.Message);
-    }
+      try
+      {
+          var updatedBeverage = await _beverageService.Update(id, beverage);
+          return Ok(updatedBeverage);
+      }
+      catch (NotFoundException e)
+      {
+          return NotFound(e.Message);
+      }
+      catch (ValidationException e)
+      {
+          return BadRequest(e.Message);
+      }
+      catch (Exception e)
+      {
+        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+      }
   }
+
 
 
   /// <summary>
@@ -164,6 +172,7 @@ public class BeveragesController : Controller
   [HttpDelete("{id}")]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   public async Task<IActionResult> Delete(int id)
   {
     try
@@ -177,13 +186,14 @@ public class BeveragesController : Controller
     }
     catch (Exception e)
     {
-      return BadRequest(e.Message);
+      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
     }
   }
 
   [HttpGet("{id}/claim", Name = "Claim beverage price")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   public async Task<IActionResult> ClaimBeveragePrice(int id)
   {
     try
@@ -197,7 +207,7 @@ public class BeveragesController : Controller
     }
     catch (Exception e)
     {
-      return BadRequest(e.Message);
+      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
     }
   }
 

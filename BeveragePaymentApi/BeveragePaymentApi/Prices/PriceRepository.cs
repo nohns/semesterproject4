@@ -2,7 +2,8 @@
 using BeveragePaymentApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace BeveragePaymentApi.Repositories
+namespace BeveragePaymentApi.Prices
+
 {
     public class PriceRepository : IPriceRepository
     {

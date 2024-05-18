@@ -1,5 +1,7 @@
 
 
+using BeveragePaymentApi.Domain;
+
 namespace Dto;
 
 
@@ -16,4 +18,34 @@ public class BeverageDto
   public double MaxPrice { get; set; }
 
   public double MinPrice { get; set; }
+
+  public bool IsActive { get; set; }
+
+  public Beverage ToBeverage()
+  {
+    return new Beverage
+    {
+      Name = this.Name,
+      Description = this.Description,
+      ImageSrc = this.ImageSrc,
+      BasePrice = this.BasePrice,
+      MaxPrice = this.MaxPrice,
+      MinPrice = this.MinPrice,
+      IsActive = this.IsActive
+    };
+  }
+
+  public Beverage ToBeverage(Beverage beverage)
+  {
+    beverage.Name = this.Name;
+    beverage.Description = this.Description;
+    beverage.ImageSrc = this.ImageSrc;
+    beverage.BasePrice = this.BasePrice;
+    beverage.MinPrice = this.MinPrice;
+    beverage.MaxPrice = this.MaxPrice;
+    beverage.IsActive = this.IsActive;
+
+    return beverage;
+  }
+
 }

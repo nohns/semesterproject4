@@ -11,7 +11,6 @@ namespace BeveragePaymentApi.Payment;
 [Route("v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
-[Route("Controller")]
 
 public class OrderController : ControllerBase
 {
@@ -23,7 +22,7 @@ public class OrderController : ControllerBase
     }
 
 //Funny haha forsøg
-    [HttpPost("Make An Order")]
+    [HttpPost]
     public async Task<ActionResult<CreateOrderDto>> MakeOrder(CreateOrderDto createOrderDto)
     {
         try

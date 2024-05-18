@@ -1,11 +1,12 @@
+/** @format */
+
 import Marquee from "react-fast-marquee";
-import { Chart, FooBar, beverages } from "@repo/ui";
+import { Chart, FooBar } from "@repo/ui";
 import SlidingBeverageItemCardLigmaNamingIsHard from "../components/SlidingBeverageItemCardLigmaNamingIsHard";
-import { History, HistoryEntry } from "@repo/api";
+import { History } from "@repo/api";
 import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
 import { ArrowBottomRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { cn } from "../../../../packages/ui/src/lib/utils";
-import { useEffect, useRef } from "react";
 
 type OverviewProps = {
   histories: History[];
