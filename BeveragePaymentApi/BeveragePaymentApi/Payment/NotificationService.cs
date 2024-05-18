@@ -3,6 +3,7 @@ using BeveragePaymentApi.Domain.Exceptions;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using BeveragePaymentApi.Domain.Entities;
 
 namespace BeveragePaymentApi.Beverages;
 
@@ -54,8 +55,7 @@ public class NotificationService
             
             if(!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Failed to send notification to '{GoServiceUrl + endpoint}'. Message received from service: {response.Content.ReadAsStringAsync().Result}");
+                Console.WriteLine($"Failed to send notification to '{GoServiceUrl + endpoint}'. Message received from service: {response.Content.ReadAsStringAsync().Result}");
             }
-            response.EnsureSuccessStatusCode();
         }
     }

@@ -89,4 +89,12 @@ public class UserApiController : Controller
         });
     }
 
+    [HttpPost]
+    [Route("v1/auth/logout")]
+    public IActionResult Logout()
+    {
+        HttpContext.Response.Cookies.Delete("jwt");
+        return Ok();
+    }
+
 }

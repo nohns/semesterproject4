@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BeveragePaymentApi.Domain;
+namespace BeveragePaymentApi.Domain.Entities;
 
 public class Beverage
 {
@@ -19,7 +19,7 @@ public class Beverage
 
     public double MinPrice { get; set; }
     public double BuyMultiplier { get; set; }
-    public string? HalfTime { get; set; }
+    public int HalfTime { get; set; }
     public bool IsActive { get; set; }
     public int TotalSales { get; set; }
     public List<Price>? Prices { get; set; }

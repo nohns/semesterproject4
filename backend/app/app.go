@@ -14,6 +14,7 @@ import (
 	pe "github.com/nohns/semesterproject4"
 	"github.com/nohns/semesterproject4/engine"
 	"github.com/nohns/semesterproject4/mock"
+	"github.com/nohns/semesterproject4/mysql"
 	"github.com/nohns/semesterproject4/trigger"
 	"github.com/nohns/semesterproject4/websocket"
 
@@ -24,7 +25,6 @@ type app struct {
 	priceStorer  pe.PriceStorer
 	histProvider pe.HistoryProvider
 	bevRepo      pe.BeverageRepo
-	currPricer   pe.CurrPricer
 	trigsrv      interface {
 		ListenAndServe() error
 	}
@@ -33,16 +33,17 @@ type app struct {
 	priceEngine *engine.Engine
 }
 
-func BootstrapMocked() (*app, error) {
+func Bootstrap() (a *app, err error) {
 	c := readConf()
-	a := &app{
-		priceStorer:  &mock.Data,
-		histProvider: &mock.Data,
-		bevRepo:      &mock.Data,
-		currPricer:   &mock.Data,
-		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelDebug,
-		})),
+
+	// Initialize the base dependencies for the app
+	if c.mocked {
+		a = makeBaseMocked(c)
+	} else {
+		a, err = makeBase(c)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Websocket manager needs a pointer to whatever owns the entirety of the draw graphs data that must be send on initial connection
@@ -78,6 +79,39 @@ func BootstrapMocked() (*app, error) {
 	a.trigsrv = trigger.New(c.trigaddr, a.logger, a) // Use the app itself as the trigger handler
 
 	return a, nil
+}
+
+// makeBase initializes the app. Afterwards, other dependencies should be bootstraped.
+func makeBase(c config) (*app, error) {
+	db, err := mysql.Open(c.dbconnstr)
+	if err != nil {
+		return nil, fmt.Errorf("mysql open: %v", err)
+	}
+	var (
+		ps      = mysql.NewPriceStorer(db)
+		hp      = mysql.NewHistoryProvider(db)
+		bevrepo = mysql.NewBeverageRepo(db)
+	)
+
+	return &app{
+		priceStorer:  ps,
+		histProvider: hp,
+		bevRepo:      bevrepo,
+		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: c.loglvl,
+		})),
+	}, nil
+}
+
+func makeBaseMocked(c config) *app {
+	return &app{
+		priceStorer:  &mock.Data,
+		histProvider: &mock.Data,
+		bevRepo:      &mock.Data,
+		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: c.loglvl,
+		})),
+	}
 }
 
 // BevUpdated is a handler triggered when a bartender updates a beverage.

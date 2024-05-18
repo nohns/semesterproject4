@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	a, err := app.BootstrapMocked()
+	a, err := app.Bootstrap()
 	if err != nil {
 		log.Fatalf("Failed to boostrap app: %v", err)
 	}
@@ -17,5 +17,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to run app: %v", err)
 	}
-
 }

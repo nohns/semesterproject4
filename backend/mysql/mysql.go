@@ -2,12 +2,14 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func Open(connstr string) (*sql.DB, error) {
+	fmt.Printf("conn str: %v\n", connstr)
 	db, err := sql.Open("mysql", connstr)
 	if err != nil {
 		return nil, err

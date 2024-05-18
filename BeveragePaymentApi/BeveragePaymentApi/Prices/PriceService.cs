@@ -1,4 +1,5 @@
 ﻿using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Domain.Exceptions;
 
 namespace BeveragePaymentApi.Prices

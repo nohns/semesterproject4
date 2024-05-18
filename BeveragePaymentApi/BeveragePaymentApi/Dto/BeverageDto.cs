@@ -1,6 +1,7 @@
 
 
 using BeveragePaymentApi.Domain;
+using BeveragePaymentApi.Domain.Entities;
 
 namespace Dto;
 
@@ -20,6 +21,8 @@ public class BeverageDto
   public double MinPrice { get; set; }
 
   public bool IsActive { get; set; }
+  public double BuyMultiplier { get; set; }
+  public int HalfTime { get; set; }
 
   public Beverage ToBeverage()
   {
@@ -31,7 +34,9 @@ public class BeverageDto
       BasePrice = this.BasePrice,
       MaxPrice = this.MaxPrice,
       MinPrice = this.MinPrice,
-      IsActive = this.IsActive
+      IsActive = this.IsActive,
+      BuyMultiplier = this.BuyMultiplier,
+      HalfTime = this.HalfTime
     };
   }
 
@@ -44,7 +49,8 @@ public class BeverageDto
     beverage.MinPrice = this.MinPrice;
     beverage.MaxPrice = this.MaxPrice;
     beverage.IsActive = this.IsActive;
-
+    beverage.BuyMultiplier = this.BuyMultiplier;
+    beverage.HalfTime = this.HalfTime;
     return beverage;
   }
 

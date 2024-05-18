@@ -14,6 +14,8 @@ interface Beverage {
   minPrice: number;
   maxPrice: number;
   isActive: boolean;
+  buyMultiplier: number;
+  halfTime: number;
   totalSales: number;
   prices: Price[];
 }

@@ -1,8 +1,10 @@
-using BeveragePaymentApi.Domain;
-using BeveragePaymentApi.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
+
+namespace BeveragePaymentApi.Domain.Entities;
 
 public class Price
 {
+    [Key]
     public int Id { get; set; }
     public int BeverageId { get; set; }
     public float Amount { get; set; }

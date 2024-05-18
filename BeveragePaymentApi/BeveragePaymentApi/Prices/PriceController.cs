@@ -3,6 +3,7 @@ using BeveragePaymentApi.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Asp.Versioning;
 using BeveragePaymentApi.Beverages;
+using BeveragePaymentApi.Domain.Entities;
 
 
 namespace BeveragePaymentApi.Prices
