@@ -10,9 +10,11 @@ namespace BeveragePaymentApi.Auth;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
-    public UserService(IUserRepository userRepository)
+    private readonly IConfiguration _configuration;
+    public UserService(IUserRepository userRepository, IConfiguration configuration)
     {
         _userRepository = userRepository;
+        _configuration = configuration;
     }
     public string SaltPassword(string password)
     {
@@ -49,7 +51,7 @@ public class UserService : IUserService
 
     public JwtSecurityToken GenerateJwtToken(ClaimsIdentity claimsIdentity)
     {
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Constants.JwtTokenKey)); // Replace "YourSecretKey" with your actual secret key
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"])); // Replace "YourSecretKey" with your actual secret key
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(

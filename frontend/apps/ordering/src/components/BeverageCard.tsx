@@ -24,7 +24,6 @@ function BeverageCard({
           alt="Beverage Image"
           className="aspect-square object-cover w-1/3"
           height={200}
-          //src={beverage.imageSrc}
           src={beverage.imageSrc}
           width={200}
           onError={(e) => {

@@ -41,45 +41,50 @@ export default function AddBeverage() {
   >(null); // State for submission status
 
   const formSchema = z.object({
-    name: z.string().min(3, {
-      message: "Navnet skal være mindst 3 bogstaver langt.",
+    name: z.string().min(1, {
+      message: "Navn skal udfyldes.",
     }),
-    description: z.string().min(3, {
-      message: "Beskrivelsen skal være mindst 3 bogstaver lang.",
+    description: z.string().min(1, {
+      message: "Beskrivelse skal udfyldes.",
     }),
     ImageSrc: z.instanceof(File, {
-      message: "Billedet skal være en fil.",
+      message: "Billede skal være en fil.",
     }),
     basePrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Basissprisen skal være mindst 1 kr.",
+        message: "Basis pris skal være mindst 1 kr.",
       })
     ),
     minPrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Minsprisen skal være mindst 1 kr.",
+        message: "Minimum pris skal være mindst 1 kr.",
       })
     ),
     maxPrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Maksprisen skal være mindst 1 kr.",
+        message: "Maksimum pris skal være mindst 1 kr.",
       })
     ),
 
     buyMultiplier: z.preprocess(
       (val) => Number(val),
-      z.number().min(1, {
-        message: "Købsmultiplikatoren skal være mindst 1.",
+      z.number().min(1.001, {
+        message: "Købsmultiplikatoren skal være større end 1.",
       })
     ),
     halfTime: z.preprocess(
       (val) => Number(val),
-      z.number().min(0, {
-        message: "Halveringstiden skal være mindst 0.1",
-      })
+      z
+        .number()
+        .min(1, {
+          message: "Halveringstiden skal være mindst 1",
+        })
+        .refine((val) => Number.isInteger(val), {
+          message: "Halveringstiden skal være et heltal",
+        })
     ),
     active: z.boolean().default(true),
   });
@@ -93,8 +98,8 @@ export default function AddBeverage() {
       basePrice: 0,
       minPrice: 0,
       maxPrice: 0,
-      buyMultiplier: 1,
-      halfTime: 0.1,
+      buyMultiplier: 1.1,
+      halfTime: 1,
       active: true,
     },
   });

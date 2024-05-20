@@ -20,6 +20,8 @@ const putBeverage = async (data: PutBeverageRequest) => {
     basePrice: beverage.basePrice,
     maxPrice: beverage.maxPrice,
     minPrice: beverage.minPrice,
+    buyMultiplier: beverage.buyMultiplier,
+    halfTime: beverage.halfTime,
     isActive: beverage.isActive,
   };
 

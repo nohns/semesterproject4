@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using BeveragePaymentApi;
 using BeveragePaymentApi.Images;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,8 +136,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
 app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),
-    System.Text.Encoding.ASCII.GetBytes(Constants.JwtTokenKey));
+    System.Text.Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:Key"]!));
 
+JwtCookieMiddleware.Initialize(builder.Configuration);
 
 //Skal måske fjernes
 //app.UseAntiforgeryCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>());
