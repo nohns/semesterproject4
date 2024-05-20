@@ -39,7 +39,7 @@ public static class ApplicationDbContextSeed
         {
             Name = "Blå vand",
             Description = "En flaske blå vand",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot1_i1X_NpAwj.png?updatedAt=1716194377675",
             BasePrice = 10,
             MaxPrice = 15,
             MinPrice = 5,
@@ -60,7 +60,7 @@ public static class ApplicationDbContextSeed
         {
             Name = "Rød vand",
             Description = "En flaske rød vand",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot2_BGjM11gdy.png?updatedAt=1716194395073",
             BasePrice = 10,
             MaxPrice = 15,
             MinPrice = 5,
@@ -77,12 +77,12 @@ public static class ApplicationDbContextSeed
                 }
             }
         },
-        
+
         new Beverage
         {
             Name = "Grøn vand",
             Description = "Refreshing green water",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot3_QGbQ6WIPN.png?updatedAt=1716194407989",
             BasePrice = 12,
             MaxPrice = 18,
             MinPrice = 6,
@@ -140,7 +140,92 @@ public static class ApplicationDbContextSeed
                     Timestamp = DateTime.Now
                 }
             }
+        },
+         new Beverage
+        {
+            Name = "Øl",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
         }
+
     };
 
         if (!context.Beverages.Any())
