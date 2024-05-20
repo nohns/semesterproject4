@@ -1,6 +1,3 @@
-using BeveragePaymentApi.Domain;
-using BeveragePaymentApi.Domain.Exceptions;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using BeveragePaymentApi.Domain.Entities;

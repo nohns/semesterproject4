@@ -1,5 +1,3 @@
-
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using BeveragePaymentApi.Domain.Entities;
