@@ -26,9 +26,9 @@ public class ApplicationDbContext : DbContext
             .Property(u => u.UserId)
             .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Price>()
-            .HasOne(p => p.Order)
-            .WithOne(o => o.Price)
+        modelBuilder.Entity<Order>()
+            .HasOne(p => p.Price)
+            .WithOne(o => o.Order)
             .HasForeignKey<Order>(o => o.PriceId);
 
         modelBuilder.Entity<Price>()
