@@ -10,7 +10,7 @@ import (
 func main() {
 	a, err := app.Bootstrap()
 	if err != nil {
-		log.Fatalf("Failed to boostrap app: %v", err)
+		log.Fatalf("Failed to bootstrap app: %v", err)
 	}
 
 	err = a.Run(context.Background())
