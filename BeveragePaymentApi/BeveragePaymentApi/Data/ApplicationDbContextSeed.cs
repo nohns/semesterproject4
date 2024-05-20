@@ -38,7 +38,7 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Blå vand",
-            Description = "En flaske blå vand",
+            Description = "Det blåeste vand du nogensinde har set",
             ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot1_i1X_NpAwj.png?updatedAt=1716194377675",
             BasePrice = 10,
             MaxPrice = 15,
@@ -59,7 +59,7 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Rød vand",
-            Description = "En flaske rød vand",
+            Description = "Mere rødt end hindbærbrus",
             ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot2_BGjM11gdy.png?updatedAt=1716194395073",
             BasePrice = 10,
             MaxPrice = 15,
@@ -81,7 +81,7 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Grøn vand",
-            Description = "Refreshing green water",
+            Description = "Mere forfriskende end en græsplæne",
             ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot3_QGbQ6WIPN.png?updatedAt=1716194407989",
             BasePrice = 12,
             MaxPrice = 18,
@@ -102,7 +102,7 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Gul vand",
-            Description = "Invigorating yellow water",
+            Description = "Ikke så gult som du tror",
             ImageSrc = "https://via.placeholder.com/150",
             BasePrice = 8,
             MaxPrice = 12,
@@ -123,7 +123,7 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Sort vand",
-            Description = "Exotic black water",
+            Description = "For de modige",
             ImageSrc = "https://via.placeholder.com/150",
             BasePrice = 15,
             MaxPrice = 20,
