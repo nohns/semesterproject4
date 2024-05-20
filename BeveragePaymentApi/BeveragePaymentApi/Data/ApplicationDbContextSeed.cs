@@ -46,7 +46,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 20,
             BuyMultiplier = 1.5,
-            HalfTime = 1000,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -67,7 +67,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 15,
             BuyMultiplier = 1.5,
-            HalfTime = 2000,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -122,12 +122,12 @@ public static class ApplicationDbContextSeed
         },
         new Beverage
         {
-            Name = "Sort vand",
-            Description = "For de modige",
+            Name = "Fidel Castro",
+            Description = "Lys rom, Ginger Beer & Limeskive (delishhh)",
             ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 15,
-            MaxPrice = 20,
-            MinPrice = 10,
+            BasePrice = 30,
+            MaxPrice = 45,
+            MinPrice = 15,
             IsActive = true,
             TotalSales = 0,
             BuyMultiplier = 1.025,
@@ -136,7 +136,7 @@ public static class ApplicationDbContextSeed
             {
                 new Price
                 {
-                    Amount = 15,
+                    Amount = 30,
                     Timestamp = DateTime.Now
                 }
             }
@@ -185,12 +185,12 @@ public static class ApplicationDbContextSeed
         },
          new Beverage
         {
-            Name = "Spejlæg",
-            Description = "Kande, der smager som slikket!",
+            Name = "Kung Fu",
+            Description = "Pisang Ambon, Pepsi & Jägermeister (mums!)",
             ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 75,
-            MaxPrice = 100,
-            MinPrice = 50,
+            BasePrice = 30,
+            MaxPrice = 45,
+            MinPrice = 15,
             IsActive = true,
             TotalSales = 0,
             BuyMultiplier = 1.025,
@@ -199,7 +199,7 @@ public static class ApplicationDbContextSeed
             {
                 new Price
                 {
-                    Amount = 75,
+                    Amount = 30,
                     Timestamp = DateTime.Now
                 }
             }
