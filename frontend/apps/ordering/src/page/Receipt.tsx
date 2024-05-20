@@ -12,7 +12,7 @@ function Receipt() {
   const [rotation, setRotation] = useState(0);
 
   useEffect(() => {
-    const handleOrientation = (event) => {
+    const handleOrientation = (event: DeviceOrientationEvent) => {
       // Extract rotation from device compass data
       const alpha = event.alpha || 0;
       setRotation(alpha);
