@@ -1,62 +1,73 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"io"
 	"log"
 	"net/url"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 var (
-	ip          = flag.String("ip", "127.0.0.1", "server IP")
-	connections = flag.Int("conn", 100000, "number of websocket connections")
+	ip          = "localhost" // server IP
+	connections = 1000        // number of websocket connections
 )
 
 func main() {
-	flag.Usage = func() {
-		io.WriteString(os.Stderr, `Websockets client generator
-Example usage: ./client -ip=172.17.0.1 -conn=10
-`)
-		flag.PrintDefaults()
-	}
-	flag.Parse()
-
-	u := url.URL{Scheme: "ws", Host: *ip + ":9090", Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: ip + ":9090", Path: "/ws"}
 	log.Printf("Connecting to %s", u.String())
+
 	var conns []*websocket.Conn
-	for i := 0; i < *connections; i++ {
+	successfulConns := 0
+	failedConns := 0
+
+	// Handling Ctrl+C or other interrupt signals
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-interrupt
+		log.Println("Received shutdown signal, closing all connections...")
+		for _, conn := range conns {
+			conn.Close()
+		}
+		os.Exit(0)
+	}()
+
+	for i := 0; i < connections; i++ {
 		c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 		if err != nil {
-			fmt.Println("Failed to connect", i, err)
-			break
+			//log.Printf("Failed to connect %d: %v", i, err)
+			failedConns++
+			continue
 		}
 		conns = append(conns, c)
-		defer func() {
-			c.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(time.Second))
-			time.Sleep(time.Second)
-			c.Close()
-		}()
+		successfulConns++
+		defer c.Close()
 	}
 
-	log.Printf("Finished initializing %d connections", len(conns))
+	log.Printf("Finished initializing connections. Successful: %d, Failed: %d", successfulConns, failedConns)
+
 	tts := time.Second
-	if *connections > 100 {
+	if connections > 100 {
 		tts = time.Millisecond * 5
 	}
+
+	ticker := time.NewTicker(time.Second * 10)
+	defer ticker.Stop()
+
 	for {
-		for i := 0; i < len(conns); i++ {
-			time.Sleep(tts)
-			conn := conns[i]
-			log.Printf("Conn %d sending message", i)
-			if err := conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(time.Second*5)); err != nil {
-				fmt.Printf("Failed to receive pong: %v", err)
+		select {
+		case <-ticker.C:
+			log.Printf("Currently active connections: %d", len(conns))
+		case <-time.After(tts):
+			for _, conn := range conns {
+				if err := conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(time.Second*5)); err != nil {
+					conn.Close()
+				}
 			}
-			conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("Hello from conn %v", i)))
 		}
 	}
 }

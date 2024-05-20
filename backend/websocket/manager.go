@@ -144,6 +144,15 @@ func (m *Manager) ListenAndServe() error {
 	}
 	m.logger.Info("Websocket server started on port " + m.addr)
 
+	go func() {
+		for {
+			m.mu.Lock()
+			m.logger.Debug("Total clients", slog.Int("count", len(m.clients)))
+			m.mu.Unlock()
+			time.Sleep(5 * time.Second)
+		}
+	}()
+
 	return nil
 }
 
