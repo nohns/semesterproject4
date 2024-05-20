@@ -41,31 +41,31 @@ export default function AddBeverage() {
   >(null); // State for submission status
 
   const formSchema = z.object({
-    name: z.string().min(3, {
-      message: "Navnet skal være mindst 3 bogstaver langt.",
+    name: z.string().min(1, {
+      message: "Navn skal udfyldes.",
     }),
-    description: z.string().min(3, {
-      message: "Beskrivelsen skal være mindst 3 bogstaver lang.",
+    description: z.string().min(1, {
+      message: "Beskrivelse skal udfyldes.",
     }),
     ImageSrc: z.instanceof(File, {
-      message: "Billedet skal være en fil.",
+      message: "Billede skal være en fil.",
     }),
     basePrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Basissprisen skal være mindst 1 kr.",
+        message: "Basis pris skal være mindst 1 kr.",
       })
     ),
     minPrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Minsprisen skal være mindst 1 kr.",
+        message: "Minimum pris skal være mindst 1 kr.",
       })
     ),
     maxPrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Maksprisen skal være mindst 1 kr.",
+        message: "Maksimum pris skal være mindst 1 kr.",
       })
     ),
 
