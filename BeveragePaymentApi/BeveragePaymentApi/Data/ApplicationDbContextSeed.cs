@@ -44,7 +44,7 @@ public static class ApplicationDbContextSeed
             MaxPrice = 15,
             MinPrice = 5,
             IsActive = true,
-            TotalSales = 20,
+            TotalSales = 0,
             BuyMultiplier = 1.5,
             HalfTime = 120,
             Prices = new List<Price>
@@ -65,7 +65,7 @@ public static class ApplicationDbContextSeed
             MaxPrice = 15,
             MinPrice = 5,
             IsActive = true,
-            TotalSales = 15,
+            TotalSales = 0,
             BuyMultiplier = 1.5,
             HalfTime = 120,
             Prices = new List<Price>
