@@ -71,15 +71,20 @@ export default function AddBeverage() {
 
     buyMultiplier: z.preprocess(
       (val) => Number(val),
-      z.number().min(1, {
-        message: "Købsmultiplikatoren skal være mindst 1.",
+      z.number().min(1.001, {
+        message: "Købsmultiplikatoren skal være større end 1.",
       })
     ),
     halfTime: z.preprocess(
       (val) => Number(val),
-      z.number().min(0, {
-        message: "Halveringstiden skal være mindst 0.1",
-      })
+      z
+        .number()
+        .min(1, {
+          message: "Halveringstiden skal være mindst 1",
+        })
+        .refine((val) => Number.isInteger(val), {
+          message: "Halveringstiden skal være et heltal",
+        })
     ),
     active: z.boolean().default(true),
   });
@@ -93,8 +98,8 @@ export default function AddBeverage() {
       basePrice: 0,
       minPrice: 0,
       maxPrice: 0,
-      buyMultiplier: 1,
-      halfTime: 0.1,
+      buyMultiplier: 1.1,
+      halfTime: 1,
       active: true,
     },
   });

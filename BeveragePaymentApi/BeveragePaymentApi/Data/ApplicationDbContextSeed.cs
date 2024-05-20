@@ -44,7 +44,7 @@ public static class ApplicationDbContextSeed
             MaxPrice = 15,
             MinPrice = 5,
             IsActive = true,
-            TotalSales = 20,
+            TotalSales = 0,
             BuyMultiplier = 1.5,
             HalfTime = 120,
             Prices = new List<Price>
@@ -65,7 +65,7 @@ public static class ApplicationDbContextSeed
             MaxPrice = 15,
             MinPrice = 5,
             IsActive = true,
-            TotalSales = 15,
+            TotalSales = 0,
             BuyMultiplier = 1.5,
             HalfTime = 120,
             Prices = new List<Price>
@@ -124,7 +124,7 @@ public static class ApplicationDbContextSeed
         {
             Name = "Fidel Castro",
             Description = "Lys rom, Ginger Beer & Limeskive (delishhh)",
-            ImageSrc = "https://ik.imagekit.io/imageAPI/image_0hKf4Msq2.png?updatedAt=1716208019429",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_W-xPJxvZq.png?updatedAt=1716196564945",
             BasePrice = 30,
             MaxPrice = 45,
             MinPrice = 15,
