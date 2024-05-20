@@ -75,20 +75,6 @@ public class BeverageService : IBeverageService
     await _notificationService.SendBeverageRemovedNotificationAsync(beverage);
   }
 
-  public async Task<float> GetLatestPrice(int id)
-  {
-    var beverage = await _beverageRepository.GetById(id);
-
-    if (beverage == null) throw new NotFoundException("Beverage was not found.");
-
-    var latestPrice = beverage.Prices.OrderByDescending(p => p.Timestamp).FirstOrDefault();
-
-    if (latestPrice == null) throw new NotFoundException("Price was not found.");
-
-    return latestPrice.Amount;
-
-  }
-
   private void ValidatePrice(BeverageDto dto)
   {
     if (dto.MinPrice < 0 || dto.BasePrice < 0 || dto.MaxPrice < 0) throw new ValidationException("Prices cannot be negative.");
@@ -117,5 +103,4 @@ public interface IBeverageService
   public Task<Beverage> Update(int id, BeverageDto beverage);
   public Task Delete(int id);
 
-  public Task<float> GetLatestPrice(int id);
 }
