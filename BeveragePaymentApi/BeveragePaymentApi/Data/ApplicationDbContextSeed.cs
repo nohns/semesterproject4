@@ -87,9 +87,9 @@ public static class ApplicationDbContextSeed
             MaxPrice = 18,
             MinPrice = 6,
             IsActive = true,
-            TotalSales = 25,
-            BuyMultiplier = 1.5,
-            HalfTime = 3000,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -109,8 +109,8 @@ public static class ApplicationDbContextSeed
             MinPrice = 4,
             IsActive = false,
             TotalSales = 5,
-            BuyMultiplier = 1.5,
-            HalfTime = 4000,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -129,9 +129,9 @@ public static class ApplicationDbContextSeed
             MaxPrice = 20,
             MinPrice = 10,
             IsActive = true,
-            TotalSales = 30,
-            BuyMultiplier = 1.5,
-            HalfTime = 5000,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -152,7 +152,7 @@ public static class ApplicationDbContextSeed
             IsActive = true,
             TotalSales = 30,
             BuyMultiplier = 1.5,
-            HalfTime = 5000,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
