@@ -71,7 +71,7 @@ export default function AddBeverage() {
 
     buyMultiplier: z.preprocess(
       (val) => Number(val),
-      z.number().min(1.1, {
+      z.number().min(1.001, {
         message: "Købsmultiplikatoren skal være større end 1.",
       })
     ),

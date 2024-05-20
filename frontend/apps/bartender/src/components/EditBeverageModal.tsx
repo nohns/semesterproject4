@@ -66,15 +66,20 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
     ),
     buyMultiplier: z.preprocess(
       (val) => Number(val),
-      z.number().min(1, {
-        message: "Købsmultiplikatoren skal være mindst 1.",
+      z.number().min(1.001, {
+        message: "Købsmultiplikatoren skal være større end 1.",
       })
     ),
     halfTime: z.preprocess(
       (val) => Number(val),
-      z.number().min(0, {
-        message: "Halveringstiden skal være mindst 0.1",
-      })
+      z
+        .number()
+        .min(1, {
+          message: "Halveringstiden skal være mindst 1",
+        })
+        .refine((val) => Number.isInteger(val), {
+          message: "Halveringstiden skal være et heltal",
+        })
     ),
     active: z.boolean().default(true),
   });
