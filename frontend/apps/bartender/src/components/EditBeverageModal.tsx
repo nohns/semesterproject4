@@ -120,7 +120,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
 
     editBeverage.mutate(beverageData, {
       onSuccess: () => {
-        console.log("Beverage created successfully");
+        console.log("Beverage updated successfully");
         // Handle additional logic here
         setSubmissionStatus("success");
         queryClient.invalidateQueries({ queryKey: ["beverages"] });
@@ -130,7 +130,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
         }, 1500);
       },
       onError: (error) => {
-        console.error("Error creating beverage:", error);
+        console.error("Error updating beverage:", error);
         setSubmissionStatus("error");
       },
     });
