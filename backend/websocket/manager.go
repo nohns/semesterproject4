@@ -12,20 +12,20 @@ import (
 )
 
 type Manager struct {
-	addr string
-	clients map[string]*Conn
+	addr     string
+	clients  map[string]*Conn
 	upgrader websocket.Upgrader
-    initconn InitConnFunc
-	mu sync.RWMutex
-	logger *slog.Logger
+	initconn InitConnFunc
+	mu       sync.RWMutex
+	logger   *slog.Logger
 }
 
 type InitConnFunc func(c *Conn)
 
 type ManagerOptions struct {
-	Addr string
-	Logger *slog.Logger
-    InitConnFunc InitConnFunc
+	Addr         string
+	Logger       *slog.Logger
+	InitConnFunc InitConnFunc
 }
 
 func NewManager(o *ManagerOptions) (*Manager, error) {
@@ -51,7 +51,7 @@ func NewManager(o *ManagerOptions) (*Manager, error) {
 			},
 		},
 
-        initconn: o.InitConnFunc,
+		initconn: o.InitConnFunc,
 	}, nil
 }
 
@@ -88,9 +88,9 @@ func (m *Manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 	ws.run()
 
 	//We need to send the initial data here when the connection is established
-    if m.initconn != nil {
-        m.initconn(ws)
-    }
+	if m.initconn != nil {
+		m.initconn(ws)
+	}
 
 	//blocking statement until we are forced to cleanup
 	<-ws.shutdown
@@ -148,16 +148,16 @@ func (m *Manager) ListenAndServe() error {
 }
 
 func (m *Manager) Stop() {
-
 	wg := &sync.WaitGroup{}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-    wg.Add(len(m.clients))
+
+	wg.Add(len(m.clients))
 	for _, client := range m.clients {
-        go func() {
-            defer wg.Done()
-            client.Close()
-        }()
+		go func(client *Conn) {
+			defer wg.Done()
+			client.Close()
+		}(client)
 	}
 	wg.Wait()
 	m.logger.Info("Websocket server stopped")
