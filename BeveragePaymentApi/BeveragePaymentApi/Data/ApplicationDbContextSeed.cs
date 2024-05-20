@@ -124,7 +124,7 @@ public static class ApplicationDbContextSeed
         {
             Name = "Fidel Castro",
             Description = "Lys rom, Ginger Beer & Limeskive (delishhh)",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_0hKf4Msq2.png?updatedAt=1716208019429",
             BasePrice = 30,
             MaxPrice = 45,
             MinPrice = 15,
@@ -187,7 +187,7 @@ public static class ApplicationDbContextSeed
         {
             Name = "Kung Fu",
             Description = "Pisang Ambon, Pepsi & Jägermeister (mums!)",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image(1)_wotNIvB_W.png?updatedAt=1716208034973",
             BasePrice = 30,
             MaxPrice = 45,
             MinPrice = 15,
