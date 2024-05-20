@@ -103,12 +103,12 @@ public static class ApplicationDbContextSeed
         {
             Name = "Gul vand",
             Description = "Ikke så gult som du tror",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_W-xPJxvZq.png?updatedAt=1716196564945",
             BasePrice = 8,
             MaxPrice = 12,
             MinPrice = 4,
             IsActive = false,
-            TotalSales = 5,
+            TotalSales = 0,
             BuyMultiplier = 1.025,
             HalfTime = 120,
             Prices = new List<Price>
@@ -143,21 +143,21 @@ public static class ApplicationDbContextSeed
         },
          new Beverage
         {
-            Name = "Øl",
-            Description = "Exotic black water",
-            ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 15,
-            MaxPrice = 20,
-            MinPrice = 10,
+            Name = "Gin Hass",
+            Description = "Sirlig blanding af gin og hass (okay det er gin, lemonsodavand og mangosirup)",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image(1)_6eU52S2gN.png?updatedAt=1716197480026",
+            BasePrice = 30,
+            MaxPrice = 45,
+            MinPrice = 15,
             IsActive = true,
-            TotalSales = 30,
-            BuyMultiplier = 1.5,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
             HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
                 {
-                    Amount = 15,
+                    Amount = 30,
                     Timestamp = DateTime.Now
                 }
             }
@@ -165,20 +165,20 @@ public static class ApplicationDbContextSeed
          new Beverage
         {
             Name = "Jägerbomb",
-            Description = "Exotic black water",
-            ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 15,
-            MaxPrice = 20,
-            MinPrice = 10,
+            Description = "Shotsglas med jägermeister sættes elegant ned i et glas med Red Bull",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_u6X-VqmVQ.png?updatedAt=1716197357406",
+            BasePrice = 25,
+            MaxPrice = 40,
+            MinPrice = 15,
             IsActive = true,
-            TotalSales = 30,
-            BuyMultiplier = 1.5,
-            HalfTime = 5000,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
                 {
-                    Amount = 15,
+                    Amount = 25,
                     Timestamp = DateTime.Now
                 }
             }
