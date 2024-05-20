@@ -128,9 +128,6 @@ test('when adding new beverage with invalid data, an error message is shown', as
         await page.fill('input[name="buyMultiplier"]', '2');
         await page.fill('input[name="halfTime"]', '5');
     
-        
-    
-        
         // Submit the form
         await page.click('button[type="submit"]');
         
@@ -143,6 +140,59 @@ test('when adding new beverage with invalid data, an error message is shown', as
     
     }
     );
+    
+    test('when updating a beverage, the beverage is updated in the list', async ({ page }) => {
+                             
+        await page.goto('http://localhost:5175'); // Add "http://" prefix to the URL
+        
+        // Fill the login form
+        await page.fill('input[id="username"]', 'bartender'); 
+        await page.fill('input[id="password"]', 'bartender123'); 
+        
+        // Submit the form
+        await Promise.all([
+            page.waitForNavigation(), // Wait for navigation after form submission
+            page.click('button[type="submit"]')
+        ]);
+        
+        // Check that the page is redirected to the bartender page
+        await expect(page.url()).toMatch(/\/admin/);
+    
+        await page.setViewportSize({ width: 1600, height: 1000 }); // Set viewport size
+     
+        const beverageCount = await page.locator('text=TestBeverage').count();
+        console.log('Number of TestBeverage elements:', beverageCount); // Output the count for debugging
+        // Locate the specific table row containing the "Blå vand" product
+        const row = page.locator('tr', { has: page.locator('td:has-text("TestBeverage")') }).first();
+      
+        // Locate the button within the specific table row
+        const button = row.locator('button');
+      
+        // Click the button
+        await button.click();
+
+        await page.locator('text=Redigér').click();
+        await page.waitForTimeout(200);
+        
+        await page.screenshot({ path: 'before_update.png' });
+
+        await page.locator('input[name="name"]').fill('TestBeverage');
+        await page.locator('input[name="description"]').fill('TestDescriptionUpdated');
+        await page.locator('input[name="basePrice"]').fill('20');
+        await page.locator('input[name="minPrice"]').fill('10');
+        await page.locator('input[name="maxPrice"]').fill('30');
+        await page.locator('input[name="buyMultiplier"]').fill('3');   
+        await page.locator('input[name="halfTime"]').fill('10');
+        await page.locator('text="Aktiver produkt"').click();
+        
+        await page.screenshot({ path: 'after_update.png' });
+
+        await page.click('text="Redigér produktet"');
+        await page.waitForTimeout(1000);
+        await page.screenshot({ path: 'beverage_updated.png' });
+
+    });
+
 
     test('when deleting a beverage, the beverage is removed from the list', async ({ page }) => {
                              
@@ -185,51 +235,4 @@ test('when adding new beverage with invalid data, an error message is shown', as
             expect(await page.locator('text=TestBeverage').count()).toBeLessThan(beverageCount);
 
             await page.screenshot({ path: 'beverage_deleted.png' });
-        });
-
-        test('when updating a beverage, the beverage is updated in the list', async ({ page }) => {
-                             
-            await page.goto('http://localhost:5175'); // Add "http://" prefix to the URL
-            
-            // Fill the login form
-            await page.fill('input[id="username"]', 'bartender'); 
-            await page.fill('input[id="password"]', 'bartender123'); 
-            
-            // Submit the form
-            await Promise.all([
-                page.waitForNavigation(), // Wait for navigation after form submission
-                page.click('button[type="submit"]')
-            ]);
-            
-            // Check that the page is redirected to the bartender page
-            await expect(page.url()).toMatch(/\/admin/);
-        
-            await page.setViewportSize({ width: 1600, height: 1000 }); // Set viewport size
-         
-            const beverageCount = await page.locator('text=TestBeverage').count();
-            console.log('Number of TestBeverage elements:', beverageCount); // Output the count for debugging
-            // Locate the specific table row containing the "Blå vand" product
-            const row = page.locator('tr', { has: page.locator('td:has-text("TestBeverage")') }).first();
-          
-            // Locate the button within the specific table row
-            const button = row.locator('button');
-          
-            // Click the button
-            await button.click();
-
-            await page.locator('text=Redigér').click();
-            await page.waitForTimeout(200);
-            page.locator('input', { hasText: 'Navn' }).fill('TestBeverageUpdated');
-            page.locator('input', { hasText: 'Beskrivelse' }).fill('TestDescriptionUpdated');
-            page.locator('input', { hasText: 'Base Price' }).fill('20');
-            page.locator('input', { hasText: 'Min Price' }).fill('10');
-            page.locator('input', { hasText: 'Max Price' }).fill('30');
-            page.locator('input[type="checkbox"]').check();
-        
-            await page.screenshot({ path: 'update.png' });
-
-            await page.click('text=Save');
-            await page.waitForTimeout(1000);
-            await page.screenshot({ path: 'beverage_updated.png' });
-
         });
