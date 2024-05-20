@@ -5,11 +5,13 @@ using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeveragePaymentApi.Beverages;
 
 [Route("v{version:apiVersion}/[controller]")]
 [ApiController]
+[Authorize]
 [ApiVersion("1.0")]
 public class BeveragesController : Controller
 {
@@ -187,26 +189,4 @@ public class BeveragesController : Controller
       return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
     }
   }
-
-  [HttpGet("{id}/claim", Name = "Claim beverage price")]
-  [ProducesResponseType(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status404NotFound)]
-  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-  public async Task<IActionResult> ClaimBeveragePrice(int id)
-  {
-    try
-    {
-      var beverage = await _beverageService.GetLatestPrice(id);
-      return Ok();
-    }
-    catch (NotFoundException e)
-    {
-      return NotFound(e.Message);
-    }
-    catch (Exception e)
-    {
-      return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-    }
-  }
-
 }
