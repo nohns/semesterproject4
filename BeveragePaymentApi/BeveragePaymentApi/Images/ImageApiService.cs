@@ -16,7 +16,7 @@ public class ImageApiService : IImageApiService
         _imageKitApiKey = configuration["ImageKitSettings:ApiKey"] ?? throw new ArgumentNullException(nameof(_imageKitApiKey));
         _imageKitApiSecret = configuration["ImageKitSettings:ApiSecret"] ?? throw new ArgumentNullException(nameof(_imageKitApiSecret));
         _imageKitUrlEndpoint = configuration["ImageKitSettings:UrlEndpoint"] ?? throw new ArgumentNullException(nameof(_imageKitUrlEndpoint));
-        
+
         _imageKit = new ImagekitClient(_imageKitApiKey, _imageKitApiSecret, _imageKitUrlEndpoint);
     }
 
@@ -45,7 +45,7 @@ public class ImageApiService : IImageApiService
 
         Result resp = _imageKit.Upload(newfile);
 
-        return Task<string>.FromResult(resp.url);
+        return Task.FromResult(resp.url);
 
     }
 }
