@@ -1,6 +1,3 @@
-
-
-using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Entities;
 
 namespace Dto;

@@ -1,6 +1,4 @@
-using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
 

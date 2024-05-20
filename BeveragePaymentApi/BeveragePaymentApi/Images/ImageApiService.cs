@@ -1,12 +1,6 @@
-
-
-
-using Microsoft.AspNetCore.Mvc;
-using BeveragePaymentApi;
 using BeveragePaymentApi.Dto;
 using Imagekit.Sdk;
-using Imagekit.Models;
-using System.Xml.Linq;
+
 
 namespace BeveragePaymentApi.Images;
 

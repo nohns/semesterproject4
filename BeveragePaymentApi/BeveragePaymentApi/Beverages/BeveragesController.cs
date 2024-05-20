@@ -1,15 +1,10 @@
 using Asp.Versioning;
-using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using System.Drawing;
 using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;
-using Newtonsoft.Json;
 
 namespace BeveragePaymentApi.Beverages;
 

@@ -1,8 +1,6 @@
-﻿
-using BeveragePaymentApi.Domain.Entities;
+﻿using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Dto;
 using BeveragePaymentApi.Domain.Exceptions;
-using BeveragePaymentApi.Orders;
 
 namespace BeveragePaymentApi.Orders
 {

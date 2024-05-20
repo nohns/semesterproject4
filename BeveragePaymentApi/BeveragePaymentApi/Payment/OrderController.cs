@@ -3,7 +3,6 @@ using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Domain.Exceptions;
 using BeveragePaymentApi.Dto;
 using Microsoft.AspNetCore.Mvc;
-using BeveragePaymentApi.Orders;
 
 namespace BeveragePaymentApi.Payment
 {

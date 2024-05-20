@@ -1,8 +1,4 @@
-
-
 using BeveragePaymentApi.Data;
-using BeveragePaymentApi.Dto;
-using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using BeveragePaymentApi.Domain.Entities;
 
