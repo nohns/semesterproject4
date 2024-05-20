@@ -7,13 +7,20 @@ namespace BeveragePaymentApi.Images;
 public class ImageApiService : IImageApiService
 {
     private readonly ImagekitClient _imageKit;
+    private readonly string _imageKitApiKey;
+    private readonly string _imageKitApiSecret;
+    private readonly string _imageKitUrlEndpoint;
 
-    public ImageApiService()
+    public ImageApiService(IConfiguration configuration)
     {
-        _imageKit = new ImagekitClient(Constants.ImageKitApiKey, Constants.ImageKitApiSecret, Constants.ImageKitUrlEndpoint);
+        _imageKitApiKey = configuration["ImageKitSettings:ApiKey"] ?? throw new ArgumentNullException(nameof(_imageKitApiKey));
+        _imageKitApiSecret = configuration["ImageKitSettings:ApiSecret"] ?? throw new ArgumentNullException(nameof(_imageKitApiSecret));
+        _imageKitUrlEndpoint = configuration["ImageKitSettings:UrlEndpoint"] ?? throw new ArgumentNullException(nameof(_imageKitUrlEndpoint));
+        
+        _imageKit = new ImagekitClient(_imageKitApiKey, _imageKitApiSecret, _imageKitUrlEndpoint);
     }
 
-    public async Task<string> UploadImage(ImageUploadDto imageDto)
+    public Task<string> UploadImage(ImageUploadDto imageDto)
     {
 
         byte[] fileBytes;
@@ -36,13 +43,11 @@ public class ImageApiService : IImageApiService
             };
         newfile.tags = tags;
 
-
         Result resp = _imageKit.Upload(newfile);
 
-        return resp.url;
+        return Task<string>.FromResult(resp.url);
 
     }
-
 }
 
 public interface IImageApiService
