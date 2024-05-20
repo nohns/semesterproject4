@@ -24,6 +24,12 @@ namespace BeveragePaymentApi.Prices
             return await _context.Prices.FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<Price> GetLatestPriceForBeverage(int beverageId)
+        {
+            var price = await _context.Prices.Where(p => p.Beverage.BeverageId.Equals(beverageId)).OrderByDescending(p => p.Timestamp).FirstAsync();
+            return price;
+        }
+
         public async Task<Price> Create(Price price)
         {
             _context.Prices.Add(price);
@@ -48,6 +54,7 @@ namespace BeveragePaymentApi.Prices
 
     public interface IPriceRepository
     {
+        Task<Price> GetLatestPriceForBeverage(int beverageId);
         Task<IEnumerable<Price>> GetAll();
         Task<Price?> GetById(int id);
         Task<Price> Create(Price price);

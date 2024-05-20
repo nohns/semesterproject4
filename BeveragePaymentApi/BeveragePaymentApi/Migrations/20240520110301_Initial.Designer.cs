@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeveragePaymentApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240517011548_AddedBuyMultiplierAndHalfTime")]
-    partial class AddedBuyMultiplierAndHalfTime
+    [Migration("20240520110301_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace BeveragePaymentApi.Migrations
                 .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("BeveragePaymentApi.Domain.Beverage", b =>
+            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Beverage", b =>
                 {
                     b.Property<int>("BeverageId")
                         .ValueGeneratedOnAdd()
@@ -37,8 +37,8 @@ namespace BeveragePaymentApi.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("HalfTime")
-                        .HasColumnType("longtext");
+                    b.Property<int>("HalfTime")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageSrc")
                         .HasColumnType("longtext");
@@ -67,45 +67,41 @@ namespace BeveragePaymentApi.Migrations
             modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Order", b =>
                 {
                     b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ExpiryTime")
+                    b.Property<int>("BeverageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Expiry")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("PriceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StripeIntentId")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("TimeStamp")
+                    b.Property<string>("StripeClientSecret")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StripeIntentId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Time")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("OrderId");
 
+                    b.HasIndex("PriceId")
+                        .IsUnique();
+
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.User", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Price", b =>
+            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Price", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,20 +123,37 @@ namespace BeveragePaymentApi.Migrations
                     b.ToTable("Prices");
                 });
 
+            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Price", "Price")
+                    b.HasOne("BeveragePaymentApi.Domain.Entities.Price", "Price")
                         .WithOne("Order")
-                        .HasForeignKey("BeveragePaymentApi.Domain.Entities.Order", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BeveragePaymentApi.Domain.Entities.Order", "PriceId");
 
                     b.Navigation("Price");
                 });
 
-            modelBuilder.Entity("Price", b =>
+            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Price", b =>
                 {
-                    b.HasOne("BeveragePaymentApi.Domain.Beverage", "Beverage")
+                    b.HasOne("BeveragePaymentApi.Domain.Entities.Beverage", "Beverage")
                         .WithMany("Prices")
                         .HasForeignKey("BeverageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -149,12 +162,12 @@ namespace BeveragePaymentApi.Migrations
                     b.Navigation("Beverage");
                 });
 
-            modelBuilder.Entity("BeveragePaymentApi.Domain.Beverage", b =>
+            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Beverage", b =>
                 {
                     b.Navigation("Prices");
                 });
 
-            modelBuilder.Entity("Price", b =>
+            modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Price", b =>
                 {
                     b.Navigation("Order");
                 });
