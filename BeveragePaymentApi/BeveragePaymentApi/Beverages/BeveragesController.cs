@@ -15,6 +15,7 @@ namespace BeveragePaymentApi.Beverages;
 
 [Route("v{version:apiVersion}/[controller]")]
 [ApiController]
+[Authorize]
 [ApiVersion("1.0")]
 public class BeveragesController : Controller
 {
