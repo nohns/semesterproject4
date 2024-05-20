@@ -164,7 +164,7 @@ public static class ApplicationDbContextSeed
         },
          new Beverage
         {
-            Name = "Sort vand",
+            Name = "Jägerbomb",
             Description = "Exotic black water",
             ImageSrc = "https://via.placeholder.com/150",
             BasePrice = 15,
@@ -185,42 +185,42 @@ public static class ApplicationDbContextSeed
         },
          new Beverage
         {
-            Name = "Sort vand",
-            Description = "Exotic black water",
+            Name = "Spejlæg",
+            Description = "Kande, der smager som slikket!",
             ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 15,
-            MaxPrice = 20,
-            MinPrice = 10,
+            BasePrice = 75,
+            MaxPrice = 100,
+            MinPrice = 50,
             IsActive = true,
-            TotalSales = 30,
-            BuyMultiplier = 1.5,
-            HalfTime = 5000,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
                 {
-                    Amount = 15,
+                    Amount = 75,
                     Timestamp = DateTime.Now
                 }
             }
         },
          new Beverage
         {
-            Name = "Sort vand",
-            Description = "Exotic black water",
-            ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 15,
+            Name = "Ceres Top",
+            Description = "Det bar' øl",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_EjtqaJsot.png?updatedAt=1716196012768",
+            BasePrice = 14,
             MaxPrice = 20,
-            MinPrice = 10,
+            MinPrice = 9,
             IsActive = true,
-            TotalSales = 30,
-            BuyMultiplier = 1.5,
-            HalfTime = 5000,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
                 {
-                    Amount = 15,
+                    Amount = 14,
                     Timestamp = DateTime.Now
                 }
             }
