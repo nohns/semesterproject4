@@ -47,7 +47,7 @@ func NewHistoryProvider(db *sql.DB) *historyProvider {
 }
 
 const (
-	_getBeverageSQL       = "SELECT `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId` = ?"
+	_getBeverageSQL       = "SELECT `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId` = ? AND `IsActive` = 1"
 	_getBeveragePricesSQL = "SELECT `Amount`, `Timestamp` FROM `Prices` WHERE `BeverageId` = ? ORDER BY `Timestamp` DESC LIMIT ?"
 )
 
@@ -79,7 +79,7 @@ func (hp *historyProvider) History(ctx context.Context, bevID string) (pe.Histor
 }
 
 const (
-	_getAllHistoriesSQL = "SELECT `BeverageId`, `Name`, `Description`, `ImageSrc`, `MaxPrice`, `MinPrice` FROM `Beverages` WHERE `BeverageId`"
+	_getAllHistoriesSQL = "SELECT `BeverageId`, `Name`, `Description`, `ImageSrc`, `MaxPrice`, `MinPrice` FROM `Beverages` WHERE `IsActive` = 1"
 )
 
 func (hp *historyProvider) Histories(ctx context.Context) ([]pe.History, error) {

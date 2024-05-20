@@ -123,6 +123,24 @@ func (a *app) BevUpdated(ctx context.Context, bevID string) error {
 	if err != nil {
 		return fmt.Errorf("bevrepo beverageByID: %v", err)
 	}
+
+	if !bev.IsActive {
+		if err := a.priceEngine.UntrackItem(bev.ID); err != nil {
+			return fmt.Errorf("engine untrackItem: %v", err)
+		}
+		return nil
+	}
+
+	if err := a.priceEngine.TrackItem(bev.ID, toItemParams(bev)); err != nil {
+		if err == engine.ErrItemAlreadyTracked {
+			if err := a.priceEngine.TweakItem(bev.ID, toItemParams(bev)); err != nil {
+				return fmt.Errorf("engine tweakItem: %v", err)
+			}
+			return nil
+		}
+		return fmt.Errorf("engine trackItem: %v", err)
+	}
+
 	if err := a.priceEngine.TweakItem(bev.ID, toItemParams(bev)); err != nil {
 		return fmt.Errorf("engine tweakItem: %v", err)
 	}
@@ -147,6 +165,11 @@ func (a *app) BevAdded(ctx context.Context, bevID string) error {
 	if err != nil {
 		return fmt.Errorf("bevrepo beverageByID: %v", err)
 	}
+
+	if !bev.IsActive {
+		return nil
+	}
+
 	if err := a.priceEngine.TrackItem(bevID, toItemParams(bev)); err != nil {
 		return fmt.Errorf("engine untrackItem: %v", err)
 	}
