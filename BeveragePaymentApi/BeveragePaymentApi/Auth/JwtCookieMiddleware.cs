@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.Metadata;
 using System.Security.Claims;
 
 namespace BeveragePaymentApi.Auth

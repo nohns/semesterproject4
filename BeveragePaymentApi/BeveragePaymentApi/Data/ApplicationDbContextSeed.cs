@@ -1,6 +1,4 @@
-using BeveragePaymentApi.Domain;
 using BeveragePaymentApi.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace BeveragePaymentApi.Data;
 
@@ -40,8 +38,8 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Blå vand",
-            Description = "En flaske blå vand",
-            ImageSrc = "https://via.placeholder.com/150",
+            Description = "Det blåeste vand du nogensinde har set",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot1_i1X_NpAwj.png?updatedAt=1716194377675",
             BasePrice = 10,
             MaxPrice = 15,
             MinPrice = 5,
@@ -61,8 +59,8 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Rød vand",
-            Description = "En flaske rød vand",
-            ImageSrc = "https://via.placeholder.com/150",
+            Description = "Mere rødt end hindbærbrus",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot2_BGjM11gdy.png?updatedAt=1716194395073",
             BasePrice = 10,
             MaxPrice = 15,
             MinPrice = 5,
@@ -79,19 +77,19 @@ public static class ApplicationDbContextSeed
                 }
             }
         },
-        
+
         new Beverage
         {
             Name = "Grøn vand",
-            Description = "Refreshing green water",
-            ImageSrc = "https://via.placeholder.com/150",
+            Description = "Mere forfriskende end en græsplæne",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/Hotpot3_QGbQ6WIPN.png?updatedAt=1716194407989",
             BasePrice = 12,
             MaxPrice = 18,
             MinPrice = 6,
             IsActive = true,
-            TotalSales = 25,
-            BuyMultiplier = 1.5,
-            HalfTime = 3000,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -104,15 +102,15 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Gul vand",
-            Description = "Invigorating yellow water",
+            Description = "Ikke så gult som du tror",
             ImageSrc = "https://via.placeholder.com/150",
             BasePrice = 8,
             MaxPrice = 12,
             MinPrice = 4,
             IsActive = false,
             TotalSales = 5,
-            BuyMultiplier = 1.5,
-            HalfTime = 4000,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -125,6 +123,48 @@ public static class ApplicationDbContextSeed
         new Beverage
         {
             Name = "Sort vand",
+            Description = "For de modige",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Øl",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 120,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Jägerbomb",
             Description = "Exotic black water",
             ImageSrc = "https://via.placeholder.com/150",
             BasePrice = 15,
@@ -142,7 +182,50 @@ public static class ApplicationDbContextSeed
                     Timestamp = DateTime.Now
                 }
             }
+        },
+         new Beverage
+        {
+            Name = "Spejlæg",
+            Description = "Kande, der smager som slikket!",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 75,
+            MaxPrice = 100,
+            MinPrice = 50,
+            IsActive = true,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 75,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Ceres Top",
+            Description = "Det bar' øl",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_EjtqaJsot.png?updatedAt=1716196012768",
+            BasePrice = 14,
+            MaxPrice = 20,
+            MinPrice = 9,
+            IsActive = true,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 14,
+                    Timestamp = DateTime.Now
+                }
+            }
         }
+
     };
 
         if (!context.Beverages.Any())

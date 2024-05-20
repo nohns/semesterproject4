@@ -1,8 +1,5 @@
-
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using BeveragePaymentApi.Domain.Exceptions;
 using BeveragePaymentApi.Dto;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;

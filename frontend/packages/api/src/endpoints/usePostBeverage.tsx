@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { client } from "../axios/axios";
-import { BeverageDTO } from "../types/beverage";
+import { BeverageDTO, Beverage } from "../types/beverage"; // Updated import statement
 
 export interface PostBeverageRequest {
   file: File;
