@@ -142,7 +142,92 @@ public static class ApplicationDbContextSeed
                     Timestamp = DateTime.Now
                 }
             }
+        },
+         new Beverage
+        {
+            Name = "Øl",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
+        },
+         new Beverage
+        {
+            Name = "Sort vand",
+            Description = "Exotic black water",
+            ImageSrc = "https://via.placeholder.com/150",
+            BasePrice = 15,
+            MaxPrice = 20,
+            MinPrice = 10,
+            IsActive = true,
+            TotalSales = 30,
+            BuyMultiplier = 1.5,
+            HalfTime = 5000,
+            Prices = new List<Price>
+            {
+                new Price
+                {
+                    Amount = 15,
+                    Timestamp = DateTime.Now
+                }
+            }
         }
+
     };
 
         if (!context.Beverages.Any())
