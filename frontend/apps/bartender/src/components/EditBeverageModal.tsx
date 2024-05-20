@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { usePutBeverage } from "@repo/api";
 import {
   Dialog,
@@ -18,7 +18,6 @@ import {
   Checkbox,
 } from "@repo/ui";
 import { Input } from "@repo/ui";
-
 import { Button } from "@repo/ui";
 import { Beverage } from "../../../../packages/api/src/types/beverage";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,9 +38,6 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
 }) => {
   const editBeverage = usePutBeverage();
   const queryClient = useQueryClient();
-  const [submissionStatus, setSubmissionStatus] = useState<
-    null | "success" | "error"
-  >(null); // State for submission status
 
   const formSchema = z.object({
     name: z.string().min(1, {
@@ -68,7 +64,6 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
         message: "Maksimum pris skal være mindst 1 kr.",
       })
     ),
-
     buyMultiplier: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
@@ -121,26 +116,29 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
     editBeverage.mutate(beverageData, {
       onSuccess: () => {
         console.log("Beverage updated successfully");
-        // Handle additional logic here
-        setSubmissionStatus("success");
         queryClient.invalidateQueries({ queryKey: ["beverages"] });
-        setTimeout(() => {
-          onClose();
-          setSubmissionStatus(null);
-        }, 1500);
+        onClose();
       },
       onError: (error) => {
         console.error("Error updating beverage:", error);
-        setSubmissionStatus("error");
       },
     });
   }
 
   useEffect(() => {
     if (!isOpen) {
-      setSubmissionStatus(null);
+      form.reset({
+        name: beverage.name,
+        description: beverage.description,
+        basePrice: beverage.basePrice,
+        minPrice: beverage.minPrice,
+        maxPrice: beverage.maxPrice,
+        buyMultiplier: beverage.buyMultiplier,
+        halfTime: beverage.halfTime,
+        active: beverage.isActive,
+      });
     }
-  }, [isOpen]);
+  }, [isOpen, beverage, form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
