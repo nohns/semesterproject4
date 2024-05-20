@@ -12,6 +12,11 @@
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    healthcheck:
+      test: ["CMD", "curl", "-f"  , "http://bevpayapi:8080/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
 
   engine:
     image: foobar-price-engine
@@ -30,6 +35,8 @@
       DB_NAME: FooBarDb
     depends_on:
       mysql:
+        condition: service_healthy
+      bevpayapi:
         condition: service_healthy
 
   mysql:
