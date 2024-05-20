@@ -5,6 +5,7 @@ using BeveragePaymentApi.Domain.Entities;
 using BeveragePaymentApi.Images;
 using BeveragePaymentApi.Dto;
 using Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeveragePaymentApi.Beverages;
 
