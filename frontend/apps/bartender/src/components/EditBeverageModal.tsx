@@ -137,14 +137,14 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
   }
 
   useEffect(() => {
-    if (!open) {
+    if (!isOpen) {
       setSubmissionStatus(null);
     }
-  }, [open]);
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Redigér Produkt</DialogTitle>
           <DialogDescription>
@@ -189,11 +189,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Basis pris</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -207,11 +203,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Minimum pris</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -225,11 +217,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Maksimum pris</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -243,11 +231,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Købs multiplier</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -261,11 +245,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Halveringstid</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -292,7 +272,7 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
             />
 
             <Button className="w-full" type="submit">
-              Tilføj produktet
+              Redigér produktet
             </Button>
           </form>
         </Form>
