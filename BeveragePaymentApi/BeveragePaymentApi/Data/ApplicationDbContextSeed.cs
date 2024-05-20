@@ -103,12 +103,12 @@ public static class ApplicationDbContextSeed
         {
             Name = "Gul vand",
             Description = "Ikke så gult som du tror",
-            ImageSrc = "https://via.placeholder.com/150",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_W-xPJxvZq.png?updatedAt=1716196564945",
             BasePrice = 8,
             MaxPrice = 12,
             MinPrice = 4,
             IsActive = false,
-            TotalSales = 5,
+            TotalSales = 0,
             BuyMultiplier = 1.025,
             HalfTime = 120,
             Prices = new List<Price>
@@ -150,8 +150,8 @@ public static class ApplicationDbContextSeed
             MaxPrice = 20,
             MinPrice = 10,
             IsActive = true,
-            TotalSales = 30,
-            BuyMultiplier = 1.5,
+            TotalSales = 0,
+            BuyMultiplier = 1.025,
             HalfTime = 120,
             Prices = new List<Price>
             {
@@ -172,8 +172,8 @@ public static class ApplicationDbContextSeed
             MinPrice = 10,
             IsActive = true,
             TotalSales = 30,
-            BuyMultiplier = 1.5,
-            HalfTime = 5000,
+            BuyMultiplier = 1.025,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
