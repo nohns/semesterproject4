@@ -9,12 +9,22 @@ import {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Form,
+  Checkbox,
 } from "@repo/ui";
 import { Input } from "@repo/ui";
 
 import { Button } from "@repo/ui";
 import { Beverage } from "../../../../packages/api/src/types/beverage";
 import { useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface EditBeverageModalProps {
   beverage: Beverage;
@@ -27,52 +37,110 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [name, setName] = useState(beverage.name);
-  const [description, setDescription] = useState(beverage.description);
-  const [imageSrc, setImageSrc] = useState(beverage.imageSrc);
-  const [basePrice, setBasePrice] = useState(beverage.basePrice);
-  const [maxPrice, setMaxPrice] = useState(beverage.maxPrice);
-  const [minPrice, setMinPrice] = useState(beverage.minPrice);
-  const [isActive, setIsActive] = useState(beverage.isActive);
-
-  const mutation = usePutBeverage();
+  const editBeverage = usePutBeverage();
   const queryClient = useQueryClient();
+  const [submissionStatus, setSubmissionStatus] = useState<
+    null | "success" | "error"
+  >(null); // State for submission status
 
-  const handleSave = () => {
-    mutation.mutate(
-      {
-        beverage: {
-          ...beverage,
-          name,
-          description,
-          imageSrc,
-          basePrice,
-          maxPrice,
-          minPrice,
-          isActive,
-        },
+  const formSchema = z.object({
+    name: z.string().min(1, {
+      message: "Navn skal udfyldes.",
+    }),
+    description: z.string().min(1, {
+      message: "Beskrivelse skal udfyldes.",
+    }),
+    basePrice: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, {
+        message: "Basis pris skal være mindst 1 kr.",
+      })
+    ),
+    minPrice: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, {
+        message: "Minimum pris skal være mindst 1 kr.",
+      })
+    ),
+    maxPrice: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, {
+        message: "Maksimum pris skal være mindst 1 kr.",
+      })
+    ),
+
+    buyMultiplier: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, {
+        message: "Købsmultiplikatoren skal være mindst 1.",
+      })
+    ),
+    halfTime: z.preprocess(
+      (val) => Number(val),
+      z.number().min(0, {
+        message: "Halveringstiden skal være mindst 0.1",
+      })
+    ),
+    active: z.boolean().default(true),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: beverage.name,
+      description: beverage.description,
+      basePrice: beverage.basePrice,
+      minPrice: beverage.minPrice,
+      maxPrice: beverage.maxPrice,
+      buyMultiplier: beverage.buyMultiplier,
+      halfTime: beverage.halfTime,
+      active: beverage.isActive,
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    const beverageData = {
+      beverage: {
+        beverageId: beverage.beverageId,
+        name: values.name,
+        description: values.description,
+        imageSrc: beverage.imageSrc,
+        basePrice: values.basePrice,
+        minPrice: values.minPrice,
+        maxPrice: values.maxPrice,
+        isActive: values.active,
+        buyMultiplier: values.buyMultiplier,
+        halfTime: values.halfTime,
+        totalSales: beverage.totalSales,
+        prices: beverage.prices,
       },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["beverages"] });
+    };
+
+    console.log("Creating beverage:", beverageData);
+
+    editBeverage.mutate(beverageData, {
+      onSuccess: () => {
+        console.log("Beverage created successfully");
+        // Handle additional logic here
+        setSubmissionStatus("success");
+        queryClient.invalidateQueries({ queryKey: ["beverages"] });
+        setTimeout(() => {
           onClose();
-        },
-        onError: (error) => {
-          console.error("Error updating beverage:", error);
-        },
-      }
-    );
-  };
+          setSubmissionStatus(null);
+        }, 1500);
+      },
+      onError: (error) => {
+        console.error("Error creating beverage:", error);
+        setSubmissionStatus("error");
+      },
+    });
+  }
 
   useEffect(() => {
-    setName(beverage.name);
-    setDescription(beverage.description);
-    setImageSrc(beverage.imageSrc);
-    setBasePrice(beverage.basePrice);
-    setMaxPrice(beverage.maxPrice);
-    setMinPrice(beverage.minPrice);
-    setIsActive(beverage.isActive);
-  }, [beverage]);
+    if (!open) {
+      setSubmissionStatus(null);
+    }
+  }, [open]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -83,75 +151,154 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
             Opdater informationen for produktet herunder.
           </DialogDescription>
         </DialogHeader>
-        <div>
-          <label>Navn</label>
-          <Input
-            value={name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setName(e.target.value)
-            }
-          />
-        </div>
-        <div>
-          <label>Beskrivelse</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="flex w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          />
-        </div>
-        <div>
-          <label>Billede URL</label>
-          <Input
-            value={imageSrc}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setImageSrc(e.target.value)
-            }
-          />
-        </div>
-        <div>
-          <label>Base Price</label>
-          <Input
-            type="number"
-            value={basePrice}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setBasePrice(Number(e.target.value))
-            }
-          />
-        </div>
-        <div>
-          <label>Max Price</label>
-          <Input
-            type="number"
-            value={maxPrice}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setMaxPrice(Number(e.target.value))
-            }
-          />
-        </div>
-        <div>
-          <label>Min Price</label>
-          <Input
-            type="number"
-            value={minPrice}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setMinPrice(Number(e.target.value))
-            }
-          />
-        </div>
-        <div className="flex items-center">
-          <label className="mr-2">Active</label>
-          <input
-            type="checkbox"
-            checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
-            className="h-4 w-4 rounded border border-input bg-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          />
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Navn</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Description */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Beskrivelse</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* BasePrice */}
+            <FormField
+              control={form.control}
+              name="basePrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Basis pris</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* MinPrice */}
+            <FormField
+              control={form.control}
+              name="minPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Minimum pris</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* MaxPrice */}
+            <FormField
+              control={form.control}
+              name="maxPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Maksimum pris</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* buyMultiplier */}
+            <FormField
+              control={form.control}
+              name="buyMultiplier"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Købs multiplier</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Halflife */}
+            <FormField
+              control={form.control}
+              name="halfTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Halveringstid</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Active */}
+            <FormField
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Aktiver produkt
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
+            <Button className="w-full" type="submit">
+              Tilføj produktet
+            </Button>
+          </form>
+        </Form>
 
         <DialogFooter>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -16,10 +16,11 @@ const putBeverage = async (data: PutBeverageRequest) => {
   const beverageDto = {
     name: beverage.name,
     description: beverage.description,
-    imageSrc: beverage.imageSrc,
     basePrice: beverage.basePrice,
     maxPrice: beverage.maxPrice,
     minPrice: beverage.minPrice,
+    buyMultiplier: beverage.buyMultiplier,
+    halfTime: beverage.halfTime,
     isActive: beverage.isActive,
   };
 
