@@ -12,6 +12,7 @@ using BeveragePaymentApi.Auth;
 using Microsoft.AspNetCore.Antiforgery;
 using BeveragePaymentApi;
 using BeveragePaymentApi.Images;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,7 +70,7 @@ builder.Services.AddScoped<IPriceRepository, PriceRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-
+builder.Services.AddHealthChecks().AddCheck<DatabaseSeededHealthCheck>("DatabaseSeeded");
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -99,6 +100,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 
 var app = builder.Build();
+app.MapHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -126,6 +128,7 @@ if (app.Environment.IsDevelopment())
             Console.WriteLine(ex.Message);
         }
         ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
+        DatabaseSeededHealthCheck.MarkDatabaseAsSeeded();
     }
 }
 //app.UseHttpsRedirection();

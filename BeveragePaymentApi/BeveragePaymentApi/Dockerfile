@@ -14,6 +14,7 @@ RUN dotnet restore
 # Copy all the project files
 COPY BeveragePaymentApi/. .
 
+
 # Publish the application
 RUN dotnet publish --os linux --arch "${TARGETARCH}" -c release -o /app
 
@@ -21,4 +22,7 @@ RUN dotnet publish --os linux --arch "${TARGETARCH}" -c release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app ./
+
+RUN apt-get update && apt-get install -y curl
+
 ENTRYPOINT ["dotnet", "BeveragePaymentApi.dll"]
