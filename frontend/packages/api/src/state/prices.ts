@@ -50,7 +50,8 @@ interface HistoryStore {
   startListening: () => void;
 }
 
-const WS_URL = "ws://localhost:9090/ws";
+const WS_URL = import.meta.env.VITE_APP_ENGINE_WS_URL;
+//const WS_URL = "ws://localhost:9090/ws";
 
 export const usePriceHistory = create<HistoryStore>((set, get) => ({
   history: [],
