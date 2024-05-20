@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using BeveragePaymentApi.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 

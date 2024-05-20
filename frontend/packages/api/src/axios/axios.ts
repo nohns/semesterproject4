@@ -3,6 +3,6 @@
 import axios from "axios";
 
 export const client = axios.create({
-  baseURL: "http://localhost:5051/v1",
+  baseURL: import.meta.env.VITE_APP_API_URL,
   withCredentials: true,
 });

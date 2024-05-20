@@ -2,17 +2,19 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "dotenv -- turbo dev",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "api-tunnel": "ssh -N -R 9879:localhost:9090 nohns@serv2.nohns.dk || exit 0"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
-    "turbo": "latest"
+    "turbo": "latest",
+    "dotenv-cli": "latest"
   },
   "engines": {
     "node": ">=18"

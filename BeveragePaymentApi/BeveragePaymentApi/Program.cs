@@ -7,15 +7,11 @@ using BeveragePaymentApi.Prices;
 using Microsoft.EntityFrameworkCore;
 using BeveragePaymentApi.Orders;
 
-using BeveragePaymentApi.Domain;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using BeveragePaymentApi.Auth;
-using System.Net;
 using Microsoft.AspNetCore.Antiforgery;
 using BeveragePaymentApi;
 using BeveragePaymentApi.Images;
-using System.Drawing;
 
 var builder = WebApplication.CreateBuilder(args);
 
