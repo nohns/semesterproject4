@@ -40,54 +40,63 @@ export default function AddBeverage() {
     null | "success" | "error"
   >(null); // State for submission status
 
-  const formSchema = z.object({
-    name: z.string().min(1, {
-      message: "Navn skal udfyldes.",
-    }),
-    description: z.string().min(1, {
-      message: "Beskrivelse skal udfyldes.",
-    }),
-    ImageSrc: z.instanceof(File, {
-      message: "Billede skal være en fil.",
-    }),
-    basePrice: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, {
-        message: "Basis pris skal være mindst 1 kr.",
-      })
-    ),
-    minPrice: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, {
-        message: "Minimum pris skal være mindst 1 kr.",
-      })
-    ),
-    maxPrice: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, {
-        message: "Maksimum pris skal være mindst 1 kr.",
-      })
-    ),
+  const formSchema = z
+    .object({
+      name: z.string().min(1, {
+        message: "Navn skal udfyldes.",
+      }),
+      description: z.string().min(1, {
+        message: "Beskrivelse skal udfyldes.",
+      }),
+      ImageSrc: z.instanceof(File, {
+        message: "Billede skal være en fil.",
+      }),
+      basePrice: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, {
+          message: "Basis pris skal være mindst 1 kr.",
+        })
+      ),
+      minPrice: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, {
+          message: "Minimum pris skal være mindst 1 kr.",
+        })
+      ),
+      maxPrice: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, {
+          message: "Maksimum pris skal være mindst 1 kr.",
+        })
+      ),
 
-    buyMultiplier: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1.001, {
-        message: "Købsmultiplikatoren skal være større end 1.",
-      })
-    ),
-    halfTime: z.preprocess(
-      (val) => Number(val),
-      z
-        .number()
-        .min(1, {
-          message: "Halveringstiden skal være mindst 1",
-        })
-        .refine((val) => Number.isInteger(val), {
-          message: "Halveringstiden skal være et heltal",
-        })
-    ),
-    active: z.boolean().default(true),
-  });
+      buyMultiplier: z
+        .preprocess((val) => Number(val), z.number())
+        .refine((value) => value > 1, {
+          message: "Multiplier skal være større end 1.",
+        }),
+
+      halfTime: z.preprocess(
+        (val) => Number(val),
+        z
+          .number()
+          .min(1, {
+            message: "Halveringstiden skal være mindst 1",
+          })
+          .refine((val) => Number.isInteger(val), {
+            message: "Halveringstiden skal være et heltal",
+          })
+      ),
+      active: z.boolean().default(true),
+    })
+    .refine((data) => data.minPrice <= data.basePrice, {
+      path: ["minPrice"],
+      message: "Minimum pris kan ikke være større end basis pris.",
+    })
+    .refine((data) => data.maxPrice >= data.basePrice, {
+      path: ["maxPrice"],
+      message: "Maksimum pris kan ikke være mindre end basis pris.",
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
