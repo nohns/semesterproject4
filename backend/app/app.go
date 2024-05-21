@@ -59,9 +59,10 @@ func Bootstrap() (a *app, err error) {
 
 	// Configure pricing engine, and track beverages
 	eng := engine.New(engine.Config{
-		FirstUpdateMode:  engine.FirstUpdateModeFollow,
-		UpdateInterval:   10 * time.Second,
-		NoisePerThousand: 25,
+		FirstUpdateMode:           engine.FirstUpdateModeRandom,
+		FirstUpdateRandomMaxDelay: 10 * time.Second,
+		UpdateInterval:            10 * time.Second,
+		NoisePerThousand:          25,
 	})
 	bevs, err := a.bevRepo.FindBeverages(context.TODO())
 	if err != nil {
