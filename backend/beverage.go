@@ -7,6 +7,7 @@ type Beverage struct {
 	Name            string        `json:"name"`
 	Desc            string        `json:"description"`
 	ImageSrc        string        `json:"imageSrc"`
+	IsActive        bool          `json:"isActive"`
 	LastPriceUpdate time.Time     `json:"lastUpdate"`
 	Params          PricingParams `json:"-"`
 }
