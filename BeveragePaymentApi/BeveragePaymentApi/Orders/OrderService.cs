@@ -3,6 +3,7 @@ using BeveragePaymentApi.Dto;
 using BeveragePaymentApi.Domain.Exceptions;
 using BeveragePaymentApi.Prices;
 using Stripe;
+using BeveragePaymentApi.Beverages;
 
 namespace BeveragePaymentApi.Orders
 {
@@ -11,11 +12,13 @@ namespace BeveragePaymentApi.Orders
     private readonly IOrderRepository _orderRepository;
     private readonly IPriceRepository _priceRepository;
     private readonly PaymentIntentService _intentService;
+    private readonly NotificationService _notificationService;
 
-    public OrderService(IOrderRepository orderRepository, IPriceRepository priceRepository)
+    public OrderService(IOrderRepository orderRepository, IPriceRepository priceRepository, NotificationService notificationService)
     {
       _orderRepository = orderRepository;
       _priceRepository = priceRepository;
+      _notificationService = notificationService;
       _intentService = new PaymentIntentService();
 
       StripeConfiguration.ApiKey = "sk_test_51PDTdFKZetYTOPv970qtAixsE1HQx463t9ti2ztmzEMtCm42tokDLTQR9ifQNmhBBF9Y3uoKpSfwvei7EBp7iprC00IQubXOaG";
@@ -67,6 +70,9 @@ namespace BeveragePaymentApi.Orders
         Currency = "dkk",
       };
       var intent = _intentService.Create(options);
+
+      // At this point the user can still cancel, but I'll take it 😈
+      await _notificationService.SendBeverageOrderedNotificationAsync(order.Beverage, quantity);
 
       // Update order with Stripe intent
       order.StripeIntentId = intent.Id;
