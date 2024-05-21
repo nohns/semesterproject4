@@ -1,5 +1,7 @@
 /** @format */
 
+import { processOrder } from "@/api/order";
+import { Order } from "@/model/order";
 import {
   ExpressCheckoutElement,
   useElements,
@@ -17,10 +19,12 @@ import { useState } from "react";
 
 interface StripeCheckoutProps {
   setNoWallet: (value: boolean) => void;
+  order: Order;
+  quantity: number;
 }
 
 //Todo: stripe is cursed
-function StripeCheckout({ setNoWallet }: StripeCheckoutProps) {
+function StripeCheckout({ setNoWallet, order, quantity }: StripeCheckoutProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<StripeError | undefined>();
@@ -45,25 +49,21 @@ function StripeCheckout({ setNoWallet }: StripeCheckoutProps) {
       return;
     }
 
-    // Create the PaymentIntent and obtain clientSecret
-    const res = await fetch("/payment/create-intent", {
-      method: "POST",
+    // Process order inorder to get Stripe client secret for final price
+    const processedOrder = await processOrder(order.orderId, quantity);
+
+    console.log({
+      processedOrder,
     });
-    const { client_secret: clientSecret } = await res.json();
-    //Check if we error on client secret or not
-    if (!clientSecret) {
-      alert("Error creating payment intent");
-      return;
-    }
 
     // Confirm the PaymentIntent using the details collected by the Express Checkout Element
     const { error } = await stripe.confirmPayment({
       // `elements` instance used to create the Express Checkout Element
       elements,
       // `clientSecret` from the created PaymentIntent
-      clientSecret,
+      clientSecret: processedOrder.stripeClientSecret!,
       confirmParams: {
-        return_url: "https://example.com/order/123/complete",
+        return_url: `https://order.foobar.nohns.dk/receipt/${processedOrder.orderId}`,
       },
     });
 

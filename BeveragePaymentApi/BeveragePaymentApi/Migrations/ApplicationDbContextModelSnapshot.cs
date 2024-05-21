@@ -79,12 +79,13 @@ namespace BeveragePaymentApi.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("StripeClientSecret")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("StripeIntentId")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("Time")
@@ -92,8 +93,7 @@ namespace BeveragePaymentApi.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("PriceId")
-                        .IsUnique();
+                    b.HasIndex("PriceId");
 
                     b.ToTable("Orders");
                 });
@@ -142,8 +142,8 @@ namespace BeveragePaymentApi.Migrations
             modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Order", b =>
                 {
                     b.HasOne("BeveragePaymentApi.Domain.Entities.Price", "Price")
-                        .WithOne("Order")
-                        .HasForeignKey("BeveragePaymentApi.Domain.Entities.Order", "PriceId");
+                        .WithMany("Orders")
+                        .HasForeignKey("PriceId");
 
                     b.Navigation("Price");
                 });
@@ -166,7 +166,7 @@ namespace BeveragePaymentApi.Migrations
 
             modelBuilder.Entity("BeveragePaymentApi.Domain.Entities.Price", b =>
                 {
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

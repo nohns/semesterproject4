@@ -59,9 +59,9 @@ namespace BeveragePaymentApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    BeverageId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<float>(type: "float", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    BeverageId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,11 +83,12 @@ namespace BeveragePaymentApi.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     BeverageId = table.Column<int>(type: "int", nullable: false),
                     PriceId = table.Column<int>(type: "int", nullable: true),
-                    StripeIntentId = table.Column<string>(type: "longtext", nullable: false),
-                    StripeClientSecret = table.Column<string>(type: "longtext", nullable: false),
+                    StripeIntentId = table.Column<string>(type: "longtext", nullable: true),
+                    StripeClientSecret = table.Column<string>(type: "longtext", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    Expiry = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Expiry = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,8 +104,7 @@ namespace BeveragePaymentApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_PriceId",
                 table: "Orders",
-                column: "PriceId",
-                unique: true);
+                column: "PriceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prices_BeverageId",

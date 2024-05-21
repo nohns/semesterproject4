@@ -6,10 +6,12 @@ import { ArrowLeftIcon, IdCardIcon } from "@radix-ui/react-icons";
 import { motion } from "framer-motion";
 import { CircleCheck, CalendarDays, Clock9 } from "Lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 //Receipt page
 function Receipt() {
   const [rotation, setRotation] = useState(0);
+  const { orderId } = useParams();
 
   useEffect(() => {
     const handleOrientation = (event: DeviceOrientationEvent) => {
@@ -25,12 +27,21 @@ function Receipt() {
     };
   }, []);
 
+  const navigate = useNavigate();
+  function onBackPressed() {
+    navigate("/");
+  }
+
+  if (!orderId) {
+    return <div>Please provide orderid!</div>;
+  }
+
   return (
     <>
       <MobileContainer>
         <div
           className="flex flex-row items-center gap-2 cursor-pointer z-10 w-10/12 mx-auto"
-          /* onClick={handleReturnClick} */
+          onClick={onBackPressed}
         >
           <ArrowLeftIcon className="w-8 h-8" />
           <span className="">Tilbage</span>

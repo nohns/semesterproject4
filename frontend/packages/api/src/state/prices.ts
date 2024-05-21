@@ -6,7 +6,7 @@ export const DEFAULT_HEARTBEAT = {
   interval: 25000, // Interval at which to send ping messages
 };
 
-export interface Beverage {
+export interface GoBeverage {
   beverageId: string;
   name: string;
   description: string;
@@ -14,7 +14,7 @@ export interface Beverage {
 }
 
 export interface History {
-  beverage: Beverage;
+  beverage: GoBeverage;
   prices: HistoryEntry[];
 }
 
@@ -47,19 +47,32 @@ interface HistoryStore {
   history: History[];
   connected: boolean;
   listening: boolean;
+  failedAttempts: number;
   startListening: () => void;
 }
 
 const WS_URL = import.meta.env.VITE_APP_ENGINE_WS_URL;
+console.log(WS_URL);
 //const WS_URL = "ws://localhost:9090/ws";
+
+const MAX_FAILED_ATTEMPTS = 5;
 
 export const usePriceHistory = create<HistoryStore>((set, get) => ({
   history: [],
   connected: false,
   listening: false,
+  failedAttempts: 0,
   startListening: () => {
     if (get().listening) return;
     set(() => ({ listening: true }));
+    if (get().failedAttempts > MAX_FAILED_ATTEMPTS) {
+      console.error(
+        "failed creating ws connection a max of " +
+          MAX_FAILED_ATTEMPTS +
+          " times. stopped retrying.",
+      );
+      return;
+    }
 
     const socket = new WebSocket(WS_URL);
     let heartbeatIntervalHandle: NodeJS.Timeout | undefined; // For keep sending heartbeats continously, keeping conneciton alive
@@ -105,14 +118,10 @@ export const usePriceHistory = create<HistoryStore>((set, get) => ({
     const onStructuredMsg = (msg: Message) => {
       switch (msg.kind) {
         case "priceHistories":
-          console.log("Price Histories");
           set(() => ({ history: msg.data }));
           break;
         case "priceUpdate":
-          console.log(msg.data);
           set((old) => {
-            console.log(old.history.length); // should print the updated length
-
             const updatedHistories = old.history.map((history) => {
               if (history.beverage.beverageId === msg.data.beverageId) {
                 return {
@@ -136,7 +145,7 @@ export const usePriceHistory = create<HistoryStore>((set, get) => ({
 
     socket.onopen = () => {
       console.log("Connection established");
-      set(() => ({ connected: true }));
+      set(() => ({ connected: true, failedAttempts: 0 }));
       startHeartbeat();
     };
 
@@ -147,7 +156,6 @@ export const usePriceHistory = create<HistoryStore>((set, get) => ({
         clearTimeout(heartbeatTimeoutHandle);
         heartbeatTimeoutHandle = undefined;
       } else {
-        console.log("Message received:", event.data);
         try {
           const data = JSON.parse(event.data);
           if (!isPriceHistoriesMessage(data)) {
@@ -163,7 +171,10 @@ export const usePriceHistory = create<HistoryStore>((set, get) => ({
 
     socket.onclose = () => {
       console.log("Connection closed");
-      set(() => ({ connected: false }));
+      set((old) => ({
+        connected: false,
+        failedAttempts: old.failedAttempts + 1,
+      }));
       if (heartbeatTimeoutHandle) {
         clearTimeout(heartbeatTimeoutHandle);
         heartbeatTimeoutHandle = undefined;
@@ -176,6 +187,7 @@ export const usePriceHistory = create<HistoryStore>((set, get) => ({
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
+      set((old) => ({ failedAttempts: old.failedAttempts + 1 }));
       closeSocket();
     };
   },

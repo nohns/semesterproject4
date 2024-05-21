@@ -2,6 +2,7 @@
 
 import NoWallet from "@/components/NoWallet";
 import StripeCheckout from "@/components/StripeCheckout";
+import { Order } from "@/model/order";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
@@ -11,22 +12,28 @@ const stripePromise = loadStripe(
 );
 
 interface PaymentProps {
-  price: number;
+  total: number;
+  quantity: number;
+  order: Order;
 }
 
-function Payment({ price }: PaymentProps) {
+function Payment({ total, order, quantity }: PaymentProps) {
   const [noWallet, setNoWallet] = useState(false);
 
   const options: StripeElementsOptions = {
     mode: "payment",
-    amount: Number((price * 100).toFixed(0)),
+    amount: Number((total * 100).toFixed(0)),
     currency: "dkk",
   };
 
   return (
     <>
       <Elements stripe={stripePromise} options={options}>
-        <StripeCheckout setNoWallet={setNoWallet} />
+        <StripeCheckout
+          setNoWallet={setNoWallet}
+          order={order}
+          quantity={quantity}
+        />
       </Elements>
       {noWallet && <NoWallet />}
     </>

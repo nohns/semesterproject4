@@ -28,14 +28,14 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Order>()
             .HasOne(p => p.Price)
-            .WithOne(o => o.Order)
-            .HasForeignKey<Order>(o => o.PriceId);
+            .WithMany(o => o.Orders)
+            .HasForeignKey(p => p.PriceId);
 
         modelBuilder.Entity<Price>()
             .HasOne(p => p.Beverage)
             .WithMany(b => b.Prices)
             .HasForeignKey(p => p.BeverageId);
-            
+
         base.OnModelCreating(modelBuilder);
 
     }

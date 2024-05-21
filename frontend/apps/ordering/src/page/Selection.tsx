@@ -5,44 +5,73 @@ import { Apple, Google } from "@repo/ui";
 
 import { useNavigate } from "react-router-dom";
 
-import { Beverage, HistoryEntry } from "@repo/api";
+import { Beverage } from "@repo/api";
 import MobileContainer from "@/components/MobileContainer";
-import { motion } from "framer-motion";
-import { useCallback, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
 
 import { usePriceHistory } from "@repo/api";
+import { createOrder } from "@/api/order";
+import { cn } from "@/lib/utils";
 
 function Selection() {
   const navigate = useNavigate();
-  const { history: histories, startListening, connected } = usePriceHistory();
+  const {
+    history: histories,
+    startListening,
+    connected,
+    listening,
+  } = usePriceHistory();
 
+  // Restart WS connection if its dropped
   useEffect(() => {
+    if (connected || listening) return;
     startListening();
-  }, [startListening]);
+  }, [connected, listening, startListening]);
+
+  const [loadingOrder, setLoadingOrder] = useState(false);
 
   const handleBeverageClick = useCallback(
-    (beverage: Beverage, priceHistory: HistoryEntry[]) => {
-      console.log("beverage", beverage);
-      navigate("/selected", { state: { beverage, priceHistory } });
+    async (beverage: Beverage) => {
+      setLoadingOrder(true);
+      const order = await createOrder(beverage.beverageId);
+      setLoadingOrder(false);
+      navigate(`/order/${order.orderId}`);
     },
-    [navigate]
+    [navigate],
   );
 
-  console.log("histories", histories);
-  console.log("isConnected", connected);
   return (
     <>
       <MobileContainer>
-        <div className="h-full flex flex-col items-center w-full gap-6">
+        <div
+          className={cn("h-full flex flex-col items-center w-full gap-6", {
+            "overflow-hidden": loadingOrder,
+          })}
+        >
           {/*Loading screen*/}
           {histories.length === 0 && (
             <div className="flex flex-col justify-center items-center">
               <div className="loader" />
               <span className="font-mono text-xs mt-4">
-                Indlæser blå vand opskriften
+                Indlæser blå vand opskriften...
               </span>
             </div>
           )}
+          <AnimatePresence>
+            {loadingOrder && (
+              <motion.div
+                className="fixed top-0 left-0 right-0 z-50 bg-white/75 flex flex-col justify-center items-center overscroll-contain h-screen"
+                initial={{ opacity: 0, visibility: "hidden" }}
+                animate={{ opacity: 1, visibility: "visible" }}
+              >
+                <div className="loader" />
+                <span className="font-mono text-xs mt-4">
+                  Indlæser dit tilbud... 🍹
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/*All drinks spawned*/}
           {histories?.length > 0 &&
@@ -72,7 +101,7 @@ function Selection() {
           transition={{ duration: 0.5 }} // control the speed of the animation
         >
           <span className="font-mono font-light mt-4 text-xs my-auto">
-            Understøttede betalings muligheder
+            Understøttede betalingsmuligheder
           </span>
 
           <div className="flex flex-row justify-center  w-full gap-x-8 ">

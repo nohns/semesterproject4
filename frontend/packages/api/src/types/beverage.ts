@@ -1,12 +1,14 @@
 /** @format */
 
 interface Price {
+  id: number;
   amount: number;
   timestamp: Date;
+  beverageId: number;
 }
 
 interface Beverage {
-  beverageId: string;
+  beverageId: number;
   name: string;
   description: string;
   imageSrc: string;
