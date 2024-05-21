@@ -29,7 +29,7 @@ export default function SlidingBeverageItemCardLigmaNamingIsHard({
     ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
 
   return (
-    <Card className="flex flex-col justify-between max-w-2xl h-32 p-2 w-52">
+    <Card className="flex flex-col justify-between max-w-2xl h-32 p-2 w-52 overflow-hidden">
       <div className="flex justify-between items-start">
         <span className="text-md font-semibold truncate max-w-[65%]">
           {history.beverage.name}
@@ -56,7 +56,7 @@ export default function SlidingBeverageItemCardLigmaNamingIsHard({
         </div>
       </div>
 
-      <div className="flex flex-grow p-2 relative">
+      <div className="flex-grow p-2 relative overflow-hidden">
         <Chart prices={displayedBeveragePrices} minimal />
       </div>
     </Card>
