@@ -36,7 +36,7 @@ namespace BeveragePaymentApi.Payment
             }
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}", Name = "GetOrderById")]
         public async Task<ActionResult<Order>> GetById(int id)
         {
             try

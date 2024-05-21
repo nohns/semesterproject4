@@ -1,4 +1,6 @@
-﻿using BeveragePaymentApi.Domain.Exceptions;
+﻿
+/*
+using BeveragePaymentApi.Domain.Exceptions;
 using BeveragePaymentApi.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Asp.Versioning;
@@ -108,3 +110,4 @@ namespace BeveragePaymentApi.Prices
         }
     }
 }
+*/
