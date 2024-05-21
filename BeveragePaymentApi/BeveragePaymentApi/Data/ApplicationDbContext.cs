@@ -33,8 +33,8 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Price>()
             .HasOne(p => p.Beverage)
-            .WithMany(b => b.Prices)
-            .HasForeignKey(p => p.BeverageId);
+            .WithMany(b => b.Prices);
+        //.HasForeignKey(p => p.BeverageId);
 
         base.OnModelCreating(modelBuilder);
 
