@@ -1,7 +1,5 @@
 /** @format */
-
 import MobileContainer from "@/components/MobileContainer";
-
 import { ArrowLeftIcon, IdCardIcon } from "@radix-ui/react-icons";
 import { useGetOrder } from "@repo/api";
 import { motion } from "framer-motion";
@@ -36,37 +34,39 @@ function Receipt() {
     return (
       <>
         <MobileContainer>
-          <motion.div
-            className="  rounded-sm  p-2  h-[80dvh] flex flex-col justify-end items-center "
-            initial={{ opacity: 0, y: 50 }} // changed from -50 to 50
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }} // changed from 50 to -50
-          >
+          <div className="justify-center items-center flex-col flex h-[80dvh]">
             <motion.div
-              className=""
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5 }}
+              className="  rounded-sm  p-2"
+              initial={{ opacity: 0, y: 50 }} // changed from -50 to 50
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }} // changed from 50 to -50
             >
-              <TriangleAlert className="h-14 w-14 mx-auto text-destructive" />
+              <motion.div
+                className=""
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <TriangleAlert className="h-28 w-28 mx-auto text-destructive" />
+              </motion.div>
+              <motion.div
+                className="font-mono text-xs mb-2 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Dit ordrenummer er ikke gyldigt
+              </motion.div>
+              <motion.button
+                onClick={onBackPressed}
+                className="w-full mt-2 bg-primary text-primary-foreground  shadow hover:bg-primary/90 rounded-md h-9 px-4 py-2 font-mono"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                Vend tilbage
+              </motion.button>
             </motion.div>
-            <motion.div
-              className="font-mono text-xs mb-2 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              Ikke et gyldigt ordrenummer
-            </motion.div>
-            <motion.button
-              onClick={onBackPressed}
-              className="w-full mt-2 bg-primary text-primary-foreground  shadow hover:bg-primary/90 rounded-md h-9 px-4 py-2 font-mono"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              Vend tilbage
-            </motion.button>
-          </motion.div>
+          </div>
         </MobileContainer>
       </>
     );
