@@ -91,7 +91,7 @@ export default function Order() {
       setLoadingState("renewing_unmountmount");
       await wait(300);
       setLoadingState("renewing_fetch");
-      await wait(1000);
+      await wait(1500);
       await renewOrder();
       setLoadingState("renewing_chart");
       await wait(300);
@@ -108,6 +108,9 @@ export default function Order() {
     prices,
     loadingState,
   });
+
+  const showChart =
+    loadingState === "loaded" || loadingState === "renewing_notice";
 
   return (
     <MobileContainer>
@@ -159,24 +162,20 @@ export default function Order() {
               exit={{ opacity: 0, y: 10 }}
             >
               <AnimatePresence>
-                {(loadingState === "loaded" ||
-                  (loadingState.startsWith("renewing") &&
-                    loadingState !== "renewing_chart")) &&
-                  order &&
-                  prices && (
-                    <motion.div
-                      className="absolute top-0 left-0 right-0"
-                      transition={{
-                        duration: 0.3,
-                      }}
-                      key={order.orderId}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                    >
-                      <OrderOverview order={order} prices={prices} />
-                    </motion.div>
-                  )}{" "}
+                {showChart && order && prices && (
+                  <motion.div
+                    className="absolute top-0 left-0 right-0"
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    key={order.orderId}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                  >
+                    <OrderOverview order={order} prices={prices} />
+                  </motion.div>
+                )}{" "}
               </AnimatePresence>
 
               <AnimatePresence>

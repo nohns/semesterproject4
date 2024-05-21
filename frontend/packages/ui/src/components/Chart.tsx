@@ -57,20 +57,17 @@ const MINIMAL_MARGIN = {
 function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
   const margin = !minimal ? NORMAL_MARGIN : MINIMAL_MARGIN;
 
-  const pricesToRender = prices;
+  const isRising = prices[0].price < prices[prices.length - 1].price;
 
-  const isRising =
-    pricesToRender[0].price < pricesToRender[pricesToRender.length - 1].price;
-
-  const startMinute = pricesToRender.at(0)!.date;
-  const endMinute = pricesToRender.at(-1)!.date;
+  const startMinute = prices.at(0)!.date;
+  const endMinute = prices.at(-1)!.date;
   const minutes = eachMinuteOfInterval({ start: startMinute, end: endMinute });
   const xScale = d3
     .scaleTime()
     .domain([startMinute, endMinute])
     .range([margin.left, width - margin.right]);
 
-  const minMaxPrices = d3.extent(pricesToRender.map((p) => p.price));
+  const minMaxPrices = d3.extent(prices.map((p) => p.price));
   if (minMaxPrices[0] === undefined || minMaxPrices[1] === undefined) {
     return <div>Error - min max could not be found from price data</div>;
   }
@@ -87,7 +84,7 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
     .range([height - margin.bottom, margin.top]);
 
   // Coordinates for price dots on graph
-  const coords = pricesToRender.map<[number, number]>((p) => [
+  const coords = prices.map<[number, number]>((p) => [
     xScale(p.date),
     yScale(p.price),
   ]);
@@ -97,17 +94,17 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
   const lineDataPoints = d3.line()(coords);
   const clipLine = d3.line()([
     ...coords,
-    [xScale(pricesToRender.at(-1)!.date), height - gradientCutOffFromBottom],
-    [xScale(pricesToRender.at(0)!.date), height - gradientCutOffFromBottom],
+    [xScale(prices.at(-1)!.date), height - gradientCutOffFromBottom],
+    [xScale(prices.at(0)!.date), height - gradientCutOffFromBottom],
   ]);
 
   function renderPriceTip(index: number) {
     if (index === 0) return null;
-    if (index === pricesToRender.length - 1) return null;
+    if (index === prices.length - 1) return null;
 
-    const p = pricesToRender[index];
-    const prev = pricesToRender[index - 1];
-    const next = pricesToRender[index + 1];
+    const p = prices[index];
+    const prev = prices[index - 1];
+    const next = prices[index + 1];
     const isLocalBottom = prev.price < p.price && next.price < p.price;
     const isLocalTop = prev.price > p.price && next.price > p.price;
     if (!isLocalTop && !isLocalBottom) {
@@ -257,11 +254,11 @@ function ChartInner({ prices, width, height, minimal }: ChartInnerProps) {
       />
 
       {/* Price tips */}
-      {!minimal && pricesToRender.map((_, i) => renderPriceTip(i))}
+      {!minimal && prices.map((_, i) => renderPriceTip(i))}
 
       {/* Circles */}
       {!minimal &&
-        pricesToRender.map((p, i) => (
+        prices.map((p, i) => (
           <motion.circle
             key={p.date.getTime()}
             initial={{ r: 0 }}
