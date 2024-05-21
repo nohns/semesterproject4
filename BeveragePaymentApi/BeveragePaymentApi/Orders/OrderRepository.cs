@@ -59,8 +59,10 @@ namespace BeveragePaymentApi.Orders
 
     public async Task<List<Price>?> GetPricesFrom(int beverageId, int fromPriceId)
     {
-      var prices = _context.Prices.Where(p => p.BeverageId.Equals(beverageId)).Where(p => p.Id <= fromPriceId).OrderBy(p => p.Id).Take(20);
-      return await prices.ToListAsync();
+      var prices = _context.Prices.Where(p => p.BeverageId.Equals(beverageId)).Where(p => p.Id <= fromPriceId).OrderByDescending(p => p.Id).Take(20);
+      var list = await prices.ToListAsync();
+      list.Reverse();
+      return list;
     }
   }
 
