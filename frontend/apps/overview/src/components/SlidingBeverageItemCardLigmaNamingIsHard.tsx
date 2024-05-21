@@ -29,10 +29,12 @@ export default function SlidingBeverageItemCardLigmaNamingIsHard({
     ((lastPrice!.price - firstPrice!.price) / firstPrice!.price) * 100;
 
   return (
-    <Card className="grid grid-cols-3 grid-rows-3 max-w-2xl h-32 p-2 w-52">
-      <p className="col-start-1 col-span-3 row-start-1 row-span-1 flex justify-between ">
-        <span className="text-xl font-semibold">{history.beverage.name}</span>
-        <div className="flex flex-col items-end">
+    <Card className="flex flex-col justify-between max-w-2xl h-32 p-2 w-52">
+      <div className="flex justify-between items-start">
+        <span className="text-md font-semibold truncate max-w-[65%]">
+          {history.beverage.name}
+        </span>
+        <div className="flex flex-col items-end text-sm">
           <span
             className={cn("font-semibold", {
               "text-green-500": isRising,
@@ -47,14 +49,14 @@ export default function SlidingBeverageItemCardLigmaNamingIsHard({
               "text-red-500": !isRising,
             })}
           >
-            {isRising && <ArrowTopRightIcon className="w-5 h-5" />}
-            {!isRising && <ArrowBottomRightIcon className="w-5 h-5" />}
+            {isRising && <ArrowTopRightIcon className="w-4 h-4" />}
+            {!isRising && <ArrowBottomRightIcon className="w-4 h-4" />}
             {percentage.toFixed(2).replace("-", "")} %
           </span>
         </div>
-      </p>
+      </div>
 
-      <div className="flex flex-col col-start-1 col-end-4 gap-2 p-2 row-start-2 row-end-4 relative">
+      <div className="flex flex-grow p-2 relative">
         <Chart prices={displayedBeveragePrices} minimal />
       </div>
     </Card>

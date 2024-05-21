@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { client } from "../axios/axios";
-import { BeverageDTO, Beverage } from "../types/beverage"; // Updated import statement
+import { BeverageDTO, Beverage } from "../types/beverage";
 
 export interface PostBeverageRequest {
   file: File;
@@ -23,7 +23,7 @@ const postBeverage = async (data: PostBeverageRequest) => {
   formData.append("MaxPrice", data.beverage.maxPrice.toString());
   formData.append("BuyMultiplier", data.beverage.buyMultiplier.toString());
   formData.append("HalfTime", data.beverage.halfTime.toString());
-  formData.append("Active", data.beverage.isActive.toString());
+  formData.append("IsActive", data.beverage.isActive.toString());
 
   return await client.post<PostBeverageResponse>(
     "/beverages/withImage",

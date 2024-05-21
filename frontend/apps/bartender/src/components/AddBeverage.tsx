@@ -41,45 +41,50 @@ export default function AddBeverage() {
   >(null); // State for submission status
 
   const formSchema = z.object({
-    name: z.string().min(3, {
-      message: "Navnet skal være mindst 3 bogstaver langt.",
+    name: z.string().min(1, {
+      message: "Navn skal udfyldes.",
     }),
-    description: z.string().min(3, {
-      message: "Beskrivelsen skal være mindst 3 bogstaver lang.",
+    description: z.string().min(1, {
+      message: "Beskrivelse skal udfyldes.",
     }),
     ImageSrc: z.instanceof(File, {
-      message: "Billedet skal være en fil.",
+      message: "Billede skal være en fil.",
     }),
     basePrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Basissprisen skal være mindst 1 kr.",
+        message: "Basis pris skal være mindst 1 kr.",
       })
     ),
     minPrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Minsprisen skal være mindst 1 kr.",
+        message: "Minimum pris skal være mindst 1 kr.",
       })
     ),
     maxPrice: z.preprocess(
       (val) => Number(val),
       z.number().min(1, {
-        message: "Maksprisen skal være mindst 1 kr.",
+        message: "Maksimum pris skal være mindst 1 kr.",
       })
     ),
 
     buyMultiplier: z.preprocess(
       (val) => Number(val),
-      z.number().min(1, {
-        message: "Købsmultiplikatoren skal være mindst 1.",
+      z.number().min(1.001, {
+        message: "Købsmultiplikatoren skal være større end 1.",
       })
     ),
     halfTime: z.preprocess(
       (val) => Number(val),
-      z.number().min(0, {
-        message: "Halveringstiden skal være mindst 0.1",
-      })
+      z
+        .number()
+        .min(1, {
+          message: "Halveringstiden skal være mindst 1",
+        })
+        .refine((val) => Number.isInteger(val), {
+          message: "Halveringstiden skal være et heltal",
+        })
     ),
     active: z.boolean().default(true),
   });
@@ -93,8 +98,8 @@ export default function AddBeverage() {
       basePrice: 0,
       minPrice: 0,
       maxPrice: 0,
-      buyMultiplier: 1,
-      halfTime: 0.1,
+      buyMultiplier: 1.1,
+      halfTime: 1,
       active: true,
     },
   });
@@ -119,13 +124,9 @@ export default function AddBeverage() {
     createBeverage.mutate(beverageData, {
       onSuccess: () => {
         console.log("Beverage created successfully");
-        // Handle additional logic here
         setSubmissionStatus("success");
         queryClient.invalidateQueries({ queryKey: ["beverages"] });
-        setTimeout(() => {
-          setOpen(false);
-          setSubmissionStatus(null);
-        }, 1500);
+        setOpen(false);
       },
       onError: (error) => {
         console.error("Error creating beverage:", error);
@@ -137,25 +138,24 @@ export default function AddBeverage() {
   useEffect(() => {
     if (!open) {
       setSubmissionStatus(null);
+      form.reset(); // Reset form fields when modal is closed
     }
-  }, [open]);
+  }, [open, form]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="w-full">Tilføj nyt produkt</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Tilføj nyt produkt</DialogTitle>
           <DialogDescription>
             Udfyld informationerne her omkring det nye produkt
           </DialogDescription>
         </DialogHeader>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
             <FormField
               control={form.control}
               name="name"
@@ -169,7 +169,6 @@ export default function AddBeverage() {
                 </FormItem>
               )}
             />
-            {/* Description */}
             <FormField
               control={form.control}
               name="description"
@@ -183,7 +182,6 @@ export default function AddBeverage() {
                 </FormItem>
               )}
             />
-            {/* ImageSrc */}
             <FormField
               control={form.control}
               name="ImageSrc"
@@ -206,7 +204,6 @@ export default function AddBeverage() {
                 </FormItem>
               )}
             />
-            {/* BasePrice */}
             <FormField
               control={form.control}
               name="basePrice"
@@ -214,17 +211,12 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Basis pris</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* MinPrice */}
             <FormField
               control={form.control}
               name="minPrice"
@@ -232,17 +224,12 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Minimum pris</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* MaxPrice */}
             <FormField
               control={form.control}
               name="maxPrice"
@@ -250,17 +237,12 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Maksimum pris</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* buyMultiplier */}
             <FormField
               control={form.control}
               name="buyMultiplier"
@@ -268,17 +250,12 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Købs multiplier</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Halflife */}
             <FormField
               control={form.control}
               name="halfTime"
@@ -286,18 +263,12 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Halveringstid</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      /* onChange={(e) => field.onChange(Number(e.target.value))} */
-                    />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Active */}
             <FormField
               control={form.control}
               name="active"
@@ -315,8 +286,11 @@ export default function AddBeverage() {
                 </FormItem>
               )}
             />
-
-            <Button className="w-full" type="submit">
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={createBeverage.isPending}
+            >
               Tilføj produktet
             </Button>
           </form>

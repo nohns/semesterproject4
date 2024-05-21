@@ -44,9 +44,9 @@ public static class ApplicationDbContextSeed
             MaxPrice = 15,
             MinPrice = 5,
             IsActive = true,
-            TotalSales = 20,
+            TotalSales = 0,
             BuyMultiplier = 1.5,
-            HalfTime = 1000,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -65,9 +65,9 @@ public static class ApplicationDbContextSeed
             MaxPrice = 15,
             MinPrice = 5,
             IsActive = true,
-            TotalSales = 15,
+            TotalSales = 0,
             BuyMultiplier = 1.5,
-            HalfTime = 2000,
+            HalfTime = 120,
             Prices = new List<Price>
             {
                 new Price
@@ -122,12 +122,12 @@ public static class ApplicationDbContextSeed
         },
         new Beverage
         {
-            Name = "Sort vand",
-            Description = "For de modige",
-            ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 15,
-            MaxPrice = 20,
-            MinPrice = 10,
+            Name = "Fidel Castro",
+            Description = "Lys rom, Ginger Beer & Limeskive (delishhh)",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image_W-xPJxvZq.png?updatedAt=1716196564945",
+            BasePrice = 30,
+            MaxPrice = 45,
+            MinPrice = 15,
             IsActive = true,
             TotalSales = 0,
             BuyMultiplier = 1.025,
@@ -136,7 +136,7 @@ public static class ApplicationDbContextSeed
             {
                 new Price
                 {
-                    Amount = 15,
+                    Amount = 30,
                     Timestamp = DateTime.Now
                 }
             }
@@ -185,12 +185,12 @@ public static class ApplicationDbContextSeed
         },
          new Beverage
         {
-            Name = "Spejlæg",
-            Description = "Kande, der smager som slikket!",
-            ImageSrc = "https://via.placeholder.com/150",
-            BasePrice = 75,
-            MaxPrice = 100,
-            MinPrice = 50,
+            Name = "Kung Fu",
+            Description = "Pisang Ambon, Pepsi & Jägermeister (mums!)",
+            ImageSrc = "https://ik.imagekit.io/imageAPI/image(1)_wotNIvB_W.png?updatedAt=1716208034973",
+            BasePrice = 30,
+            MaxPrice = 45,
+            MinPrice = 15,
             IsActive = true,
             TotalSales = 0,
             BuyMultiplier = 1.025,
@@ -199,7 +199,7 @@ public static class ApplicationDbContextSeed
             {
                 new Price
                 {
-                    Amount = 75,
+                    Amount = 30,
                     Timestamp = DateTime.Now
                 }
             }

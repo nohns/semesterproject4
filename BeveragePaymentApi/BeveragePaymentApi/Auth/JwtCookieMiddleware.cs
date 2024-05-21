@@ -19,6 +19,12 @@ namespace BeveragePaymentApi.Auth
         /// <param name="autoRefresh">Creates a new token if the token is half past expiration time (and still valid).</param>
         /// <param name="cookieName">Name of the cookie where the jwt is (defaults to jwt).</param>
         /// <param name="csrfCookieName">Name of the cookie where the request token is stored.</param>
+        private static string jwtKey = null;
+        public static void Initialize(IConfiguration configuration)
+        {
+            jwtKey = configuration["JwtSettings:Key"];
+        }
+        
         public static void UseJwtCookieMiddleware(this IApplicationBuilder app,
                                                   IAntiforgery antiforgery,
                                                   byte[] key,
@@ -75,8 +81,9 @@ namespace BeveragePaymentApi.Auth
                     newPrincipal = new ClaimsPrincipal(claimsIdentity);
                     context.User = newPrincipal;
 
+
                     jwtToken = rawValidatedToken as JwtSecurityToken;
-                    context.Items[Constants.JwtTokenKey] = jwtToken;
+                    context.Items[jwtKey] = jwtToken;
                 }
                 catch (Exception)
                 {

@@ -221,10 +221,7 @@ function Selected() {
               <Alert variant="destructive">
                 <ExclamationTriangleIcon className="w-4 h-4" />
                 <AlertTitle>Din pris er låst</AlertTitle>
-                <AlertDescription>
-                  Tilbuddet er tilgængeligt indtil C# backenden giver os et
-                  endpoint 🤬 {formattedCountdown}
-                </AlertDescription>
+                <AlertDescription> {formattedCountdown}</AlertDescription>
               </Alert>
               <div>
                 <div
