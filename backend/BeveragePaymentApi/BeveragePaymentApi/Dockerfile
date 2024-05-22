@@ -7,12 +7,12 @@ WORKDIR /source
 COPY *.sln .
 
 # Copy the project file and restore dependencies
-COPY BeveragePaymentApi/*.csproj ./BeveragePaymentApi/
-WORKDIR /source/BeveragePaymentApi
+COPY *.csproj ./
+WORKDIR /source
 RUN dotnet restore
 
 # Copy all the project files
-COPY BeveragePaymentApi/. .
+COPY . .
 
 
 # Publish the application
