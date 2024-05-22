@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useGetBeverages, useDeleteBeverage } from "@repo/api";
-import { MoreHorizontal } from "Lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@repo/ui";
 import {
   DropdownMenu,
@@ -39,7 +39,7 @@ function Dashboard() {
   const { data: beverages, isLoading, error } = useGetBeverages();
   const deleteMutation = useDeleteBeverage();
   const [selectedBeverage, setSelectedBeverage] = useState<Beverage | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name");
