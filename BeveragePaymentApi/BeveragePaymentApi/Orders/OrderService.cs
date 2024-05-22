@@ -79,6 +79,7 @@ namespace BeveragePaymentApi.Orders
 
             // Update order with Stripe intent
             order.StripeIntentId = intent.Id;
+            order.Status = Status.Fulfilled;
             order.StripeClientSecret = intent.ClientSecret;
             await _orderRepository.Update(order);
             order = await _orderRepository.GetById(order.OrderId, true);
