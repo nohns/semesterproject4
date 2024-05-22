@@ -19,7 +19,7 @@
   engine:
     image: foobar-price-engine
     build:
-      context: ./backend/RealtimePricingEngine
+      context: ./backend/RealTimePricingEngine
       dockerfile: Dockerfile
     container_name: price-engine
     ports:
