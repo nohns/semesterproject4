@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5175", "http://engine:80", "https://bartender.foobar.nohns.dk", "https://order.foobar.nohns.dk" )
+        builder => builder.WithOrigins("http://localhost:5175", "http://localhost:5174", "http://engine:80", "https://bartender.foobar.nohns.dk", "https://order.foobar.nohns.dk")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
@@ -129,6 +129,27 @@ if (app.Environment.IsDevelopment())
             Console.WriteLine(ex.Message);
         }
         ApplicationDbContextSeed.SeedDataAsync(context).Wait(); // Call SeedDataAsync and wait for completion
+        DatabaseSeededHealthCheck.MarkDatabaseAsSeeded();
+    }
+}
+else
+{
+    using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        try
+        {
+            if (context.Database.CanConnect())
+            {
+
+                context.Database.Migrate();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
         DatabaseSeededHealthCheck.MarkDatabaseAsSeeded();
     }
 }

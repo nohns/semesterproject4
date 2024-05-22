@@ -2,31 +2,28 @@
   bevpayapi:
     image: bevpayapi
     build:
-      context: ./backend/BeveragePaymentApi/BeveragePaymentApi
-      dockerfile: Dockerfile
+      context: ./BeveragePaymentApi
+      dockerfile: BeveragePaymentApi/Dockerfile
     container_name: bevpayapi
     ports:
-      - 5051:8080
+      - 9974:8080
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     healthcheck:
-      test: ["CMD", "curl", "-f"  , "http://bevpayapi:8080/health"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD", "curl", "-f", "http://bevpayapi:8080/health"]
+      interval: 3s
+      timeout: 3s
       retries: 5
 
   engine:
     image: foobar-price-engine
     build:
-      context: ./backend/RealTimePricingEngine
+      context: ./backend
       dockerfile: Dockerfile
     container_name: price-engine
     ports:
-      - 9090:80
-      - 9099:8080
+      - 9979:80
     environment:
       HTTP_PORT: 80
       TRIGGER_PORT: 8080
@@ -47,8 +44,6 @@
     environment:
       MYSQL_ROOT_PASSWORD: SuperSecretPassword123
       MYSQL_DATABASE: FooBarDb
-    ports:
-      - 3306:3306
     healthcheck:
       test:
         [
@@ -61,6 +56,6 @@
           "root",
           "--password=SuperSecretPassword123",
         ]
-      interval: 5s
-      timeout: 5s
+      interval: 3s
+      timeout: 3s
       retries: 5
