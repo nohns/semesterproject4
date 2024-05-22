@@ -2,8 +2,8 @@
   bevpayapi:
     image: bevpayapi
     build:
-      context: ./backend/BeveragePaymentApi
-      dockerfile: BeveragePaymentApi/Dockerfile
+      context: ./backend/BeveragePaymentApi/BeveragePaymentApi
+      dockerfile: Dockerfile
     container_name: bevpayapi
     ports:
       - 9974:8080
