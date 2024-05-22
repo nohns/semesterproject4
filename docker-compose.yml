@@ -14,8 +14,8 @@
       - ASPNETCORE_ENVIRONMENT=Development
     healthcheck:
       test: ["CMD", "curl", "-f"  , "http://bevpayapi:8080/health"]
-      interval: 3s
-      timeout: 3s
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   engine:
@@ -61,6 +61,6 @@
           "root",
           "--password=SuperSecretPassword123",
         ]
-      interval: 3s
-      timeout: 3s
+      interval: 5s
+      timeout: 5s
       retries: 5
