@@ -63,7 +63,7 @@ function StripeCheckout({ setNoWallet, order, quantity }: StripeCheckoutProps) {
       // `clientSecret` from the created PaymentIntent
       clientSecret: processedOrder.stripeClientSecret!,
       confirmParams: {
-        return_url: `https://order.foobar.nohns.dk/receipt/${processedOrder.orderId}`,
+        return_url: `${window.location.origin}/receipt/${processedOrder.orderId}`,
       },
     });
 
