@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogFooter,
   DialogTitle,
   DialogDescription,
   FormField,
@@ -308,10 +307,6 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
             </Button>
           </form>
         </Form>
-
-        <DialogFooter>
-          <Button onClick={onClose}>Cancel</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
