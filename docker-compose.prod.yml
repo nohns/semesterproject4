@@ -2,7 +2,7 @@
   bevpayapi:
     image: bevpayapi
     build:
-      context: ./BeveragePaymentApi
+      context: ./backend/BeveragePaymentApi
       dockerfile: BeveragePaymentApi/Dockerfile
     container_name: bevpayapi
     ports:
@@ -19,7 +19,7 @@
   engine:
     image: foobar-price-engine
     build:
-      context: ./backend
+      context: ./backend/RealtimePricingEngine
       dockerfile: Dockerfile
     container_name: price-engine
     ports:
