@@ -201,7 +201,11 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Basis pris</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,7 +219,11 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Minimum pris</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -229,7 +237,11 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Maksimum pris</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -243,7 +255,11 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Købs multiplier</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -257,7 +273,11 @@ const EditBeverageModal: React.FC<EditBeverageModalProps> = ({
                 <FormItem>
                   <FormLabel>Halveringstid</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

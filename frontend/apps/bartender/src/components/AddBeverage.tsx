@@ -220,7 +220,11 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Basis pris</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -233,7 +237,11 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Minimum pris</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -246,7 +254,11 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Maksimum pris</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -259,7 +271,11 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Købs multiplier</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -272,7 +288,11 @@ export default function AddBeverage() {
                 <FormItem>
                   <FormLabel>Halveringstid</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

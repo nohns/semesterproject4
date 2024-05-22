@@ -132,6 +132,27 @@ if (app.Environment.IsDevelopment())
         DatabaseSeededHealthCheck.MarkDatabaseAsSeeded();
     }
 }
+else
+{
+    using (var scope = app.Services.CreateScope()) // Create a scope to resolve dependencies
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        try
+        {
+            if (context.Database.CanConnect())
+            {
+
+                context.Database.Migrate();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        DatabaseSeededHealthCheck.MarkDatabaseAsSeeded();
+    }
+}
 //app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
