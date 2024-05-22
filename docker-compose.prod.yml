@@ -10,8 +10,6 @@
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     healthcheck:
       test: ["CMD", "curl", "-f", "http://bevpayapi:8080/health"]
       interval: 3s
