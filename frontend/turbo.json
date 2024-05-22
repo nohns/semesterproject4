@@ -4,12 +4,24 @@
   "globalDotEnv": [".env.local", ".env"],
   "pipeline": {
     "build": {
+      "dotEnv": [
+        ".env.production.local",
+        ".env.production",
+        ".env.local",
+        ".env"
+      ],
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "lint": {},
     "type-check": {},
     "dev": {
+      "dotEnv": [
+        ".env.development.local",
+        ".env.development",
+        ".env.local",
+        ".env"
+      ],
       "cache": false,
       "persistent": true
     },
