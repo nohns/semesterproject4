@@ -1,7 +1,7 @@
 /** @format */
 
 import { useNavigate } from "react-router-dom";
-import { TriangleAlert } from "Lucide-react";
+import { TriangleAlert } from "lucide-react";
 import { motion } from "framer-motion";
 
 function NoWallet() {
