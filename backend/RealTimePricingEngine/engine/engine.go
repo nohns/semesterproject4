@@ -116,10 +116,10 @@ func (ip *ItemParams) validate() error {
 	if ip.MaxPrice < ip.MinPrice {
 		return fmt.Errorf("%w: max price must be larger than min price", ErrItemParamsInvalid)
 	}
-	if ip.BuyMultiplier < 1 {
+	if ip.BuyMultiplier <= 1 {
 		return fmt.Errorf("%w: buy multiplier must be larger than 1", ErrItemParamsInvalid)
 	}
-	if ip.HalfTime <= 1 {
+	if ip.HalfTime < 1 {
 		return fmt.Errorf("%w: half time must be greater than or equal to 1 second", ErrItemParamsInvalid)
 	}
 	if ip.MaxPrice < ip.InitialPrice || ip.MinPrice > ip.InitialPrice {
