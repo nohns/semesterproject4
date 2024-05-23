@@ -28,6 +28,7 @@ type app struct {
 	trigsrv      interface {
 		ListenAndServe() error
 	}
+	conf        config
 	logger      *slog.Logger
 	sockMan     *websocket.Manager
 	priceEngine *engine.Engine
@@ -95,6 +96,7 @@ func makeBase(c config) (*app, error) {
 	)
 
 	return &app{
+		conf:         c,
 		priceStorer:  ps,
 		histProvider: hp,
 		bevRepo:      bevrepo,
@@ -106,6 +108,7 @@ func makeBase(c config) (*app, error) {
 
 func makeBaseMocked(c config) *app {
 	return &app{
+		conf:         c,
 		priceStorer:  &mock.Data,
 		histProvider: &mock.Data,
 		bevRepo:      &mock.Data,
@@ -142,9 +145,6 @@ func (a *app) BevUpdated(ctx context.Context, bevID string) error {
 		return fmt.Errorf("engine trackItem: %v", err)
 	}
 
-	if err := a.priceEngine.TweakItem(bev.ID, toItemParams(bev)); err != nil {
-		return fmt.Errorf("engine tweakItem: %v", err)
-	}
 	return nil
 }
 
@@ -197,12 +197,15 @@ func (a *app) Run(ctx context.Context) error {
 	go a.handlePriceUpdates()
 	defer a.priceEngine.Terminate()
 
-	bevs, err := a.bevRepo.FindBeverages(context.TODO())
-	if err != nil {
-		return fmt.Errorf("failed to get beverages: %v", err)
-	}
-	for _, bev := range bevs {
-		go a.tempSimulateDemand(bev)
+	// Simulate demand when running in mocked
+	if a.conf.mocked {
+		bevs, err := a.bevRepo.FindBeverages(context.TODO())
+		if err != nil {
+			return fmt.Errorf("failed to get beverages: %v", err)
+		}
+		for _, bev := range bevs {
+			go a.tempSimulateDemand(bev)
+		}
 	}
 
 	// Listen for notification triggers
