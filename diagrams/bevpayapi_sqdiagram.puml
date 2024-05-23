@@ -1,0 +1,78 @@
+@startuml
+Actor Frontend as frontend
+participant UserController as usercontroller
+participant UserService as userserv
+participant UserRepository as userrepo
+participant BevController as bevcontroller
+participant BevService as bevserv
+participant BevRepository as bevrepo
+participant NotificationService as notifserv
+participant Stripe as stripe
+participant PricingEngine as pricingengine
+participant OrderController
+participant OrderService
+participant OrderRepository
+database Database as mysql
+
+frontend -> usercontroller: POST /auth/login
+usercontroller -> userserv: Login(dto)
+userserv -> userrepo: GetUserByUserName(dto.UserName)
+userrepo --> userserv: User
+userserv -> userrepo: VeryifyPassword(dto.Password, user.Password)
+userrepo --> userserv: bool
+userserv --> usercontroller: User
+usercontroller -> usercontroller: GenerateToken(user)
+usercontroller --> frontend: 200 OK
+
+frontend -> usercontroller: POST /auth/logout
+usercontroller -> userserv: DeleteToken() 
+usercontroller -> frontend: 200 OK
+
+
+frontend -> bevcontroller: GET /beverages
+bevcontroller -> bevserv: GetAllBeverages()
+bevserv -> bevrepo: GetAll()
+bevrepo --> bevserv: List<Beverage>
+bevserv --> bevcontroller: List<Beverage>
+bevcontroller --> frontend: 200 OK
+
+frontend -> bevcontroller: GET /beverages/id
+bevcontroller -> bevserv: GetById()
+bevserv -> bevrepo: GetById()
+bevrepo --> bevserv: Beverage
+alt beverage == null
+bevserv -> bevcontroller: throw NotFoundException
+bevcontroller --> frontend: 404 Not Found
+end
+bevserv --> bevcontroller: Beverage
+bevcontroller --> frontend: 200 OK
+
+frontend -> bevcontroller: POST /beverages
+bevcontroller -> bevserv: Create(dto)
+bevserv -> bevserv: Validate(dto)
+bevserv -> bevserv: dto.ToBeverage()
+bevserv -> bevrepo: Create(beverage)
+bevrepo --> bevserv: Beverage
+bevserv -> notifserv: SendBeverageCreatedNotification(beverage)
+notifserv -> pricingengine: POST /beverageCreated
+bevserv --> bevcontroller: Beverage
+bevcontroller --> frontend: 201 Created
+
+frontend -> bevcontroller: PUT /beverages/id
+bevcontroller -> bevserv: Update(dto)
+bevserv -> bevserv: Validate(dto)
+bevserv -> bevserv: dto.ToBeverage(existingBeverage)
+bevserv -> bevrepo: Update(beverage)
+bevrepo --> bevserv: Beverage
+bevserv -> notifserv: SendBeverageUpdatedNotification(beverage)
+notifserv -> pricingengine: POST /beverageUpdated
+bevserv --> bevcontroller: Beverage
+bevcontroller --> frontend: 200 OK
+
+frontend -> bevcontroller: DELETE /beverages/id
+bevcontroller -> bevserv: Delete(id)
+bevserv -> bevrepo: Delete(id)
+bevserv -> notifserv: SendBeverageDeletedNotification(beverage)
+notifserv -> pricingengine: POST /beverageDeleted
+bevcontroller --> frontend: 204 No Content
+@enduml
