@@ -23,22 +23,43 @@ usercontroller -> userserv: Login(dto)
 activate userserv
 userserv -> userrepo: GetUserByUserName(dto.UserName)
 activate userrepo
+userrepo -> database: FirstOrDefaultAsync(username)
+activate database
+database -->userrepo: User
+deactivate database
 userrepo --> userserv: User
 deactivate userrepo
+alt user == null
+userserv -> usercontroller:  throw new NotFoundException("User was not found.")
+usercontroller --> frontend: 401 Unauthorized
+end
+userserv -> userserv: VerifyPassword()
+alt !correctPassword
+userserv -> usercontroller: throw new WrongPasswordException("Password was not correct.")
+usercontroller --> frontend: 401 Unauthorized
+end
 userserv -> userrepo: VeryifyPassword(dto.Password, user.Password)
 activate userrepo
 userrepo --> userserv: bool
 deactivate userrepo
 userserv --> usercontroller: User
 deactivate userserv
-usercontroller -> usercontroller: GenerateToken(user)
+usercontroller -> userserv: GenerateClaimsIdentity(userDto)
+activate userserv
+userserv --> usercontroller: claimsIdentity
+deactivate userserv
+usercontroller -> userserv: GenerateJwtToken(claimsIdentity)
+activate userserv
+userserv --> usercontroller: token
+deactivate userserv
+usercontroller -> usercontroller: Cookies.Append(token)
 usercontroller --> frontend: 200 OK
 deactivate usercontroller
 
 frontend -> usercontroller: POST /auth/logout
 activate usercontroller
 usercontroller -> userserv: DeleteToken() 
-usercontroller -> frontend: 200 OK
+usercontroller --> frontend: 200 OK
 deactivate usercontroller
 
 == Get all beverages ==
@@ -81,7 +102,11 @@ frontend -> bevcontroller: POST /beverages
 activate bevcontroller
 bevcontroller -> bevserv: Create(dto)
 activate bevserv
-bevserv -> bevserv: Validate(dto)
+bevserv -> bevserv: Validate...(dto)
+note right
+    Validation of the content of the DTO.
+    Things like the price, halftime, buymultiplier are checked for correct values.
+end note
 alt dto is not valid
 bevserv -> bevcontroller: throw ValidationException()
 bevcontroller --> frontend: 400 Bad Request
@@ -114,7 +139,11 @@ alt beverage == null
 bevserv -> bevcontroller: throw NotFoundException()
 bevcontroller --> frontend: 404 Not Found
 end
-bevserv -> bevserv: Validate(dto)
+bevserv -> bevserv: Validate...(dto)
+note right
+    Validation identical to the one prior
+    in the "Create a new beverage" section.
+end note
 alt dto is not valid
 bevserv -> bevcontroller: throw ValidationException()
 bevcontroller --> frontend: 400 Bad Request
