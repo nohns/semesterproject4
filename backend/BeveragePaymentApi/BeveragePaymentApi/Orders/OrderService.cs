@@ -65,6 +65,8 @@ namespace BeveragePaymentApi.Orders
             var order = await _orderRepository.GetById(id);
             if (order == null) throw new NotFoundException("order not found.");
 
+
+
             // Create intent
             var options = new PaymentIntentCreateOptions
             {
@@ -81,8 +83,12 @@ namespace BeveragePaymentApi.Orders
             order.StripeIntentId = intent.Id;
             order.Status = Status.Fulfilled;
             order.StripeClientSecret = intent.ClientSecret;
+            order.Quantity = quantity;
             await _orderRepository.Update(order);
             order = await _orderRepository.GetById(order.OrderId, true);
+
+            if (order == null) throw new NotFoundException("Order was not found.");
+
             return order!;
         }
 
