@@ -1,6 +1,6 @@
 /** @format */
 
-import { TrendingUp, TrendingDown } from "Lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 export function FooBar() {
   return (

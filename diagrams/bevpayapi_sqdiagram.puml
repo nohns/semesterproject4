@@ -1,0 +1,283 @@
+@startuml bevpayapi
+Actor Frontend as frontend
+participant UserController as usercontroller
+participant UserService as userserv
+participant UserRepository as userrepo
+participant BevController as bevcontroller
+participant BevService as bevserv
+participant BevRepository as bevrepo
+participant NotificationService as notifserv
+database MySQL as mysql
+participant Stripe as stripe
+participant OrderController as ordercontroller
+participant OrderService as orderserv
+participant OrderRepository as orderrepo
+participant PriceRepository as pricerepo
+participant PricingEngine as pricingengine
+
+== Login & Logout ==
+
+frontend -> usercontroller: POST /auth/login
+activate usercontroller
+usercontroller -> userserv: Login(dto)
+activate userserv
+userserv -> userrepo: GetUserByUserName(dto.UserName)
+activate userrepo
+userrepo -> mysql: FirstOrDefaultAsync(username)
+activate mysql
+mysql -->userrepo: User
+deactivate mysql
+userrepo --> userserv: User
+deactivate userrepo
+alt user == null
+userserv -> usercontroller:  throw new NotFoundException("User was not found.")
+usercontroller --> frontend: 401 Unauthorized
+end
+userserv -> userserv: VerifyPassword()
+alt !correctPassword
+userserv -> usercontroller: throw new WrongPasswordException("Password was not correct.")
+usercontroller --> frontend: 401 Unauthorized
+end
+userserv -> userrepo: VeryifyPassword(dto.Password, user.Password)
+activate userrepo
+userrepo --> userserv: bool
+deactivate userrepo
+userserv --> usercontroller: User
+deactivate userserv
+usercontroller -> userserv: GenerateClaimsIdentity(userDto)
+activate userserv
+userserv --> usercontroller: claimsIdentity
+deactivate userserv
+usercontroller -> userserv: GenerateJwtToken(claimsIdentity)
+activate userserv
+userserv --> usercontroller: token
+deactivate userserv
+usercontroller -> usercontroller: Cookies.Append(token)
+usercontroller --> frontend: 200 OK
+deactivate usercontroller
+
+frontend -> usercontroller: POST /auth/logout
+activate usercontroller
+usercontroller -> userserv: DeleteToken() 
+usercontroller --> frontend: 200 OK
+deactivate usercontroller
+
+== Get all beverages ==
+
+frontend -> bevcontroller: GET /beverages
+activate bevcontroller
+bevcontroller -> bevserv: GetAllBeverages()
+activate bevserv
+bevserv -> bevrepo: GetAll()
+activate bevrepo
+bevrepo --> bevserv: List<Beverage>
+deactivate bevrepo
+bevserv --> bevcontroller: List<Beverage>
+deactivate bevserv
+bevcontroller --> frontend: 200 OK
+deactivate bevcontroller
+
+== Get a beverage by its ID ==
+
+frontend -> bevcontroller: GET /beverages/id
+activate bevcontroller
+bevcontroller -> bevserv: GetById(id)
+activate bevserv
+bevserv -> bevrepo: GetById(id)
+activate bevrepo
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+alt beverage == null
+bevserv -> bevcontroller: throw NotFoundException()
+bevcontroller --> frontend: 404 Not Found
+end
+bevserv --> bevcontroller: Beverage
+deactivate bevserv
+bevcontroller --> frontend: 200 OK
+deactivate bevcontroller
+
+== Create a new beverage ==
+
+frontend -> bevcontroller: POST /beverages
+activate bevcontroller
+bevcontroller -> bevserv: Create(dto)
+activate bevserv
+bevserv -> bevserv: Validate...(dto)
+note right
+    Validation of the content of the DTO.
+    Things like the price, halftime, buymultiplier are checked for correct values.
+end note
+alt dto is not valid
+bevserv -> bevcontroller: throw ValidationException()
+bevcontroller --> frontend: 400 Bad Request
+end
+bevserv -> bevserv: dto.ToBeverage()
+bevserv -> bevrepo: Create(beverage)
+activate bevrepo
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+bevserv -> notifserv: SendBeverageCreatedNotification(beverage)
+activate notifserv
+notifserv -> pricingengine: POST /beverageCreated
+deactivate notifserv
+bevserv --> bevcontroller: Beverage
+deactivate bevserv
+bevcontroller --> frontend: 201 Created
+deactivate bevcontroller
+
+== Update a beverage ==
+
+frontend -> bevcontroller: PUT /beverages/id
+activate bevcontroller
+bevcontroller -> bevserv: Update(dto)
+activate bevserv
+bevserv -> bevrepo: GetById(id)
+activate bevrepo
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+alt beverage == null
+bevserv -> bevcontroller: throw NotFoundException()
+bevcontroller --> frontend: 404 Not Found
+end
+bevserv -> bevserv: Validate...(dto)
+note right
+    Validation identical to the one prior
+    in the "Create a new beverage" section.
+end note
+alt dto is not valid
+bevserv -> bevcontroller: throw ValidationException()
+bevcontroller --> frontend: 400 Bad Request
+end
+bevserv -> bevserv: dto.ToBeverage(existingBeverage)
+bevserv -> bevrepo: Update(beverage)
+activate bevrepo
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+bevserv -> notifserv: SendBeverageUpdatedNotification(beverage)
+activate notifserv
+notifserv -> pricingengine: POST /beverageUpdated
+deactivate notifserv
+bevserv --> bevcontroller: Beverage
+deactivate bevserv
+bevcontroller --> frontend: 200 OK
+deactivate bevcontroller
+
+== Delete a beverage ==
+
+frontend -> bevcontroller: DELETE /beverages/id
+activate bevcontroller
+bevcontroller -> bevserv: Delete(id)
+activate bevserv
+bevserv -> bevrepo: Delete(id)
+bevserv -> notifserv: SendBeverageDeletedNotification(beverage)
+deactivate bevserv
+activate notifserv
+notifserv -> pricingengine: POST /beverageDeleted
+deactivate notifserv
+bevcontroller --> frontend: 204 No Content
+deactivate bevcontroller
+
+== Create an order == 
+
+frontend -> ordercontroller: POST /orders
+activate ordercontroller
+ordercontroller -> orderserv: CreateOrder(dto)
+activate orderserv
+orderserv -> orderserv: dto.ToOrder()
+orderserv -> pricerepo: GetLatestPriceForBeverage(dto.BeverageId)
+activate pricerepo
+pricerepo --> orderserv: Price
+deactivate pricerepo
+orderserv -> orderrepo: Create(order)
+activate orderrepo
+orderrepo --> orderserv: Order
+orderserv -> orderrepo: GetById(id)
+orderrepo --> orderserv: Order
+deactivate orderrepo
+orderserv --> ordercontroller: Order
+deactivate orderserv
+ordercontroller --> frontend: 201 Created
+deactivate ordercontroller
+
+== Process an order == 
+
+frontend -> ordercontroller: POST /orders/id/process
+activate ordercontroller
+ordercontroller -> orderserv: ProcessOrder(id, quantity)
+activate orderserv
+alt quantity < 1
+orderserv -> ordercontroller: throw ValidationException()
+ordercontroller --> frontend: 400 Bad Request
+end
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+alt order == null
+orderserv -> ordercontroller: throw NotFoundException()
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv -> stripe: Create(new PaymentIntentCreateOptions)
+orderserv -> notifserv: POST /beverageOrdered
+activate notifserv
+deactivate notifserv
+orderserv -> orderrepo: Update(order)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+orderserv --> ordercontroller: Order
+deactivate orderserv
+ordercontroller --> frontend: 200 OK
+deactivate ordercontroller
+
+== Get an order by id ==
+
+frontend -> ordercontroller: GET /orders/id
+activate ordercontroller
+ordercontroller -> orderserv: GetById(id)
+activate orderserv
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+alt order == null
+orderserv -> ordercontroller: throw NotFoundException()
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv --> ordercontroller: Order
+deactivate orderserv
+ordercontroller --> frontend: 200 OK
+deactivate ordercontroller
+
+== Get prices of an order ==
+
+frontend -> ordercontroller: GET /orders/id/prices
+activate ordercontroller
+ordercontroller -> orderserv: GetOrderPrices(id)
+activate orderserv
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+alt order == null
+orderserv -> ordercontroller: throw NotFoundException("Order not found")
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv -> orderrepo: GetPricesFrom(order.beverageId, order.priceId)
+activate orderrepo
+orderrepo --> orderserv: List<Price>
+deactivate orderrepo
+alt prices == null
+orderserv -> ordercontroller: throw NotFoundException("Prices not found for order")
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv --> ordercontroller: List<Price>
+deactivate orderserv
+ordercontroller --> frontend: 200 OK
+deactivate ordercontroller
+
+@enduml

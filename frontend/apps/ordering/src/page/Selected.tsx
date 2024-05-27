@@ -7,7 +7,7 @@ import {
   useParams,
 } from "react-router-dom";
 import MobileContainer from "@/components/MobileContainer";
-import { ArrowLeftIcon } from "Lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button, Chart } from "@repo/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -18,17 +18,12 @@ import axios from "axios";
 import {
   ArrowBottomRightIcon,
   ArrowTopRightIcon,
-  ComponentNoneIcon,
   ExclamationTriangleIcon,
   MinusIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
 import Payment from "./Payment";
-import {
-  addSeconds,
-  differenceInSeconds,
-  formatDistanceStrict,
-} from "date-fns";
+import { addSeconds, formatDistanceStrict } from "date-fns";
 import { da } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@repo/ui";
@@ -38,8 +33,6 @@ interface LocationState {
   beverage: Beverage | undefined;
   priceHistory: HistoryEntry[] | undefined;
 }
-
-const COUNTDOWN_DURATION = 10;
 
 // Wait function returning promise
 function wait(ms: number) {

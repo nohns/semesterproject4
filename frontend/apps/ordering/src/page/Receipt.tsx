@@ -3,7 +3,7 @@ import MobileContainer from "@/components/MobileContainer";
 import { ArrowLeftIcon, IdCardIcon } from "@radix-ui/react-icons";
 import { useGetOrder } from "@repo/api";
 import { motion } from "framer-motion";
-import { CircleCheck, CalendarDays, Clock9, TriangleAlert } from "Lucide-react";
+import { CircleCheck, CalendarDays, Clock9, TriangleAlert } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 //Receipt page
