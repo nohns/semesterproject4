@@ -23,10 +23,10 @@ usercontroller -> userserv: Login(dto)
 activate userserv
 userserv -> userrepo: GetUserByUserName(dto.UserName)
 activate userrepo
-userrepo -> database: FirstOrDefaultAsync(username)
-activate database
-database -->userrepo: User
-deactivate database
+userrepo -> mysql: FirstOrDefaultAsync(username)
+activate mysql
+mysql -->userrepo: User
+deactivate mysql
 userrepo --> userserv: User
 deactivate userrepo
 alt user == null
@@ -217,7 +217,7 @@ alt order == null
 orderserv -> ordercontroller: throw NotFoundException()
 ordercontroller --> frontend: 404 Not Found
 end
-orderserv -> Stripe: Create(new PaymentIntentCreateOptions)
+orderserv -> stripe: Create(new PaymentIntentCreateOptions)
 orderserv -> notifserv: POST /beverageOrdered
 activate notifserv
 deactivate notifserv
@@ -279,11 +279,5 @@ orderserv --> ordercontroller: List<Price>
 deactivate orderserv
 ordercontroller --> frontend: 200 OK
 deactivate ordercontroller
-
-
-
-
-
-
 
 @enduml
