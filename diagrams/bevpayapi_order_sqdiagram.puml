@@ -1,0 +1,123 @@
+@startuml bevpayapi
+Actor Frontend as frontend
+participant OrderController as ordercontroller
+participant OrderService as orderserv
+participant OrderRepository as orderrepo
+participant PriceRepository as pricerepo
+participant NotificationService as notifserv
+participant PricingEngine as pricingengine
+participant Stripe as stripe
+
+== Create an order == 
+
+frontend -> ordercontroller: POST /orders
+activate ordercontroller
+ordercontroller -> orderserv: CreateOrder(dto)
+activate orderserv
+orderserv -> orderserv: dto.ToOrder()
+orderserv -> pricerepo: GetLatestPriceForBeverage(dto.BeverageId)
+activate pricerepo
+pricerepo --> orderserv: Price
+deactivate pricerepo
+orderserv -> orderrepo: Create(order)
+activate orderrepo
+orderrepo --> orderserv: Order
+orderserv -> orderrepo: GetById(id)
+orderrepo --> orderserv: Order
+deactivate orderrepo
+orderserv --> ordercontroller: Order
+deactivate orderserv
+ordercontroller --> frontend: 201 Created
+deactivate ordercontroller
+
+hide footbox
+
+== Process an order == 
+
+frontend -> ordercontroller: POST /orders/id/process
+activate ordercontroller
+ordercontroller -> orderserv: ProcessOrder(id, quantity)
+activate orderserv
+alt quantity < 1
+orderserv -> ordercontroller: throw ValidationException()
+ordercontroller --> frontend: 400 Bad Request
+end
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+alt order == null
+orderserv -> ordercontroller: throw NotFoundException()
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv -> stripe: Create(new PaymentIntentCreateOptions)
+orderserv -> notifserv:
+activate notifserv
+notifserv -> pricingengine: POST /beverageOrdered
+deactivate notifserv
+orderserv -> orderrepo: Update(order)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+orderserv --> ordercontroller: Order
+deactivate orderserv
+ordercontroller --> frontend: 200 OK
+deactivate ordercontroller
+
+== Get an order by id ==
+
+frontend -> ordercontroller: GET /orders/id
+activate ordercontroller
+ordercontroller -> orderserv: GetById(id)
+activate orderserv
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+alt order == null
+orderserv -> ordercontroller: throw NotFoundException()
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv --> ordercontroller: Order
+deactivate orderserv
+ordercontroller --> frontend: 200 OK
+deactivate ordercontroller
+
+== Get prices of an order ==
+
+frontend -> ordercontroller: GET /orders/id/prices
+activate ordercontroller
+ordercontroller -> orderserv: GetOrderPrices(id)
+activate orderserv
+orderserv -> orderrepo: GetById(id)
+activate orderrepo
+orderrepo --> orderserv: Order
+deactivate orderrepo
+alt order == null
+orderserv -> ordercontroller: throw NotFoundException("Order not found")
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv -> orderrepo: GetPricesFrom(order.beverageId, order.priceId)
+activate orderrepo
+orderrepo --> orderserv: List<Price>
+deactivate orderrepo
+alt prices == null
+orderserv -> ordercontroller: throw NotFoundException("Prices not found for order")
+ordercontroller --> frontend: 404 Not Found
+end
+orderserv --> ordercontroller: List<Price>
+deactivate orderserv
+ordercontroller --> frontend: 200 OK
+deactivate ordercontroller
+
+
+
+
+
+
+
+@enduml

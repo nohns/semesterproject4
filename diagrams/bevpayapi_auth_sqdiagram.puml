@@ -1,0 +1,52 @@
+@startuml bevpayapi
+Actor Frontend as frontend
+participant UserController as usercontroller
+participant UserService as userserv
+participant UserRepository as userrepo
+
+== Login ==
+
+frontend -> usercontroller: POST /auth/login
+activate usercontroller
+usercontroller -> userserv: Login(dto)
+activate userserv
+userserv -> userrepo: GetUserByUserName(dto.UserName)
+activate userrepo
+userrepo --> userserv: User
+deactivate userrepo
+alt user == null
+userserv -> usercontroller:  throw new NotFoundException("User was not found.")
+usercontroller --> frontend: 401 Unauthorized
+end
+userserv -> userserv: VerifyPassword()
+alt !correctPassword
+userserv -> usercontroller: throw new WrongPasswordException("Password was not correct.")
+usercontroller --> frontend: 401 Unauthorized
+end
+userserv -> userrepo: VeryifyPassword(dto.Password, user.Password)
+activate userrepo
+userrepo --> userserv: bool
+deactivate userrepo
+userserv --> usercontroller: User
+deactivate userserv
+usercontroller -> userserv: GenerateClaimsIdentity(userDto)
+activate userserv
+userserv --> usercontroller: claimsIdentity
+deactivate userserv
+usercontroller -> userserv: GenerateJwtToken(claimsIdentity)
+activate userserv
+userserv --> usercontroller: token
+deactivate userserv
+usercontroller -> usercontroller: Cookies.Append(token)
+usercontroller --> frontend: 200 OK
+deactivate usercontroller
+
+== Logout ==
+
+frontend -> usercontroller: POST /auth/logout
+activate usercontroller
+usercontroller -> userserv: DeleteToken() 
+usercontroller --> frontend: 200 OK
+deactivate usercontroller
+
+@enduml
