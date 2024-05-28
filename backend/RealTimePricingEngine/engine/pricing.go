@@ -57,7 +57,7 @@ func (i *item) price() float64 {
 
 func (i *item) tweakParams(params ItemParams) {
 	// Clamp current price between min and max to stay in bounds
-	i.initprice = clampPrice(params, i.price())
+	i.initprice = params.InitialPrice
 	i.decaycoef = toDecayCoefficient(params.HalfTime)
 	i.reset()
 
