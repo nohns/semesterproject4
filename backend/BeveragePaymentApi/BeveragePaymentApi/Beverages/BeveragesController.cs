@@ -31,6 +31,7 @@ public class BeveragesController : Controller
     /// </summary>
     /// <returns>A list of Beverages</returns>
     [HttpGet]
+    [ProducesResponseType<IEnumerable<Beverage>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Beverage>>> Get()
     {
     var beverages = await _beverageService.GetAllBeverages();
@@ -47,16 +48,15 @@ public class BeveragesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Beverage>> GetById(int id)
     {
-    try
-    {
-    var beverage = await _beverageService.GetById(id);
-    return Ok(beverage);
-    }
-    catch (NotFoundException e)
-    {
-    return NotFound(e.Message);
-
-    }
+        try
+        {
+            var beverage = await _beverageService.GetById(id);
+            return Ok(beverage);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     /// <summary>
