@@ -7,6 +7,7 @@ participant PriceRepository as pricerepo
 participant NotificationService as notifserv
 participant PricingEngine as pricingengine
 participant Stripe as stripe
+database MySQL as database
 
 == Create an order == 
 
@@ -17,12 +18,26 @@ activate orderserv
 orderserv -> orderserv: dto.ToOrder()
 orderserv -> pricerepo: GetLatestPriceForBeverage(dto.BeverageId)
 activate pricerepo
+pricerepo -> database: // Fetch the latest price of the beverage //
+activate database
+database --> pricerepo
+deactivate database
 pricerepo --> orderserv: Price
 deactivate pricerepo
 orderserv -> orderrepo: Create(order)
 activate orderrepo
+orderrepo -> database: // Save a new order to the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
-orderserv -> orderrepo: GetById(id)
+deactivate orderrepo
+orderserv -> orderrepo: GetById(id) // WHY THIS?
+activate orderrepo
+orderrepo -> database: // Fetch that same order from the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
 deactivate orderrepo
 orderserv --> ordercontroller: Order
@@ -44,6 +59,10 @@ ordercontroller --> frontend: 400 Bad Request
 end
 orderserv -> orderrepo: GetById(id)
 activate orderrepo
+orderrepo -> database: // Fetch a specific order from the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
 deactivate orderrepo
 alt order == null
@@ -57,10 +76,18 @@ notifserv -> pricingengine: POST /beverageOrdered
 deactivate notifserv
 orderserv -> orderrepo: Update(order)
 activate orderrepo
+orderrepo -> database: // Update a specific order in the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
 deactivate orderrepo
 orderserv -> orderrepo: GetById(id)
 activate orderrepo
+orderrepo -> database: // Fetch a specific order from the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
 deactivate orderrepo
 orderserv --> ordercontroller: Order
@@ -76,6 +103,10 @@ ordercontroller -> orderserv: GetById(id)
 activate orderserv
 orderserv -> orderrepo: GetById(id)
 activate orderrepo
+orderrepo -> database: // Fetch a specific order from the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
 deactivate orderrepo
 alt order == null
@@ -95,6 +126,10 @@ ordercontroller -> orderserv: GetOrderPrices(id)
 activate orderserv
 orderserv -> orderrepo: GetById(id)
 activate orderrepo
+orderrepo -> database: // Fetch a specific order from the database //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: Order
 deactivate orderrepo
 alt order == null
@@ -103,6 +138,10 @@ ordercontroller --> frontend: 404 Not Found
 end
 orderserv -> orderrepo: GetPricesFrom(order.beverageId, order.priceId)
 activate orderrepo
+orderrepo -> database: // Fetch prices from a specific beverage //
+activate database
+database --> orderrepo
+deactivate database
 orderrepo --> orderserv: List<Price>
 deactivate orderrepo
 alt prices == null

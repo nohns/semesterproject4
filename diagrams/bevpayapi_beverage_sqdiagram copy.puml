@@ -5,6 +5,9 @@ participant BevService as bevserv
 participant BevRepository as bevrepo
 participant NotificationService as notifserv
 participant PricingEngine as pricingengine
+Database MySQL as database
+
+hide footbox
 
 == Get all beverages ==
 
@@ -14,6 +17,10 @@ bevcontroller -> bevserv: GetAllBeverages()
 activate bevserv
 bevserv -> bevrepo: GetAll()
 activate bevrepo
+bevrepo -> database: // Fetch all beverages from the database //
+activate database
+database --> bevrepo
+deactivate database
 bevrepo --> bevserv: List<Beverage>
 deactivate bevrepo
 bevserv --> bevcontroller: List<Beverage>
@@ -29,6 +36,10 @@ bevcontroller -> bevserv: GetById(id)
 activate bevserv
 bevserv -> bevrepo: GetById(id)
 activate bevrepo
+bevrepo -> database: // Fetch a specific beverage from the database //
+activate database
+database --> bevrepo
+deactivate database
 bevrepo --> bevserv: Beverage
 deactivate bevrepo
 alt beverage == null
@@ -58,6 +69,10 @@ end
 bevserv -> bevserv: dto.ToBeverage()
 bevserv -> bevrepo: Create(beverage)
 activate bevrepo
+bevrepo -> database: // Save a new beverage to the database //
+activate database
+database --> bevrepo
+deactivate database
 bevrepo --> bevserv: Beverage
 deactivate bevrepo
 bevserv -> notifserv: SendBeverageCreatedNotification(beverage)
@@ -77,6 +92,10 @@ bevcontroller -> bevserv: Update(dto)
 activate bevserv
 bevserv -> bevrepo: GetById(id)
 activate bevrepo
+bevrepo -> database: // Fetch a specific beverage from the database //
+activate database
+database --> bevrepo
+deactivate database
 bevrepo --> bevserv: Beverage
 deactivate bevrepo
 alt beverage == null
@@ -95,6 +114,10 @@ end
 bevserv -> bevserv: dto.ToBeverage(existingBeverage)
 bevserv -> bevrepo: Update(beverage)
 activate bevrepo
+bevrepo -> database: // Update a specific beverage in the database //
+activate database
+database --> bevrepo
+deactivate database
 bevrepo --> bevserv: Beverage
 deactivate bevrepo
 bevserv -> notifserv: SendBeverageUpdatedNotification(beverage)
@@ -112,7 +135,22 @@ frontend -> bevcontroller: DELETE /beverages/id
 activate bevcontroller
 bevcontroller -> bevserv: Delete(id)
 activate bevserv
+bevserv -> bevrepo: GetById(id)
+activate bevrepo
+bevrepo -> database: // Fetch a specific beverage from the database //
+activate database
+database --> bevrepo
+deactivate database
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+alt bev == null
+bevserv -> bevcontroller: throw NotFoundException()
+bevcontroller --> frontend: 404 Not Found
+end
 bevserv -> bevrepo: Delete(id)
+activate bevrepo
+bevrepo -> database: // Delete a specific beverage in the database //
+deactivate bevrepo
 bevserv -> notifserv: SendBeverageDeletedNotification(beverage)
 deactivate bevserv
 activate notifserv

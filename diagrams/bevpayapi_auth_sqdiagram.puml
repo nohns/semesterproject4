@@ -3,6 +3,9 @@ Actor Frontend as frontend
 participant UserController as usercontroller
 participant UserService as userserv
 participant UserRepository as userrepo
+database MySQL as database
+
+hide footbox
 
 == Login ==
 
@@ -12,21 +15,21 @@ usercontroller -> userserv: Login(dto)
 activate userserv
 userserv -> userrepo: GetUserByUserName(dto.UserName)
 activate userrepo
+userrepo -> database: // Fetch a specific user from the database //
+activate database
+database --> userrepo
+deactivate database
 userrepo --> userserv: User
 deactivate userrepo
 alt user == null
-userserv -> usercontroller:  throw new NotFoundException("User was not found.")
+userserv -> usercontroller:  throw new NotFoundException()
 usercontroller --> frontend: 401 Unauthorized
 end
-userserv -> userserv: VerifyPassword()
+userserv -> userserv: VerifyPassword(dto.Password, user.Password)
 alt !correctPassword
-userserv -> usercontroller: throw new WrongPasswordException("Password was not correct.")
+userserv -> usercontroller: throw new WrongPasswordException()
 usercontroller --> frontend: 401 Unauthorized
 end
-userserv -> userrepo: VeryifyPassword(dto.Password, user.Password)
-activate userrepo
-userrepo --> userserv: bool
-deactivate userrepo
 userserv --> usercontroller: User
 deactivate userserv
 usercontroller -> userserv: GenerateClaimsIdentity(userDto)
