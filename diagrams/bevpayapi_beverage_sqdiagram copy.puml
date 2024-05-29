@@ -6,6 +6,7 @@ participant BevRepository as bevrepo
 participant NotificationService as notifserv
 participant PricingEngine as pricingengine
 Database MySQL as database
+participant ImageAPI as imageapi
 
 hide footbox
 
@@ -84,6 +85,39 @@ deactivate bevserv
 bevcontroller --> frontend: 201 Created
 deactivate bevcontroller
 
+== Create a new beverage with image ==
+
+frontend -> bevcontroller: POST /beverages/withImage
+activate bevcontroller
+bevcontroller -> imageapi: UploadImage()
+activate imageapi
+imageapi --> bevcontroller: ImageUrl
+deactivate imageapi
+bevcontroller -> bevserv: Create(dto)
+activate bevserv
+bevserv -> bevserv: Validate...(dto)
+alt dto is not valid
+bevserv -> bevcontroller: throw ValidationException()
+bevcontroller --> frontend: 400 Bad Request
+end
+bevserv -> bevserv: dto.ToBeverage()
+bevserv -> bevrepo: Create(beverage)
+activate bevrepo
+bevrepo -> database: // Save a new beverage to the database //
+activate database
+database --> bevrepo
+deactivate database
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+bevserv -> notifserv: SendBeverageCreatedNotification(beverage)
+activate notifserv
+notifserv -> pricingengine: POST /beverageCreated
+deactivate notifserv
+bevserv --> bevcontroller: Beverage
+deactivate bevserv
+bevcontroller --> frontend: 201 Created
+deactivate bevcontroller
+
 == Update a beverage ==
 
 frontend -> bevcontroller: PUT /beverages/id
@@ -103,10 +137,6 @@ bevserv -> bevcontroller: throw NotFoundException()
 bevcontroller --> frontend: 404 Not Found
 end
 bevserv -> bevserv: Validate...(dto)
-note right
-    Validation identical to the one prior
-    in the "Create a new beverage" section.
-end note
 alt dto is not valid
 bevserv -> bevcontroller: throw ValidationException()
 bevcontroller --> frontend: 400 Bad Request
