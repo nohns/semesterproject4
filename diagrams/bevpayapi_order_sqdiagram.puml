@@ -4,6 +4,7 @@ participant OrderController as ordercontroller
 participant OrderService as orderserv
 participant OrderRepository as orderrepo
 participant PriceRepository as pricerepo
+participant BeverageRepository as bevrepo
 participant NotificationService as notifserv
 participant PricingEngine as pricingengine
 participant Stripe as stripe
@@ -70,10 +71,17 @@ orderserv -> ordercontroller: throw NotFoundException()
 ordercontroller --> frontend: 404 Not Found
 end
 orderserv -> stripe: Create(new PaymentIntentCreateOptions)
-orderserv -> notifserv:
+orderserv -> notifserv: SendBeverageOrderedNotificationAsync(beverage, quantity)
 activate notifserv
 notifserv -> pricingengine: POST /beverageOrdered
 deactivate notifserv
+orderserv -> bevrepo: IncreaseSoldUnits(beverage, quantity)
+activate bevrepo
+bevrepo -> database: // Update a specific beverage in the database //
+activate database
+database --> bevrepo
+deactivate database
+deactivate bevrepo
 orderserv -> orderrepo: Update(order)
 activate orderrepo
 orderrepo -> database: // Update a specific order in the database //
