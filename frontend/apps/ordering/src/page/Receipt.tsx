@@ -110,7 +110,7 @@ function Receipt() {
             </div>
 
             <div className="text-2xl text-center mb-8">
-              {data?.price.amount * data?.quantity} kr.
+              {(data?.price.amount * data?.quantity).toFixed(2)} kr.
             </div>
 
             <div className="flex flex-row mb-4">
