@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-
 namespace BeveragePaymentApi.Auth
 {
     /// <summary>
@@ -14,7 +13,6 @@ namespace BeveragePaymentApi.Auth
         /// Checks the jwt cookie and sets the user for the application.
         /// </summary>
         /// <param name="app">App builder reference.</param>
-        /// <param name="antiforgery">Reference to the antiforgery service.</param>
         /// <param name="key">The key to decrypt the token.</param>
         /// <param name="autoRefresh">Creates a new token if the token is half past expiration time (and still valid).</param>
         /// <param name="cookieName">Name of the cookie where the jwt is (defaults to jwt).</param>
@@ -24,9 +22,8 @@ namespace BeveragePaymentApi.Auth
         {
             jwtKey = configuration["JwtSettings:Key"];
         }
-        
+
         public static void UseJwtCookieMiddleware(this IApplicationBuilder app,
-                                                  IAntiforgery antiforgery,
                                                   byte[] key,
                                                   bool autoRefresh = true,
                                                   string cookieName = "jwt",
@@ -87,12 +84,6 @@ namespace BeveragePaymentApi.Auth
                 }
                 catch (Exception)
                 {
-                    /*
-                    var tokens = antiforgery.GetAndStoreTokens(context);
-                    context.Response.Cookies.Append(csrfCookieName,
-                                                    tokens.RequestToken,
-                                                    new CookieOptions() { HttpOnly = false, IsEssential = true, Secure = true, SameSite = SameSiteMode.None });
-                                                    */
                     context.Response.Cookies.Delete(cookieName);
                 }
 
@@ -140,4 +131,5 @@ namespace BeveragePaymentApi.Auth
             return tokenHandler.WriteToken(token);
         }
     }
+
 }

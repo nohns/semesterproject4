@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using BeveragePaymentApi.Dto;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +8,13 @@ namespace BeveragePaymentApi.Auth;
 
 public class UserApiController : Controller
 {
-    public UserApiController(IUserService userService, IAntiforgery antiforgery)
+    public UserApiController(IUserService userService)
     {
         _userService = userService;
-        _antiforgery = antiforgery;
 
     }
 
     private readonly IUserService _userService;
-    private readonly IAntiforgery _antiforgery;
     [HttpPost]
     [Route("v1/auth/login")]
 
@@ -74,17 +71,6 @@ public class UserApiController : Controller
         return Ok("Protected");
     }
 
-    private void RefreshCSRFToken() //Sould be fixed
-    {
-        var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-        Response.Cookies.Append("XSRF-REQUEST-TOKEN", tokens.RequestToken, new CookieOptions
-        {
-            HttpOnly = false,
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            IsEssential = true
-        });
-    }
 
     [HttpPost]
     [Route("v1/auth/logout")]
