@@ -38,8 +38,7 @@ type Engine struct {
 	// actors keeps track of actors registered. ONLY interact with it when mu lock is acquired
 	actors map[string]*actor
 
-	actorout chan PriceUpdate
-	updates  chan PriceUpdate
+	updates chan PriceUpdate
 
 	state engineState
 	// conf is set when New() is called. Should be read-only from here on out.
@@ -50,8 +49,8 @@ type Engine struct {
 type firstUpdateMode int
 
 const (
-	FirstUpdateModeFollow firstUpdateMode = iota
-	FirstUpdateModeRandom
+	FirstUpdateModeRandom firstUpdateMode = iota
+	FirstUpdateModeFollow
 )
 
 type Config struct {
@@ -85,11 +84,10 @@ var DefaultConfig = Config{
 // New instantiates a pricing engine, which can track items over time.
 func New(conf Config) *Engine {
 	return &Engine{
-		actors:   make(map[string]*actor),
-		actorout: make(chan PriceUpdate),
-		updates:  make(chan PriceUpdate),
-		state:    engineStateIdle,
-		conf:     conf,
+		actors:  make(map[string]*actor),
+		updates: make(chan PriceUpdate),
+		state:   engineStateIdle,
+		conf:    conf,
 	}
 }
 
@@ -260,6 +258,5 @@ func (e *Engine) Terminate() {
 	e.mu.Unlock()
 
 	wg.Wait()
-	close(e.actorout)
 	close(e.updates)
 }
