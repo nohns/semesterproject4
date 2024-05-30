@@ -35,7 +35,7 @@ type actorConfig struct {
 func newActor(id string, conf actorConfig) *actor {
 	return &actor{
 		id:     id,
-		itm:    newItem(conf.params),
+		itm:    newItem(conf.params, conf.econf),
 		orders: make(chan int, 1),
 		params: make(chan ItemParams),
 		term:   make(chan struct{}),
@@ -128,9 +128,12 @@ func (a *actor) handleOrderPlaced(qty int) {
 
 // emitUpdate outputs an update of the current item price tracked by the actor.
 func (a *actor) emitUpdate() {
-	noise := float64(rand.Intn(25)) - 12.5
-	noise /= 1000
-	noise += 1
+	noise := float64(1)
+	if a.econf.NoisePerThousand > 0 {
+		noise := float64(rand.Intn(a.econf.NoisePerThousand)) - 12.5
+		noise /= 1000
+		noise += float64(1)
+	}
 
 	a.out <- PriceUpdate{
 		Id:    a.id,

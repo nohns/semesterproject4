@@ -6,7 +6,7 @@ namespace BeveragePaymentApi.Beverages;
 
 public class NotificationService
     {
-        private static readonly string GoServiceUrl = "http://engine:8080"; // Use service name 'engine'
+        private static readonly string GoServiceUrl = "http://engine:8080";
         private readonly IHttpClientFactory _httpClientFactory;
         public NotificationService(IHttpClientFactory httpClientFactory)
         {
@@ -43,7 +43,7 @@ public class NotificationService
 
         private async Task SendNotificationAsync(string endpoint, object data)
         {
-            using HttpClient client = _httpClientFactory.CreateClient();
+            using HttpClient client = _httpClientFactory.CreateClient();        
 
             string json = JsonSerializer.Serialize(data);
             using HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -52,7 +52,8 @@ public class NotificationService
             
             if(!response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Failed to send notification to '{GoServiceUrl + endpoint}'. Message received from service: {response.Content.ReadAsStringAsync().Result}");
+                Console.Write($"Failed to send notification to '{GoServiceUrl + endpoint}'");
+                Console.WriteLine($"Message received from service: {response.Content.ReadAsStringAsync().Result}")
             }
         }
     }

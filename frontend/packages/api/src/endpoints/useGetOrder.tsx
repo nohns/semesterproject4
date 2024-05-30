@@ -4,15 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { client } from "../axios/axios";
 import { Beverage, Price } from "@/types/beverage";
-
-//Pending = 0
-//Processing = 1
-// Fulfilled = 2
-interface OrderStatus {
-  Pending: 0;
-  Processing: 1;
-  Fulfilled: 2;
-}
+import { Order } from "@/types/order";
 
 export interface GetOrderResponse {
   orderId: number;
@@ -20,18 +12,33 @@ export interface GetOrderResponse {
   beverage: Beverage;
   priceId: number;
   price: Price;
-  stripeIntentId: string;
-  stripeClientSecret: string;
+  stripeIntentId: string | null;
+  stripeClientSecret: string | null;
   quantity: number;
   time: string;
   expiry: string;
-  status: OrderStatus;
+  status: 0 | 1 | 2;
 }
 
-const getOrder = async (orderId: number): Promise<GetOrderResponse> => {
+export function orderResponseToDomain(respData: GetOrderResponse): Order {
+  return {
+    ...respData,
+    expiry: forceUtc(respData.expiry),
+    time: forceUtc(respData.time),
+  };
+}
+
+export function forceUtc(dateStr: string) {
+  if (dateStr.includes("Z")) {
+    return new Date(dateStr);
+  }
+  return new Date(dateStr + "Z");
+}
+
+const getOrder = async (orderId: number): Promise<Order> => {
   const response: AxiosResponse<GetOrderResponse> =
     await client.get<GetOrderResponse>(`/Orders/${orderId}`);
-  return response.data;
+  return orderResponseToDomain(response.data);
 };
 
 export const useGetOrder = (orderId: number) => {
