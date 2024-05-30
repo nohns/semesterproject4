@@ -1,22 +1,15 @@
+//Inspiration taken from
+//https://medium.com/@marcos.deaguiar/spa-with-cookie-authentication-in-asp-net-core-c7ba6d9f8ebe
+
+
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 namespace BeveragePaymentApi.Auth
 {
-    /// <summary>
-    /// Middleware that gets jwt as cookie and sets the user for the application.
-    /// </summary>
     public static class JwtCookieMiddleware
     {
-        /// <summary>
-        /// Checks the jwt cookie and sets the user for the application.
-        /// </summary>
-        /// <param name="app">App builder reference.</param>
-        /// <param name="key">The key to decrypt the token.</param>
-        /// <param name="autoRefresh">Creates a new token if the token is half past expiration time (and still valid).</param>
-        /// <param name="cookieName">Name of the cookie where the jwt is (defaults to jwt).</param>
-        /// <param name="csrfCookieName">Name of the cookie where the request token is stored.</param>
         private static string jwtKey = null;
         public static void Initialize(IConfiguration configuration)
         {
@@ -26,8 +19,7 @@ namespace BeveragePaymentApi.Auth
         public static void UseJwtCookieMiddleware(this IApplicationBuilder app,
                                                   byte[] key,
                                                   bool autoRefresh = true,
-                                                  string cookieName = "jwt",
-                                                  string csrfCookieName = "XSRF-TOKEN")
+                                                  string cookieName = "jwt")
         {
             app.Use(async (context, next) =>
             {
@@ -41,14 +33,12 @@ namespace BeveragePaymentApi.Auth
 
                 var validationParameters = new TokenValidationParameters
                 {
-                    // Clock skew compensates for server time drift.
                     ClockSkew = TimeSpan.FromMinutes(5),
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     RequireSignedTokens = true,
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
-                    // Ensure the token audience matches our audience value (default true):
                     ValidateAudience = false,
                     ValidateIssuer = false
                 };

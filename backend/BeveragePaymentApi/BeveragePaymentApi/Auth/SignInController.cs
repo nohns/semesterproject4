@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeveragePaymentApi.Auth;
 
-public class UserApiController : Controller
+public class SignInController : Controller
 {
-    public UserApiController(IUserService userService)
+    public SignInController(IUserService userService)
     {
         _userService = userService;
 
