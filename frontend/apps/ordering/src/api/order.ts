@@ -1,5 +1,4 @@
-import { Order } from "@/model/order";
-import { Beverage } from "@repo/api";
+import { Beverage, Order, orderResponseToDomain } from "@repo/api";
 import { Price } from "@repo/api";
 import axios from "axios";
 
@@ -10,6 +9,7 @@ interface OrderResponse {
   beverageId: number;
   beverage: Beverage;
   priceId: number;
+  price: Price;
   stripeIntentId: string | null;
   stripeClientSecret: string | null;
   quantity: number;
@@ -58,19 +58,4 @@ export async function processOrder(
     },
   );
   return orderResponseToDomain(resp.data);
-}
-
-function orderResponseToDomain(respData: OrderResponse): Order {
-  return {
-    ...respData,
-    expiry: forceUtc(respData.expiry),
-    time: forceUtc(respData.time),
-  };
-}
-
-function forceUtc(dateStr: string) {
-  if (dateStr.includes("Z")) {
-    return new Date(dateStr);
-  }
-  return new Date(dateStr + "Z");
 }

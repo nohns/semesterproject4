@@ -9,4 +9,5 @@ export * from "./endpoints/usePostBeverage";
 export * from "./endpoints/useDeleteBeverages";
 export * from "./endpoints/useGetOrder";
 export * from "./types/beverage";
+export * from "./types/order";
 export * from "./state/prices";
