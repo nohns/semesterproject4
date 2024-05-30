@@ -1,4 +1,4 @@
-import { Beverage, Order, orderResponseToDomain } from "@repo/api";
+import { Beverage, Order, forceUtc, orderResponseToDomain } from "@repo/api";
 import { Price } from "@repo/api";
 import axios from "axios";
 
@@ -15,7 +15,7 @@ interface OrderResponse {
   quantity: number;
   time: string;
   expiry: string;
-  status: number;
+  status: 0 | 1 | 2;
 }
 
 export async function fetchOrder(id: number): Promise<Order> {
