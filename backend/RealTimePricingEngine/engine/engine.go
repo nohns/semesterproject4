@@ -161,7 +161,9 @@ func (e *Engine) UntrackItem(id string) error {
 		return ErrItemNotFound
 	}
 
-	a.terminate()
+	if e.state == engineStateRunning {
+		a.terminate()
+	}
 	delete(e.actors, id)
 	return nil
 }
