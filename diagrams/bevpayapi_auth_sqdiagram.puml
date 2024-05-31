@@ -1,5 +1,5 @@
 @startuml bevpayapi
-Actor Frontend as frontend
+participant Frontend as frontend
 participant UserController as usercontroller
 participant UserService as userserv
 participant UserRepository as userrepo
