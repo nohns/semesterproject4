@@ -1,5 +1,5 @@
 @startuml bevpayapi
-Actor Frontend as frontend
+participant Frontend as frontend
 participant OrderController as ordercontroller
 participant OrderService as orderserv
 participant OrderRepository as orderrepo
@@ -160,11 +160,5 @@ orderserv --> ordercontroller: List<Price>
 deactivate orderserv
 ordercontroller --> frontend: 200 OK
 deactivate ordercontroller
-
-
-
-
-
-
 
 @enduml

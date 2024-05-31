@@ -1,5 +1,5 @@
 @startuml bevpayapi
-Actor Frontend as frontend
+participant Frontend as frontend
 participant BevController as bevcontroller
 participant BevService as bevserv
 participant BevRepository as bevrepo
@@ -9,81 +9,6 @@ Database MySQL as database
 participant ImageAPI as imageapi
 
 hide footbox
-
-== Get all beverages ==
-
-frontend -> bevcontroller: GET /beverages
-activate bevcontroller
-bevcontroller -> bevserv: GetAllBeverages()
-activate bevserv
-bevserv -> bevrepo: GetAll()
-activate bevrepo
-bevrepo -> database: // Fetch all beverages from the database //
-activate database
-database --> bevrepo
-deactivate database
-bevrepo --> bevserv: List<Beverage>
-deactivate bevrepo
-bevserv --> bevcontroller: List<Beverage>
-deactivate bevserv
-bevcontroller --> frontend: 200 OK
-deactivate bevcontroller
-
-== Get a beverage by its ID ==
-
-frontend -> bevcontroller: GET /beverages/id
-activate bevcontroller
-bevcontroller -> bevserv: GetById(id)
-activate bevserv
-bevserv -> bevrepo: GetById(id)
-activate bevrepo
-bevrepo -> database: // Fetch a specific beverage from the database //
-activate database
-database --> bevrepo
-deactivate database
-bevrepo --> bevserv: Beverage
-deactivate bevrepo
-alt beverage == null
-bevserv -> bevcontroller: throw NotFoundException()
-bevcontroller --> frontend: 404 Not Found
-end
-bevserv --> bevcontroller: Beverage
-deactivate bevserv
-bevcontroller --> frontend: 200 OK
-deactivate bevcontroller
-
-== Create a new beverage ==
-
-frontend -> bevcontroller: POST /beverages
-activate bevcontroller
-bevcontroller -> bevserv: Create(dto)
-activate bevserv
-bevserv -> bevserv: Validate...(dto)
-note right
-    Validation of the content of the DTO.
-    Things like the price, halftime, buymultiplier are checked for correct values.
-end note
-alt dto is not valid
-bevserv -> bevcontroller: throw ValidationException()
-bevcontroller --> frontend: 400 Bad Request
-end
-bevserv -> bevserv: dto.ToBeverage()
-bevserv -> bevrepo: Create(beverage)
-activate bevrepo
-bevrepo -> database: // Save a new beverage to the database //
-activate database
-database --> bevrepo
-deactivate database
-bevrepo --> bevserv: Beverage
-deactivate bevrepo
-bevserv -> notifserv: SendBeverageCreatedNotification(beverage)
-activate notifserv
-notifserv -> pricingengine: POST /beverageCreated
-deactivate notifserv
-bevserv --> bevcontroller: Beverage
-deactivate bevserv
-bevcontroller --> frontend: 201 Created
-deactivate bevcontroller
 
 == Create a new beverage with image ==
 
@@ -158,6 +83,49 @@ bevserv --> bevcontroller: Beverage
 deactivate bevserv
 bevcontroller --> frontend: 200 OK
 deactivate bevcontroller
+
+== Get all beverages ==
+
+frontend -> bevcontroller: GET /beverages
+activate bevcontroller
+bevcontroller -> bevserv: GetAllBeverages()
+activate bevserv
+bevserv -> bevrepo: GetAll()
+activate bevrepo
+bevrepo -> database: // Fetch all beverages from the database //
+activate database
+database --> bevrepo
+deactivate database
+bevrepo --> bevserv: List<Beverage>
+deactivate bevrepo
+bevserv --> bevcontroller: List<Beverage>
+deactivate bevserv
+bevcontroller --> frontend: 200 OK
+deactivate bevcontroller
+
+== Get a beverage by its ID ==
+
+frontend -> bevcontroller: GET /beverages/id
+activate bevcontroller
+bevcontroller -> bevserv: GetById(id)
+activate bevserv
+bevserv -> bevrepo: GetById(id)
+activate bevrepo
+bevrepo -> database: // Fetch a specific beverage from the database //
+activate database
+database --> bevrepo
+deactivate database
+bevrepo --> bevserv: Beverage
+deactivate bevrepo
+alt beverage == null
+bevserv -> bevcontroller: throw NotFoundException()
+bevcontroller --> frontend: 404 Not Found
+end
+bevserv --> bevcontroller: Beverage
+deactivate bevserv
+bevcontroller --> frontend: 200 OK
+deactivate bevcontroller
+
 
 == Delete a beverage ==
 
