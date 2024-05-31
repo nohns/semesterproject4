@@ -8,14 +8,16 @@ import (
 
 type item struct {
 	params    ItemParams
+	econf     Config
 	initprice float64
 	decaycoef float64
 	lastorder time.Time
 }
 
-func newItem(params ItemParams) item {
+func newItem(params ItemParams, econf Config) item {
 	return item{
 		params:    params,
+		econf:     econf,
 		initprice: params.InitialPrice,
 		decaycoef: toDecayCoefficient(params.HalfTime),
 		lastorder: time.Now(),
@@ -29,8 +31,11 @@ func (i *item) reset() {
 func (i *item) order(qty int) {
 	mult := math.Pow(i.params.BuyMultiplier, float64(qty))
 	// Random noise for price change
-	noise := float64(rand.Intn(25)) - 12.5
-	noise = 1 + float64(noise)/1000
+	noise := float64(1)
+	if i.econf.NoisePerThousand > 0 {
+		noise := float64(rand.Intn(i.econf.NoisePerThousand)) - 12.5
+		noise = 1 + float64(noise)/1000
+	}
 	mult *= noise
 
 	currprice := i.price()

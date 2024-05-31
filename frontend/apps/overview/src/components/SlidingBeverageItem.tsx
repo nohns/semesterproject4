@@ -10,7 +10,7 @@ interface BeverageCardProps {
   history: History;
 }
 
-export default function SlidingBeverageItemCardLigmaNamingIsHard({
+export default function SlidingBeverageItem({
   history,
 }: BeverageCardProps): JSX.Element {
   const displayedBeveragePrices: BeveragePrice[] = history.prices

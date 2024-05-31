@@ -38,7 +38,7 @@ function Selection() {
       setLoadingOrder(false);
       navigate(`/order/${order.orderId}`);
     },
-    [navigate],
+    [navigate]
   );
 
   return (
@@ -106,7 +106,6 @@ function Selection() {
 
           <div className="flex flex-row justify-center  w-full gap-x-8 ">
             <Apple />
-            <div className="transform scale-75">{/* <Money /> */}</div>
             <Google />
           </div>
 

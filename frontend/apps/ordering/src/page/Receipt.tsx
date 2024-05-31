@@ -150,32 +150,6 @@ function Receipt() {
             <div className="relative w-full mb-10">
               <div className="absolute top-4 left-2 right-2 border-t-4 border-dotted border-background" />
             </div>
-
-            <motion.div
-              initial={{ scale: 0, rotate: 0 }}
-              animate={{ scale: 1, rotate: 360 }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: 2,
-                duration: 2,
-              }}
-              className="flex justify-center items-center mb-14 w-full h-20   rounded-lg mt-auto"
-            >
-              <img
-                src="https://c.tenor.com/ZAMoMuQgf9UAAAAC/tenor.gifv"
-                className="rounded-full h-20 w-20 mx-auto"
-              />
-              <img
-                src="https://c.tenor.com/ZAMoMuQgf9UAAAAC/tenor.gifv"
-                className="rounded-full h-20 w-20 mx-auto"
-              />
-              <img
-                src="https://c.tenor.com/ZAMoMuQgf9UAAAAC/tenor.gifv"
-                className="rounded-full h-20 w-20 mx-auto"
-              />
-            </motion.div>
           </div>
         </motion.div>
       </MobileContainer>

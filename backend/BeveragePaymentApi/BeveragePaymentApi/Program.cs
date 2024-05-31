@@ -9,7 +9,6 @@ using BeveragePaymentApi.Orders;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using BeveragePaymentApi.Auth;
-using Microsoft.AspNetCore.Antiforgery;
 using BeveragePaymentApi;
 using BeveragePaymentApi.Images;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -73,20 +72,8 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddHealthChecks().AddCheck<DatabaseSeededHealthCheck>("DatabaseSeeded");
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/v1/auth/login";
-    options.AccessDeniedPath = "/v1/auth/accessdenied";
-});
-/*
-builder.Services.AddAntiforgery(options =>
-{
-    options.HeaderName = "X-XSRF-TOKEN";
-    options.Cookie = new CookieBuilder()
-    {
-        Name = "XSRF"
-    };
-});*/
+
+//builder.Services.ConfigureApplicationCookie();
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -96,7 +83,25 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
+    .AddCookie(options =>
+{
+    options.LoginPath = null; // Disable redirect to login page
+    options.AccessDeniedPath = null; // Disable redirect to access denied page
+    options.Events = new CookieAuthenticationEvents
+    {
+        OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        },
+        OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        }
+    };
+}
+    );
 
 
 
@@ -157,14 +162,9 @@ else
 //app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 app.UseCookiePolicy();
-app.UseJwtCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>(),
-    System.Text.Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:Key"]!));
+app.UseJwtCookieMiddleware(System.Text.Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:Key"]!));
 
 JwtCookieMiddleware.Initialize(builder.Configuration);
-
-//Skal måske fjernes
-//app.UseAntiforgeryCookieMiddleware(app.Services.GetRequiredService<IAntiforgery>());
-//app.UseAntiforgery();
 
 
 app.UseAuthentication();
@@ -175,4 +175,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-

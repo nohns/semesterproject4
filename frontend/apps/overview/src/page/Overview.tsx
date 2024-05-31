@@ -2,11 +2,12 @@
 
 import Marquee from "react-fast-marquee";
 import { Chart, FooBar } from "@repo/ui";
-import SlidingBeverageItemCardLigmaNamingIsHard from "../components/SlidingBeverageItemCardLigmaNamingIsHard";
+
 import { History } from "@repo/api";
 import { BeveragePrice } from "../../../../packages/ui/src/model/Beverage";
 import { ArrowBottomRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { cn } from "../../../../packages/ui/src/lib/utils";
+import SlidingBeverageItem from "@/components/SlidingBeverageItem";
 
 type OverviewProps = {
   histories: History[];
@@ -39,7 +40,6 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
             {displayedBeverage.beverage.name}
           </h2>
         </div>
-
         <div
           className={cn("flex flex-col", {
             "text-green-500": isRising,
@@ -69,10 +69,7 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
       <div className="flex flex-none" style={{ height: "20%" }}>
         <Marquee speed={50} pauseOnHover={true}>
           {histories?.map((item, index) => (
-            <SlidingBeverageItemCardLigmaNamingIsHard
-              key={index}
-              history={item}
-            />
+            <SlidingBeverageItem key={index} history={item} />
           ))}
         </Marquee>
       </div>

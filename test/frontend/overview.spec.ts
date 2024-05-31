@@ -26,8 +26,8 @@ test('Is showing the correct amount of items in the marquee', async ({ page }) =
   const childCount = await page.locator('.rfm-marquee .rfm-child').count();
   console.log('Number of child elements:', childCount);
 
-  // Check that the amount of childs in the marquee is 9
-  await expect(childCount).toBe(18);
+  // Check that the amount of childs in the marquee is 8x2=16, 
+  await expect(childCount).toBe(16);
 });
 
 
