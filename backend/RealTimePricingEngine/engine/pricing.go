@@ -33,7 +33,7 @@ func (i *item) order(qty int) {
 	// Random noise for price change
 	noise := float64(1)
 	if i.econf.NoisePerThousand > 0 {
-		noise := float64(rand.Intn(i.econf.NoisePerThousand)) - 12.5
+		noise = float64(rand.Intn(i.econf.NoisePerThousand)) - 12.5
 		noise = 1 + float64(noise)/1000
 	}
 	mult *= noise

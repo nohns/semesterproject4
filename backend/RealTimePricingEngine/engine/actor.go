@@ -130,7 +130,7 @@ func (a *actor) handleOrderPlaced(qty int) {
 func (a *actor) emitUpdate() {
 	noise := float64(1)
 	if a.econf.NoisePerThousand > 0 {
-		noise := float64(rand.Intn(a.econf.NoisePerThousand)) - 12.5
+		noise = float64(rand.Intn(a.econf.NoisePerThousand)) - (float64(a.econf.NoisePerThousand) / 2)
 		noise /= 1000
 		noise += float64(1)
 	}
