@@ -39,7 +39,7 @@ function Dashboard() {
   const { data: beverages, isLoading, error } = useGetBeverages();
   const deleteMutation = useDeleteBeverage();
   const [selectedBeverage, setSelectedBeverage] = useState<Beverage | null>(
-    null,
+    null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name");
@@ -198,7 +198,9 @@ function Dashboard() {
                           Redigér
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDeleteClick(beverage.beverageId)}
+                          onClick={() =>
+                            handleDeleteClick(beverage.beverageId.toString())
+                          }
                         >
                           Slet
                         </DropdownMenuItem>

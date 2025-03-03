@@ -8,7 +8,8 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+  // auto changed to hidden to prevent scrollbar on animation
+  <div className="relative w-full overflow-hidden">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
