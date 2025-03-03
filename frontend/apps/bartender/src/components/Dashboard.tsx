@@ -120,7 +120,7 @@ function Dashboard() {
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
+        <Table className="overflow-hidden">
           <TableHeader>
             <TableRow>
               <TableHead className="hidden w-[100px] sm:table-cell">
