@@ -68,9 +68,12 @@ function Overview({ displayedBeverage, histories }: OverviewProps) {
       </div>
       <div className="flex flex-none" style={{ height: "20%" }}>
         <Marquee speed={50} pauseOnHover={true}>
-          {histories?.map((item, index) => (
-            <SlidingBeverageItem key={index} history={item} />
-          ))}
+          {histories?.length > 0 &&
+            [...histories, ...histories, ...histories].map((item, index) => (
+              <div key={`item-${index}`} className="mx-0.5">
+                <SlidingBeverageItem history={item} />
+              </div>
+            ))}
         </Marquee>
       </div>
     </div>
