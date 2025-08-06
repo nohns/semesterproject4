@@ -71,7 +71,7 @@ type Config struct {
 	// NoisePerThousand is the multiplier (divided by 1000) which the price
 	// updates can sway away from the mathematically calculated price. It is also
 	// applied to the new price when ordering an item. E.g a NoisePerThousand of
-	// 25 (default) means swaying +/-2,5%.
+	// 25 (default) means swaying +/-1,25%.
 	NoisePerThousand int
 }
 
