@@ -10,9 +10,6 @@ namespace BeveragePaymentApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Prices_BeverageId",
-                table: "Prices");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Price_BeverageId_Timestamp",
@@ -27,11 +24,6 @@ namespace BeveragePaymentApi.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Price_BeverageId_Timestamp",
                 table: "Prices");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Prices_BeverageId",
-                table: "Prices",
-                column: "BeverageId");
         }
     }
 }
