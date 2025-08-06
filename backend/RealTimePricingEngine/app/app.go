@@ -200,7 +200,7 @@ func (a *app) Run(ctx context.Context) error {
 	defer a.priceEngine.Terminate()
 
 	// Simulate demand when running in mocked
-	if a.conf.mocked {
+	if true {
 		bevs, err := a.bevRepo.FindBeverages(context.TODO())
 		if err != nil {
 			return fmt.Errorf("failed to get beverages: %v", err)
