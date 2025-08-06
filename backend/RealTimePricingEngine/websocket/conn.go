@@ -13,22 +13,21 @@ const (
 	writeTimeout = 10 * time.Second
 	// close connections where we haven't received a ping in `idleTimeout`.
 	idleTimeout = 70 * time.Second
-	// How often we ping clients.
-	pingPeriod = 30 * time.Second
+
+	writeWait  = 10 * time.Second
+	pongWait   = 60 * time.Second
+	pingPeriod = (pongWait * 9) / 10 // send pings before connection times out
 
 	// Max number of messages queued in send buffer.
 	sendBufferSize = 200
-	// Max number of messages queued in receive buffer.
-	recieveBufferSize = 200
 )
 
 type Conn struct {
-	conn             *websocket.Conn
-	id               string
-	sendChannel      chan []byte
-	heartbeatChannel chan []byte
-	shutdown         chan any
-	cleanupOnce      *sync.Once
+	conn        *websocket.Conn
+	id          string
+	sendChannel chan []byte
+	shutdown    chan any
+	cleanupOnce *sync.Once
 
 	logger *slog.Logger
 
@@ -44,14 +43,13 @@ type connOptions struct {
 func newConnection(o *connOptions) *Conn {
 	now := time.Now()
 	return &Conn{
-		conn:             o.conn,
-		id:               o.id,
-		sendChannel:      make(chan []byte, sendBufferSize),
-		heartbeatChannel: make(chan []byte, recieveBufferSize),
-		shutdown:         make(chan interface{}),
-		cleanupOnce:      &sync.Once{},
-		logger:           o.logger,
-		lastPongAt:       now,
+		conn:        o.conn,
+		id:          o.id,
+		sendChannel: make(chan []byte, sendBufferSize),
+		shutdown:    make(chan interface{}),
+		cleanupOnce: &sync.Once{},
+		logger:      o.logger,
+		lastPongAt:  now,
 	}
 }
 
@@ -65,54 +63,51 @@ func (c *Conn) Send(msg []byte) {
 
 func (c *Conn) writePump() {
 	c.logger.Info("Write pump started")
-
 	ticker := time.NewTicker(pingPeriod)
+
 	defer func() {
-		c.logger.Info("Write pump stopped")
 		ticker.Stop()
+		c.logger.Info("Write pump stopped")
 		c.cleanup()
+		c.conn.Close()
 	}()
 
 	for {
 		select {
-		case <-c.shutdown:
-			return
-
-			//Send inputs from the send channel to the websocket connection
-		case msg, ok := <-c.sendChannel:
-			// If the channel is closed, we should stop the goroutine.
-			if !ok {
-				c.logger.Info("Send channel closed")
-				return
-			}
-
-			if err := c.conn.SetWriteDeadline(time.Now().Add(writeTimeout)); err != nil {
+		case message, ok := <-c.sendChannel:
+			// Set write deadline for all messages
+			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				c.logger.Error("Failed to set write deadline", slog.String("error", err.Error()))
 				return
 			}
 
-			if err := c.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			if !ok {
+				c.logger.Info("Send channel closed")
+				_ = c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				return
+			}
 
+			if err := c.conn.WriteMessage(websocket.TextMessage, message); err != nil {
 				c.logger.Error("Failed to write message", slog.String("error", err.Error()))
 				return
 			}
 			c.logger.Info("Message sent")
 
-			//Send ping messages to the websocket connection
-		case _, ok := <-c.heartbeatChannel:
-			if !ok {
-				return
-			}
-			if err := c.conn.SetWriteDeadline(time.Now().Add(writeTimeout)); err != nil {
+		case <-ticker.C:
+			// Send periodic ping
+			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				c.logger.Error("Failed to set write deadline", slog.String("error", err.Error()))
 				return
 			}
 
-			if err := c.conn.WriteControl(websocket.PingMessage, []byte("PING"), time.Now().Add(writeTimeout)); err != nil {
-				c.logger.Error("Failed to write control ping message", slog.String("error", err.Error()))
+			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				c.logger.Error("Failed to send ping", slog.String("error", err.Error()))
 				return
 			}
+			c.logger.Debug("Ping sent")
 
+		case <-c.shutdown:
+			return
 		}
 	}
 }
@@ -120,79 +115,28 @@ func (c *Conn) writePump() {
 func (c *Conn) readPump() {
 	c.logger.Info("Read pump started")
 	defer func() {
-		c.logger.Debug("read pump stopped")
+		c.logger.Info("Read pump stopped")
 		c.cleanup()
+		c.conn.Close()
 	}()
 
-	c.conn.SetReadLimit(recieveBufferSize)
-	if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
-		c.logger.Error("failed to set read deadline", slog.String("error", err.Error()))
-	}
+	c.conn.SetReadLimit(512)
+	_ = c.conn.SetReadDeadline(time.Now().Add(pongWait))
 
-	//Here I need to implement some sort of ping pong mechanism to keep the connection alive
-	c.conn.SetPongHandler(func(s string) error {
-		c.logger.Info("Received pong", slog.String("data", s))
-		c.lastPongAt = time.Now()
-		if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
-			c.logger.Error("Failed to set read deadline", slog.String("error", err.Error()))
-			c.cleanup()
-		}
-		return nil
+	c.conn.SetPongHandler(func(string) error {
+		c.logger.Debug("Pong received")
+		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
 
-	errC := make(chan error, 1)
-
-	go func() {
-		for {
-			//Listen for ping messages and respond
-
-			if _, _, err := c.conn.NextReader(); err != nil {
-				errC <- err
-				return
-			}
-		}
-	}()
-
 	for {
-		select {
-		case err := <-errC:
-			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-				// If the connection is closed, increment metric for closing
-				c.logger.Debug("websocket connection closed unexpectedly", slog.String("error", err.Error()))
+		_, _, err := c.conn.ReadMessage()
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				c.logger.Error("Unexpected close error", slog.String("error", err.Error()))
 			} else {
-				// Otherwise we failed to read from the connection, increment metric for failure
-				c.logger.Error("failed to read from connection", slog.String("error", err.Error()))
+				c.logger.Info("Connection closed", slog.String("reason", err.Error()))
 			}
-			return
-
-		case <-c.shutdown:
-			return
-		}
-	}
-
-}
-
-// We need heartbeat to act as the reader goroutine
-func (c *Conn) heartBeat() {
-
-	c.logger.Info("Heartbeat started")
-	ticker := time.NewTicker(pingPeriod)
-	defer func() {
-		c.logger.Info("Heartbeat stopped cleaning up the connection")
-		ticker.Stop()
-		c.cleanup()
-	}()
-
-	for {
-		select {
-		case <-ticker.C:
-			c.logger.Info("Sending heartbeat")
-			c.heartbeatChannel <- []byte{}
-
-		case <-c.shutdown:
-
-			c.logger.Info("Forcing shutdown")
-			return
+			break
 		}
 	}
 }
@@ -204,7 +148,6 @@ func (c *Conn) cleanup() {
 
 		close(c.shutdown)
 		close(c.sendChannel)
-		close(c.heartbeatChannel)
 
 		// Close the underlying websocket connection.
 		err := c.conn.Close()
@@ -220,7 +163,6 @@ func (c *Conn) run() {
 	c.logger.Info("New connection starting read, write and heartbeat pumps")
 	go c.writePump()
 	go c.readPump()
-	go c.heartBeat()
 }
 
 // Close closes the connection gracefully. It waits for all goroutines to finish.
