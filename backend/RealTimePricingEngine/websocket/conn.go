@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"context"
 	"log/slog"
 	"sync"
 	"time"
@@ -23,33 +24,35 @@ const (
 )
 
 type Conn struct {
+	ctx         context.Context
+	cancel      context.CancelFunc
 	conn        *websocket.Conn
 	id          string
 	sendChannel chan []byte
-	shutdown    chan any
 	cleanupOnce *sync.Once
 
 	logger *slog.Logger
-
-	lastPongAt time.Time
 }
 
 type connOptions struct {
+	ctx    context.Context
+	cancel context.CancelFunc
 	conn   *websocket.Conn
 	id     string
 	logger *slog.Logger
 }
 
-func newConnection(o *connOptions) *Conn {
-	now := time.Now()
+func newConnection(o *connOptions, parentCtx context.Context) *Conn {
+	ctx, cancel := context.WithCancel(parentCtx)
+
 	return &Conn{
 		conn:        o.conn,
 		id:          o.id,
 		sendChannel: make(chan []byte, sendBufferSize),
-		shutdown:    make(chan interface{}),
 		cleanupOnce: &sync.Once{},
 		logger:      o.logger,
-		lastPongAt:  now,
+		ctx:         ctx,
+		cancel:      cancel,
 	}
 }
 
@@ -74,6 +77,9 @@ func (c *Conn) writePump() {
 
 	for {
 		select {
+		case <-c.ctx.Done():
+			return
+
 		case message, ok := <-c.sendChannel:
 			// Set write deadline for all messages
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
@@ -105,9 +111,6 @@ func (c *Conn) writePump() {
 				return
 			}
 			c.logger.Debug("Ping sent")
-
-		case <-c.shutdown:
-			return
 		}
 	}
 }
@@ -117,7 +120,6 @@ func (c *Conn) readPump() {
 	defer func() {
 		c.logger.Info("Read pump stopped")
 		c.cleanup()
-		c.conn.Close()
 	}()
 
 	c.conn.SetReadLimit(512)
@@ -129,34 +131,33 @@ func (c *Conn) readPump() {
 	})
 
 	for {
-		_, _, err := c.conn.ReadMessage()
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				c.logger.Error("Unexpected close error", slog.String("error", err.Error()))
-			} else {
-				c.logger.Info("Connection closed", slog.String("reason", err.Error()))
+		select {
+		case <-c.ctx.Done():
+			return
+		default:
+			_, _, err := c.conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					c.logger.Error("Unexpected close error", slog.String("error", err.Error()))
+				} else {
+					c.logger.Info("Connection closed", slog.String("reason", err.Error()))
+				}
+				return
 			}
-			break
 		}
 	}
 }
 
 func (c *Conn) cleanup() {
-	c.logger.Info("Cleaning up connection")
 	c.cleanupOnce.Do(func() {
-		c.logger.Debug("CLEANUP ONCE")
-
-		close(c.shutdown)
+		c.logger.Info("Cleaning up connection")
+		c.cancel()
 		close(c.sendChannel)
-
-		// Close the underlying websocket connection.
-		err := c.conn.Close()
-		if err != nil {
+		if err := c.conn.Close(); err != nil {
 			c.logger.Error("Failed to close connection", slog.String("error", err.Error()))
 		}
 		c.logger.Info("Connection closed")
 	})
-	c.logger.Info("outside of cleanup once")
 }
 
 func (c *Conn) run() {

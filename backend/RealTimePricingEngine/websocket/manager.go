@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"sync"
@@ -18,6 +19,9 @@ type Manager struct {
 	initconn InitConnFunc
 	mu       sync.RWMutex
 	logger   *slog.Logger
+
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 type InitConnFunc func(c *Conn)
@@ -34,15 +38,15 @@ func NewManager(o *ManagerOptions) (*Manager, error) {
 		o.Logger.Info("No port specified, defaulting to 10000")
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+
 	return &Manager{
-		addr: o.Addr,
-
+		ctx:     ctx,
+		cancel:  cancel,
+		addr:    o.Addr,
 		clients: make(map[string]*Conn),
-
-		mu: sync.RWMutex{},
-
-		logger: o.Logger,
-
+		mu:      sync.RWMutex{},
+		logger:  o.Logger,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -77,10 +81,11 @@ func (m *Manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ws := newConnection(&connOptions{conn: conn,
+	ws := newConnection(&connOptions{
+		conn:   conn,
 		id:     uuid.Must(uuid.NewRandom()).String(),
 		logger: m.logger,
-	})
+	}, m.ctx)
 
 	m.addClient(ws)
 	defer m.removeClient(ws)
@@ -92,8 +97,8 @@ func (m *Manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		m.initconn(ws)
 	}
 
-	//blocking statement until we are forced to cleanup
-	<-ws.shutdown
+	// Block until context for this conn is canceled
+	<-ws.ctx.Done()
 
 }
 
@@ -118,15 +123,12 @@ func (m *Manager) removeClient(c *Conn) {
 }
 
 func (m *Manager) ListenAndServe() error {
-
 	router := http.NewServeMux()
-
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		m.logger.Info("Websocket connection request received")
 		m.upgradeHandler(w, r)
 	})
 
-	//Sane defaults
 	srv := &http.Server{
 		Handler:           router,
 		Addr:              m.addr,
@@ -137,37 +139,36 @@ func (m *Manager) ListenAndServe() error {
 	}
 
 	m.logger.Info("Starting websocket server on port: " + m.addr)
+
+	go func() {
+		<-m.ctx.Done()
+		m.logger.Info("Shutting down HTTP server...")
+		_ = srv.Close()
+	}()
+
 	err := srv.ListenAndServe()
-	if err != nil {
+	if err != nil && err != http.ErrServerClosed {
 		m.logger.Error("Failed to start websocket server", slog.String("error", err.Error()))
 		return err
 	}
-	m.logger.Info("Websocket server started on port " + m.addr)
-
-	go func() {
-		for {
-			m.mu.Lock()
-			m.logger.Debug("Total clients", slog.Int("count", len(m.clients)))
-			m.mu.Unlock()
-			time.Sleep(5 * time.Second)
-		}
-	}()
 
 	return nil
 }
 
 func (m *Manager) Stop() {
+	m.logger.Info("Stopping websocket manager...")
+	m.cancel() // cancel root context
+
 	wg := &sync.WaitGroup{}
 	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	wg.Add(len(m.clients))
 	for _, client := range m.clients {
+		wg.Add(1)
 		go func(client *Conn) {
 			defer wg.Done()
 			client.Close()
 		}(client)
 	}
+	m.mu.Unlock()
 	wg.Wait()
 	m.logger.Info("Websocket server stopped")
 }
