@@ -283,12 +283,14 @@ func (a *app) handlePriceUpdates() {
 
 func (a *app) onInitialConn(c *websocket.Conn) {
 	// Gather price histories
+	start := time.Now()
 	histories, err := a.histProvider.Histories(context.TODO())
 	if err != nil {
 		a.logger.Error("Failed to get histories when initiating ws connection", slog.String("error", err.Error()))
 		c.Close()
 		return
 	}
+	afterFetch := time.Now().Sub(start)
 	// Convert to message to be sent to frontend
 	b, err := json.Marshal(pe.NewHistoryMsg(histories))
 	if err != nil {
@@ -296,6 +298,9 @@ func (a *app) onInitialConn(c *websocket.Conn) {
 		c.Close()
 		return
 	}
+	afterMarshal := time.Now().Sub(start)
+	a.logger.Info("Retrieved histories", slog.Duration("start-to-fetch", afterFetch), slog.Duration("start-to-marshal", afterMarshal))
+
 	c.Send(b)
 }
 
