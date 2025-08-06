@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strconv"
 	"time"
@@ -12,11 +13,12 @@ import (
 )
 
 type priceStorer struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewPriceStorer(db *sql.DB) *priceStorer {
-	return &priceStorer{db: db}
+func NewPriceStorer(db *sql.DB, logger *slog.Logger) *priceStorer {
+	return &priceStorer{db: db, logger: logger}
 }
 
 const _insertPriceSQL = "INSERT INTO `Prices` (`BeverageId`, `Amount`, `Timestamp`) VALUES (?, ?, ?)"
@@ -39,16 +41,16 @@ func (ps *priceStorer) StorePrice(ctx context.Context, u pe.Update) error {
 }
 
 type historyProvider struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewHistoryProvider(db *sql.DB) *historyProvider {
-	return &historyProvider{db: db}
+func NewHistoryProvider(db *sql.DB, logger *slog.Logger) *historyProvider {
+	return &historyProvider{db: db, logger: logger}
 }
 
 const (
-	_getBeverageSQL       = "SELECT `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId` = ? AND `IsActive` = 1"
-	_getBeveragePricesSQL = "SELECT `Amount`, `Timestamp` FROM `Prices` WHERE `BeverageId` = ? ORDER BY `Timestamp` DESC LIMIT ?"
+	_getBeverageSQL = "SELECT `Name`, `Description`, `ImageSrc`, `BasePrice`, `MaxPrice`, `MinPrice`, `BuyMultiplier`, `HalfTime` FROM `Beverages` WHERE `BeverageId` = ? AND `IsActive` = 1"
 )
 
 func (hp *historyProvider) History(ctx context.Context, bevID string) (pe.History, error) {
@@ -83,13 +85,17 @@ const (
 )
 
 func (hp *historyProvider) Histories(ctx context.Context) ([]pe.History, error) {
+	hp.logger.Info("Querying histories...")
 	rows, err := hp.db.QueryContext(ctx, _getAllHistoriesSQL)
 	if err != nil {
 		return nil, fmt.Errorf("query beverages: %v", err)
 	}
+	hp.logger.Info("Queried histories!! Going thru rows next...")
+
 	defer rows.Close()
 	hists := make([]pe.History, 0)
 	for rows.Next() {
+		hp.logger.Info("Querying histories...")
 		// Read beverage from query result, and make sure id is converted
 		var (
 			h  pe.History
@@ -114,9 +120,14 @@ func (hp *historyProvider) Histories(ctx context.Context) ([]pe.History, error) 
 	return hists, nil
 }
 
+const (
+	_getBeveragePricesSQL = "SELECT `Amount`, `Timestamp` FROM `Prices` WHERE `BeverageId` = ? ORDER BY `Timestamp` DESC LIMIT ?"
+)
+
 // prices gets the prices of beverage with given id from DB. Only get required
 // amount of prices.
 func (hp *historyProvider) prices(ctx context.Context, numBevID int) ([]pe.HistoryEntry, error) {
+	hp.logger.Info("Querying prices for bev", slog.Int("numBevID", numBevID))
 	rows, err := hp.db.QueryContext(ctx, _getBeveragePricesSQL, numBevID, pe.HistoryLen)
 	if err != nil {
 		return nil, fmt.Errorf("query bev prices: %v", err)
@@ -130,6 +141,8 @@ func (hp *historyProvider) prices(ctx context.Context, numBevID int) ([]pe.Histo
 		}
 		prices = append(prices, entry)
 	}
+	hp.logger.Info("Finished Querying prices for bev", slog.Int("numBevID", numBevID), slog.Int("total-prices", len(prices)))
+
 	slices.Reverse(prices) // In a history, oldest price comes first
 	return prices, nil
 }

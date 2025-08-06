@@ -85,13 +85,17 @@ func Bootstrap() (a *app, err error) {
 
 // makeBase initializes the app. Afterwards, other dependencies should be bootstraped.
 func makeBase(c config) (*app, error) {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: c.loglvl,
+	}))
+
 	db, err := mysql.Open(c.dbconnstr)
 	if err != nil {
 		return nil, fmt.Errorf("mysql open: %v", err)
 	}
 	var (
-		ps      = mysql.NewPriceStorer(db)
-		hp      = mysql.NewHistoryProvider(db)
+		ps      = mysql.NewPriceStorer(db, logger)
+		hp      = mysql.NewHistoryProvider(db, logger)
 		bevrepo = mysql.NewBeverageRepo(db)
 	)
 
@@ -100,9 +104,7 @@ func makeBase(c config) (*app, error) {
 		priceStorer:  ps,
 		histProvider: hp,
 		bevRepo:      bevrepo,
-		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: c.loglvl,
-		})),
+		logger:       logger,
 	}, nil
 }
 
