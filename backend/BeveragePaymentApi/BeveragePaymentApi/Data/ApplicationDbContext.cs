@@ -36,6 +36,11 @@ public class ApplicationDbContext : DbContext
             .WithMany(b => b.Prices);
         //.HasForeignKey(p => p.BeverageId);
 
+        modelBuilder.Entity<Price>()
+            .HasIndex(e => new { e.BeverageId, e.Timestamp })
+            .HasDatabaseName("IX_Price_BeverageId_Timestamp")
+            .IsDescending(false, true);
+
         base.OnModelCreating(modelBuilder);
 
     }
